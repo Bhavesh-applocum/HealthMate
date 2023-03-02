@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Candidate;
 use App\Client;
+use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 
 class CandidateController extends Controller
 {
@@ -60,8 +62,16 @@ class CandidateController extends Controller
                 'code' =>  400
             ], 400);
         }
+        $allJobCategory = config('constant.job_Category');
 
         $candidate = new Candidate;
+
+        $jobCategory = '';
+        for ($i = 1; $i <= count($allJobCategory); $i++) {
+            if ($request->role == $i) {
+                $jobCategory = $allJobCategory[$i];
+            }
+        };
 
         $candidate->first_name = $request->first_name;
         $candidate->last_name = $request->last_name;
@@ -122,9 +132,25 @@ class CandidateController extends Controller
      * @param  \App\Candidate  $candidate
      * @return \Illuminate\Http\Response
      */
-    public function show(Candidate $candidate)
+    public function show($id)
     {
-        //
+        $candidate = Candidate::find($id);
+
+        if($candidate){
+            $candidate->role = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
+        return response()->json([
+            'message' => 'Candidate found',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $candidate
+        ], 200);
+    }else{
+        return response()->json([
+            'message' => 'Candidate not found',
+            'status' => 'Bad Request',
+            'code' => 400   
+        ], 400);
+    }
     }
 
     /**

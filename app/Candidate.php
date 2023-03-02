@@ -29,7 +29,8 @@ class Candidate extends Model
     ];
 
     //protected $primaryKey = 'email';
-    public function avatar(){
-        
+    
+    public function applications(){
+        return $this->hasMany('App\Application');
     }
 }

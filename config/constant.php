@@ -2,16 +2,10 @@
 
 return [
 
-    'application_status' => [
-        1 => 'Application Pending',
-        2 => 'Application Approved',
-        3 => 'Application Rejected',
-        4 => 'Application In-Review',
-        5 => 'Application Under-Consideration',
-        6 => 'Application Shortlisted',
-        7 => 'Application Hired',
-        8 => 'Application Accepted',
-        9 => 'Application Declined',
+    'job_status' => [
+        1 => 'Job Pending',
+        2 => 'Job Approved',
+        3 => 'Job Rejected',
     ],
 
     'job_Category' => [
@@ -42,5 +36,11 @@ return [
         4 => 'Temporary',
         5 => 'Internship',
         6 => 'Volunteer',
+    ],
+
+    'Application_status' => [
+        1 => 'Pending',
+        2 => 'Approved',
+        3 => 'Rejected',
     ],
 ];

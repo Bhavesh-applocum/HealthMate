@@ -26,4 +26,8 @@ class Job extends Model
     public function client(){
         return $this->belongsTo('App\Client');
     }
+
+    public function applications(){
+        return $this->hasMany('App\Application');
+    }
 }

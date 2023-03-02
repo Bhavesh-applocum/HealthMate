@@ -108,9 +108,23 @@ class ClientController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client)
+    public function show($id)
     {
-        //
+        $client = Client::find($id);
+
+        if($client == null){
+            return response()->json([
+                'message' => 'Client not found',
+                'status' => 'Bad Request',
+                'code' => 400,
+            ], 400);
+        }
+        return response()->json([
+            'message' => 'Client found',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $client
+        ], 200);
     }
 
     /**

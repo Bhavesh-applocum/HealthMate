@@ -18,7 +18,7 @@ class CreateCandidateTable extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('gender');
-            $table->string('role');
+            $table->integer('role')->unsigned();
             $table->string('email')->unique();
             $table->string('phone');
             $table->string('password');

@@ -21,7 +21,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/candidate/register', 'CandidateController@store');
+Route::get('/candidate/{id}/index', 'CandidateController@show');
 Route::post('/client/register', 'ClientController@store');
+Route::get('/client/{id}/index', 'ClientController@show');
 Route::post('/login', 'LoginController@login');
 Route::post('/otpVerify', 'LoginController@verifyotp'); // login otp
 Route::post('/resendOtp', 'LoginController@resendotp'); // resend login otp
@@ -34,8 +36,13 @@ Route::post('/client/editprofile', 'ClientController@profileedit');
 
 Route::resource('job', JobController::class);
 
+Route::resource('application', CandidateApplicationController::class);
+Route::post('/application/approve', 'CandidateApplicationController@approveApplication');
+Route::post('/application/reject', 'CandidateApplicationController@afterApplicatonRejected');
+
 Route::post('/job/update/{id}', 'JobController@jobupdate');
 Route::get('/job/{id}/index', 'JobController@clientJobs');
+Route::get('/job/{id}/candidate', 'JobController@specificJob');
 
 Route::get('/hello', function () {
     return 'Hello World';

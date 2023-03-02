@@ -30,14 +30,25 @@ class ApplicationStatusHelper
         return $jobCategory;
     }
 
-    public static function getApplicationStatusByName($id){
-        $allApplicationStatus = config('constant.application_status');
-        $applicationStatus = '';
-        for($i = 1; $i <= count($allApplicationStatus); $i++){
+    public static function getCandidateCategoryByName($id){
+        $allJobCategory = config('constant.job_Category');
+        $jobCategory = '';
+        for($i = 1; $i <= count($allJobCategory); $i++){
             if($id == $i){
-                $applicationStatus = $allApplicationStatus[$i];
+                $jobCategory = $allJobCategory[$i];
             }
         };
-        return $applicationStatus;
+        return $jobCategory;
+    }
+
+    public static function getJobStatusByName($id){
+        $allJobStatus = config('constant.job_status');
+        $jobStatus = '';
+        for($i = 1; $i <= count($allJobStatus); $i++){
+            if($id == $i){
+                $jobStatus = $allJobStatus[$i];
+            }
+        };
+        return $jobStatus;
     }
 }
