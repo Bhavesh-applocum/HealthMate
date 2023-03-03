@@ -39,8 +39,9 @@ return [
     ],
 
     'Application_status' => [
-        1 => 'Pending',
-        2 => 'Approved',
-        3 => 'Rejected',
+        0 => 'Applied', // applied
+        1 => 'Booked', // booked
+        2 => 'Rejected', // rejected
+        3 => 'Worked', // worked
     ],
 ];

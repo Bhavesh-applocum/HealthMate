@@ -51,4 +51,15 @@ class ApplicationStatusHelper
         };
         return $jobStatus;
     }
+
+    public static function getApplicationStatusByName($id){
+        $allApplicationStatus = config('constant.Application_status');
+        $applicationStatus = '';
+        for($i = 0; $i <= count($allApplicationStatus); $i++){
+            if($id == $i){
+                $applicationStatus = $allApplicationStatus[$i];
+            }
+        };
+        return $applicationStatus;
+    }
 }

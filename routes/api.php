@@ -37,12 +37,15 @@ Route::post('/client/editprofile', 'ClientController@profileedit');
 Route::resource('job', JobController::class);
 
 Route::resource('application', CandidateApplicationController::class);
-Route::post('/application/approve', 'CandidateApplicationController@approveApplication');
-Route::post('/application/reject', 'CandidateApplicationController@afterApplicatonRejected');
+Route::resource('client/application', ClientApplicationController::class);
+Route::post('/application/approve', 'ClientApplicationController@approveApplication');
+Route::post('/application/reject', 'ClientApplicationController@afterApplicatonRejected');
+Route::get('/application/{id}/index', 'ClientApplicationController@applicationforclient');
+Route::post('/application/status/jobs' , 'CandidateApplicationController@showstautsjob');
 
 Route::post('/job/update/{id}', 'JobController@jobupdate');
 Route::get('/job/{id}/index', 'JobController@clientJobs');
-Route::get('/job/{id}/candidate', 'JobController@specificJob');
+Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');
 
 Route::get('/hello', function () {
     return 'Hello World';

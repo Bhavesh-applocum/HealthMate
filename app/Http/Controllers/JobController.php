@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Application;
 use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
 use App\Job;
+use Carbon\Carbon;
 
 class JobController extends Controller
 {
@@ -25,13 +27,34 @@ class JobController extends Controller
     {
         $candidate = Candidate::find($id);
         
-        $jobs = Job::with('client')->get();
-         
+        if(!$candidate) {
+            return response()->json([
+                'message' => 'Candidate not found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+
+        $jobs = Job::with('client')->with('applications')->get();
+
         $data = [];
-        
+
         foreach ($jobs as $key => $job) {
-            if ($candidate->role == $job->job_category) {
+            
+            $isBooked = false;
+            foreach($job->applications as $application) {
+                if($application->status == 1) {
+                    $isBooked = true;
+                }
+                return response()->json([
+                    'message' => 'Job not found',
+                    'status' => 'Bad Request',
+                    'code' => 400
+                ], 400);
+            }
+            if ($candidate->role == $job->job_category && !$isBooked && $job->job_start_date > now()) {
                 $data[$key]['client_id']        = $job->client->practice_name; 
+                $data[$key]['job_id']           = $job->id; 
                 $data[$key]['job_title']        = $job->job_title;
                 $data[$key]['job_description']  = $job->job_description;
                 $data[$key]['job_location']     = $job->job_location;
@@ -46,6 +69,8 @@ class JobController extends Controller
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         }
+
+        // for particular candidate 
         return response()->json([
             'success' => true,
             'data' => $data
@@ -73,20 +98,20 @@ class JobController extends Controller
                 'message' => 'No job found'
             ], 400);
         }
-
-        foreach ($jobs as $job) {
-            $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
-            $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
-            $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+        $data = [];
+        // echo "<pre>";
+        foreach ($jobs as $key => $job) {
+            if($job->job_end_date > Carbon::now()){
+                $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
+                $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
+                $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                $data[$key]        = $job;
+            }
         }
-        // dd($jobs);
-        // $job->job_status = ApplicationStatusHelper::getApplicationStatusByName($job->job_status);
-        // $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
-        // $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
 
         return response()->json([
             'success' => true,
-            'data' => $jobs->toArray()
+            'data' => $data,
         ], 200);
     }
 
@@ -340,7 +365,6 @@ class JobController extends Controller
     public function destroy($id)
     {
         $job = Job::find($id);
-
         if (!$job) {
             return response()->json([
                 'message'   => 'Job Not Found',
@@ -349,6 +373,18 @@ class JobController extends Controller
                 'data'      => ['job' => $job,]
             ], 404);
         }
+
+        $applications = Job::with('applications')->where('id', $id)->first();
+        foreach($applications->applications as $application){
+            if ($application->status == 1) {
+                return response()->json([
+                    'message'   => 'Job Has Been Applied So,Cannot be Deleted',
+                    'status'    => 'Not Found',
+                    'code'      => 404,
+                ], 404);
+            }
+        }
+
 
         if ($job->job_status == 8) {
             // dd()
