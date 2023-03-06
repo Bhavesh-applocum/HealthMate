@@ -33,4 +33,14 @@ class Candidate extends Model
     public function applications(){
         return $this->hasMany('App\Application');
     }
+
+    public function timesheets(){
+        return $this->hasMany('App\TimeSheet');
+    }
+
+    public function jobs(){
+        return $this->belongsToMany('App\Job');
+    }
+
+
 }

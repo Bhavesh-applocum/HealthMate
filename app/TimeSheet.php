@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Application extends Model
+class TimeSheet extends Model
 {
     public function job(){
         return $this->belongsToMany('App\Job');
@@ -14,7 +14,11 @@ class Application extends Model
         return $this->belongsToMany('App\Candidate');
     }
 
-    public function timesheet(){
-        return $this->belongsToMany('App\TimeSheet');
+    public function application(){
+        return $this->belongsToMany('App\Application');
+    }
+
+    public function client(){
+        return $this->belongsToMany('App\Client');
     }
 }

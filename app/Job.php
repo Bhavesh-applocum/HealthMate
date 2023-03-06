@@ -30,4 +30,12 @@ class Job extends Model
     public function applications(){
         return $this->hasMany('App\Application');
     }
+
+    public function timesheets(){
+        return $this->hasMany('App\TimeSheet');
+    }
+
+    public function candidates(){
+        return $this->belongsToMany('App\Candidate');
+    }
 }

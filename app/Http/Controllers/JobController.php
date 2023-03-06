@@ -36,6 +36,7 @@ class JobController extends Controller
         }
 
         $jobs = Job::with('client')->with('applications')->get();
+        // dd($jobs);
 
         $data = [];
 
@@ -45,14 +46,10 @@ class JobController extends Controller
             foreach($job->applications as $application) {
                 if($application->status == 1) {
                     $isBooked = true;
+                   
                 }
-                return response()->json([
-                    'message' => 'Job not found',
-                    'status' => 'Bad Request',
-                    'code' => 400
-                ], 400);
             }
-            if ($candidate->role == $job->job_category && !$isBooked && $job->job_start_date > now()) {
+            if ($candidate->role == $job->job_category && !$isBooked && $job->job_start_date > Carbon::now()) {
                 $data[$key]['client_id']        = $job->client->practice_name; 
                 $data[$key]['job_id']           = $job->id; 
                 $data[$key]['job_title']        = $job->job_title;
@@ -69,16 +66,14 @@ class JobController extends Controller
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         }
-
         // for particular candidate 
         return response()->json([
             'success' => true,
             'data' => $data
         ], 200);
+
     }
-
-
-
+    
     public function clientJobs($id)
     {
 

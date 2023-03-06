@@ -29,4 +29,16 @@ class Client extends Model
     public function jobs(){
         return $this->hasMany('App\Job');
     }
+
+    public function timesheets(){
+        return $this->hasMany('App\TimeSheet');
+    }
+
+    public function candidates(){
+        return $this->belongsToMany('App\Candidate');
+    }
+
+    public function applications(){
+        return $this->hasMany('App\Application');
+    }
 }

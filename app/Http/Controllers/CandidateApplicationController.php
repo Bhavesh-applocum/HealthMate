@@ -149,6 +149,15 @@ class CandidateApplicationController extends Controller
             $data[$key]['job_created_at'] = $job->created_at;
         }
         if(count($candidateApplication) > 0){
+            if($status == 2)
+                return response()->json([
+                    'message' => 'Applied Jobs',
+                    'Application_status' => ApplicationStatusHelper::getApplicationStatusByName($status),
+                    'Rejected_reason' => $application->reject_reason,
+                    'status' => 'OK',
+                    'code' => 200,
+                    'data' => $data
+                ]);
             return response()->json([
                 'message' => 'All Jobs',
                 'Application_status' => ApplicationStatusHelper::getApplicationStatusByName($status),
