@@ -44,7 +44,7 @@ class ApplicationStatusHelper
     public static function getJobStatusByName($id){
         $allJobStatus = config('constant.job_status');
         $jobStatus = '';
-        for($i = 1; $i <= count($allJobStatus); $i++){
+        for($i = 0; $i <= count($allJobStatus); $i++){
             if($id == $i){
                 $jobStatus = $allJobStatus[$i];
             }

@@ -20,28 +20,55 @@ class ClientApplicationController extends Controller
         //
     }
 
-    public function applicationforclient($id)
+    public function statusforclient($id, Request $request)
     {
         $job = Client::with('jobs')->find($id);
-        // dd($job);
+
+        $status = $request->status;
+        // dd($status);
         $data = [];
-        foreach ($job->jobs as $key => $jobs) {
-            $applications = Job::with('applications')->find($jobs->id);
-            $data[$key]['job_id']           = $jobs->id;
-            $data[$key]['job_title']        = $jobs->job_title;
-            $data[$key]['job_location']     = $jobs->job_location;
-            $data[$key]['job_salary']       = $jobs->job_salary;
-            $data[$key]['job_start_date']   = $jobs->job_start_date;
-            $data[$key]['job_end_date']     = $jobs->job_end_date;
-            $data[$key]['total_applications']   = count($applications->applications);
+        if ($status == 1) {
+            foreach ($job->jobs as $key => $jobs) {
+                $applications = Job::with('applications')->find($jobs->id);
+                $data[$key]['job_id']           = $jobs->id;
+                $data[$key]['job_title']        = $jobs->job_title;
+                $data[$key]['job_location']     = $jobs->job_location;
+                $data[$key]['job_salary']       = $jobs->job_salary;
+                $data[$key]['job_start_date']   = $jobs->job_start_date;
+                $data[$key]['job_end_date']     = $jobs->job_end_date;
+                $data[$key]['total_applications']   = count($applications->applications);
+            }
+            // dd($data);
+            return response()->json([
+                'message' => 'Applications for client',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        } elseif ($status == 2) {
+
+            foreach ($job->jobs as $key => $jobs) {
+                $applications = Job::with('applications')->find($jobs->id);
+                $applicationforstatus = Application::where('job_id', $jobs->id)->where('status', 2)->get();
+                if ($applicationforstatus) {
+                    $data[$key]['job_id']           = $jobs->id;
+                    $data[$key]['job_title']        = $jobs->job_title;
+                    $data[$key]['job_location']     = $jobs->job_location;
+                    $data[$key]['job_salary']       = $jobs->job_salary;
+                    $data[$key]['job_start_date']   = $jobs->job_start_date;
+                    $data[$key]['job_end_date']     = $jobs->job_end_date;
+                    $data[$key]['total_bookings']   = count($applicationforstatus);
+                    // dd($applicationforstatus);
+                }
+            }
+            // dd($data);
+            return response()->json([
+                'message' => 'Booking for client',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
         }
-        // dd($data);
-        return response()->json([
-            'message' => 'Applications for client',
-            'status' => 'OK',
-            'code' => 200,
-            'data' => $data
-        ], 200);
     }
 
     public function approveApplication(Request $request)
@@ -59,7 +86,7 @@ class ClientApplicationController extends Controller
             ], 400);
         }
 
-        $application->status = 1;
+        $application->status = 2;
 
         $application->save();
 
@@ -70,39 +97,70 @@ class ClientApplicationController extends Controller
         ], 200);
     }
 
-    public function afterApplicatonRejected(Request $request)
-    {
-        $applicationID = $request->application_id;
-        $rejectReason = $request->reason;
+    // public function BookingCandidate($id)
+    // {
+    //     $job = Client::with('jobs')->find($id);
+    //     // dd($job);
+    //     $data = [];
+    //     foreach ($job->jobs as $key => $jobs) {
+    //         $applications = Job::with('applications')->find($jobs->id);
+    //         $applicationforstatus = Application::where('job_id', $jobs->id)->where('status', 2)->get();
+    //         if ($applicationforstatus) {
+    //             $data[$key]['job_id']           = $jobs->id;
+    //             $data[$key]['job_title']        = $jobs->job_title;
+    //             $data[$key]['job_location']     = $jobs->job_location;
+    //             $data[$key]['job_salary']       = $jobs->job_salary;
+    //             $data[$key]['job_start_date']   = $jobs->job_start_date;
+    //             $data[$key]['job_end_date']     = $jobs->job_end_date;
+    //             $data[$key]['total_bookings']   = count($applicationforstatus);
+    //             // dd($applicationforstatus);
+    //         }
+    //     }
+    //     // dd($data);
+    //     return response()->json([
+    //         'message' => 'Booking for client',
+    //         'status' => 'OK',
+    //         'code' => 200,
+    //         'data' => $data
+    //     ], 200);
+    // }
 
-        $application = Application::find($applicationID);
+    /********* Candidate Reject function *********/
 
 
-        if (!$application) {
-            return response()->json([
-                'message' => 'Application not found',
-                'status' => 'Bad Request',
-                'code' => 400
-            ], 400);
-        }
-        if (!$rejectReason) {
-            return response()->json([
-                'message' => 'Reason is required',
-                'status' => 'Bad Request',
-                'code' => 400
-            ], 400);
-        }
-        $application->status = 2;
-        $application->reject_reason = $rejectReason;
-        
-        $application->save();
+    // public function afterApplicatonRejected(Request $request)
+    // {
+    //     $applicationID = $request->application_id;
+    //     $rejectReason = $request->reason;
 
-        return response()->json([
-            'message' => 'Application successfully rejected',
-            'status' => 'OK',
-            'code' => 200
-        ], 200);
-    }
+    //     $application = Application::find($applicationID);
+
+
+    //     if (!$application) {
+    //         return response()->json([
+    //             'message' => 'Application not found',
+    //             'status' => 'Bad Request',
+    //             'code' => 400
+    //         ], 400);
+    //     }
+    //     if (!$rejectReason) {
+    //         return response()->json([
+    //             'message' => 'Reason is required',
+    //             'status' => 'Bad Request',
+    //             'code' => 400
+    //         ], 400);
+    //     }
+    //     $application->status = 2;
+    //     $application->reject_reason = $rejectReason;
+
+    //     $application->save();
+
+    //     return response()->json([
+    //         'message' => 'Application successfully rejected',
+    //         'status' => 'OK',
+    //         'code' => 200
+    //     ], 200);
+    // }
 
     /**
      * Show the form for creating a new resource.

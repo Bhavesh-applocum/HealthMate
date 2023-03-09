@@ -85,7 +85,13 @@ class CandidateController extends Controller
 
         $candidate->save();
 
-        return $candidate;
+        return response()->json([
+            'message' => 'Candidate created successfully',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $candidate
+        ], 200);
+        // return $candidate;
     }
 
     public function profileedit(CandidateUpdateRequest $request){

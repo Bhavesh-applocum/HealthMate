@@ -20,7 +20,22 @@ class JobController extends Controller
      */
     public function index()
     {
-        //
+        $job = Job::all();
+
+        if(!$job) {
+            return response()->json([
+                'message' => 'No jobs found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Jobs found',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $job
+        ], 200);
     }
 
     public function specificJob($id)
@@ -44,7 +59,7 @@ class JobController extends Controller
             
             $isBooked = false;
             foreach($job->applications as $application) {
-                if($application->status == 1) {
+                if($application->status == 2) {
                     $isBooked = true;
                    
                 }
@@ -381,15 +396,15 @@ class JobController extends Controller
         }
 
 
-        if ($job->job_status == 8) {
-            // dd()
-            dd($job->job_status);
-            return response()->json([
-                'message'   => 'Job Has Been Applied So,Cannot be Deleted',
-                'status'    => 'Not Found',
-                'code'      => 404,
-            ], 404);
-        }
+        // if ($job->job_status == ) {
+        //     // dd()
+        //     dd($job->job_status);
+        //     return response()->json([
+        //         'message'   => 'Job Has Been Applied So,Cannot be Deleted',
+        //         'status'    => 'Not Found',
+        //         'code'      => 404,
+        //     ], 404);
+        // }
         $job->delete();
 
         return response()->json([

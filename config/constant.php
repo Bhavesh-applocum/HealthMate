@@ -3,9 +3,10 @@
 return [
 
     'job_status' => [
-        1 => 'Job Pending',
-        2 => 'Job Approved',
-        3 => 'Job Rejected',
+        0 => 'Published',// published
+        1 => 'Application', // application
+        2 => 'Booking',// booking
+        3 => 'Worked',// worked
     ],
 
     'job_Category' => [
@@ -39,9 +40,9 @@ return [
     ],
 
     'Application_status' => [
-        0 => 'Applied', // applied
-        1 => 'Booked', // booked
-        2 => 'Rejected', // rejected
+        0 => 'Published', // published
+        1 => 'Applied', // applied
+        2 => 'Booked', // booked
         3 => 'Worked', // worked
     ],
 ];

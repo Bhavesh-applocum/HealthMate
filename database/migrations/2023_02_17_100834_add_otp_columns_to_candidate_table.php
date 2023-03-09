@@ -15,7 +15,7 @@ class AddOtpColumnsToCandidateTable extends Migration
     {
         Schema::table('candidates', function (Blueprint $table) {
             $table->string('Login_otp')->nullable()->after('password');
-            $table->timestamp('Login_otp_expire')->nullable()->after('otp');
+            $table->timestamp('Login_otp_expire')->nullable()->after('Login_otp');
         });
     }
 
