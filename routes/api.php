@@ -42,7 +42,7 @@ Route::post('/application/approve', 'ClientApplicationController@approveApplicat
 Route::post('/application/reject', 'ClientApplicationController@afterApplicatonRejected');
 Route::post('/application/{id}/index', 'ClientApplicationController@statusforclient');
 Route::post('/application/status/jobs' , 'CandidateApplicationController@showstautsjob');
-// Route::get('/booking/{id}/index', 'ClientApplicationController@BookingCandidate');
+Route::get('/booking/{id}/index', 'ClientApplicationController@BookingCandidate');
 Route::post('/job/update/{id}', 'JobController@jobupdate');
 Route::get('/job/{id}/index', 'JobController@clientJobs');
 Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');

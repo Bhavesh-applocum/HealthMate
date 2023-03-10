@@ -14,7 +14,7 @@ class AddForgotPasswordOtpColumnsToClientTable extends Migration
     public function up()
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->string('forgot_password_otp')->nullable()->after('otp_expire');
+            $table->string('forgot_password_otp')->nullable()->after('Login_otp_expire');
             $table->timestamp('forgot_password_otp_expire')->nullable()->after('forgot_password_otp');
         });
     }

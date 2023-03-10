@@ -23,34 +23,19 @@ use Psy\TabCompletion\Matcher\FunctionsMatcher;
 class LoginController extends Controller
 {
 
-    public function login(LoginRequest $request, Candidate $candidate, Client $client)
+    public function login(LoginRequest $request)
     {
-        $candidate = Candidate::where('email', $request->email)->first();
+        $candidate = Candidate::where(['email' => $request->email])->first();
         $client = Client::where('email', $request->email)->first();
         if ($candidate) {
             if (Hash::check($request->password, $candidate->password)) {
-                $otp = rand(1000,9999);
-                $otp_expire = now()->addMinutes(5);
-                $candidate->otp = $otp;
-                $candidate->otp_expire = $otp_expire;
-                $candidate->save();
-                // $obj = array(
-                //     'data' => $candidate,
-                //     'type' => 1,
-                //     'status' => 'success',
-                // );
-                // return $obj;
-                Mail::to($candidate->email)->send(new LoginAuthMail($otp));
-
                 return response()->json([
-                    'data' => $candidate,
+                    'message' => 'Login Successful',
                     'type' => 2,
-                    'code' => 200
+                    'code' => 200,
+                    'data' => [$candidate]
                 ], 200);
-                // $obj = new \stdClass();
-                // $obj->data = $candidate;
-                // $obj->type = 1;
-                // return $obj;
+        
             } else {
                 return response()->json([
                     'message' => 'password is incorrect',
@@ -58,25 +43,15 @@ class LoginController extends Controller
                     'code' => 401
                 ], 401);
             }
-        } else if ($client) {
+        } 
+        else if ($client) {
             if (Hash::check($request->password, $client->password)) {
-                $otp = rand(1000,9999);
-                $otp_expire = now()->addMinutes(5);
-                $client->otp = $otp;
-                $client->otp_expire = $otp_expire;
-                $client->save();
-                // $obj = array(
-                //     'data' => $client,
-                //     'type' => 2,
-                //     'status' => 'success',
-                // );
-                // return $obj;
-                Mail::to($candidate->email)->send(new LoginAuthMail($otp));
-
+                
                 return response()->json([
-                    'data' => $client,
+                    'message' => 'Login Successful',
                     'type' => 1,
-                    'code' => 200
+                    'code' => 200,
+                    'data' => [$client],
                 ], 200);
             } else {
                 return response()->json([
@@ -85,7 +60,8 @@ class LoginController extends Controller
                     'code' => 400
                 ], 400);
             }
-        } else {
+        } 
+        else {
             return response()->json([
                 'message' => 'User not found',
                 'status' => 'Bad Request',
@@ -113,16 +89,14 @@ class LoginController extends Controller
             $model = Candidate::find($id);
         }
 
-        if ($model->otp_expire < now()) {
+        if ($model->Login_otp_expire < now()) {
             return response()->json([
                 'message' => 'OTP Expired',
                 'status' => 'Bad Request',
                 'code' => 400
             ], 400);
         } else {
-            if ($model->otp == $otp) {
-                $model->otp = null;
-                $model->otp_expire = null;
+            if ($model->Login_otp == $otp) {
                 $model->save();
                 return response()->json([
                     'message' => 'OTP Verified',
@@ -154,8 +128,8 @@ class LoginController extends Controller
 
         $otp = rand(1000,9999);
         $otp_expire = now()->addMinutes(5);
-        $model->otp = $otp;
-        $model->otp_expire = $otp_expire;
+        $model->Login_otp = $otp;
+        $model->Login_otp_expire = $otp_expire;
         $model->save();
 
         Mail::to($model->email)->send(new LoginAuthMail($otp));
@@ -196,8 +170,10 @@ class LoginController extends Controller
 
                 return response()->json([
                     'message' => 'Otp sent',
+                    'type' => 1,
                     'status' => 'Success',
-                    'code' => 200
+                    'code' => 200,
+                    'data' => [$client]
                 ], 200);
             }
             else if($candidate_cnt > 0){
@@ -205,7 +181,7 @@ class LoginController extends Controller
                 $otp_expire = now()->addMinutes(5);
                 $upadte = Candidate::where('id', $candidate->id)
                 ->update([
-                    'otp_expire'=>now()->addMinutes(5),
+                    'forgot_password_otp_expire'=>now()->addMinutes(5),
                     'forgot_password_otp'=>$otp,
                     'forgot_password_otp_expire'=>$otp_expire
                 ]);
@@ -218,8 +194,10 @@ class LoginController extends Controller
 
                 return response()->json([
                     'message' => 'Otp sent',
+                    'type' => 2,
                     'status' => 'Success',
-                    'code' => 200
+                    'code' => 200,
+                    'data' => [$candidate]
                 ], 200);
             }
             else{

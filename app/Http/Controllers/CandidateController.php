@@ -7,9 +7,11 @@ use App\Client;
 use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
+use App\Mail\LoginAuthMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 
 class CandidateController extends Controller
@@ -83,11 +85,19 @@ class CandidateController extends Controller
         $candidate->created_at = now();
         $candidate->updated_at = now();
 
+        $otp = rand(1000,9999);
+        $otp_expire = now()->addMinutes(5);
+        $candidate->Login_otp = $otp;
+        $candidate->Login_otp_expire = $otp_expire;
+
         $candidate->save();
+
+        Mail::to($candidate->email)->send(new LoginAuthMail($otp));
 
         return response()->json([
             'message' => 'Candidate created successfully',
             'status' => 'OK',
+            'type' => 2,
             'code' => 200,
             'data' => $candidate
         ], 200);

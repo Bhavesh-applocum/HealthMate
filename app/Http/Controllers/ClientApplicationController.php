@@ -97,33 +97,41 @@ class ClientApplicationController extends Controller
         ], 200);
     }
 
-    // public function BookingCandidate($id)
-    // {
-    //     $job = Client::with('jobs')->find($id);
-    //     // dd($job);
-    //     $data = [];
-    //     foreach ($job->jobs as $key => $jobs) {
-    //         $applications = Job::with('applications')->find($jobs->id);
-    //         $applicationforstatus = Application::where('job_id', $jobs->id)->where('status', 2)->get();
-    //         if ($applicationforstatus) {
-    //             $data[$key]['job_id']           = $jobs->id;
-    //             $data[$key]['job_title']        = $jobs->job_title;
-    //             $data[$key]['job_location']     = $jobs->job_location;
-    //             $data[$key]['job_salary']       = $jobs->job_salary;
-    //             $data[$key]['job_start_date']   = $jobs->job_start_date;
-    //             $data[$key]['job_end_date']     = $jobs->job_end_date;
-    //             $data[$key]['total_bookings']   = count($applicationforstatus);
-    //             // dd($applicationforstatus);
-    //         }
-    //     }
-    //     // dd($data);
-    //     return response()->json([
-    //         'message' => 'Booking for client',
-    //         'status' => 'OK',
-    //         'code' => 200,
-    //         'data' => $data
-    //     ], 200);
-    // }
+    public function BookingCandidate($id)
+    {
+        $job = Job::with('applications')->find($id);
+        // dd($job);
+
+        if (!$job) {
+            return response()->json([
+                'message' => 'Job not found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+
+        $data = [];
+
+        foreach ($job->applications as $key => $application) {
+            if ($application->status == 2) {
+                $candidate = Candidate::find($application->candidate_id);
+                $data[$key]['candidate_id'] = $candidate->id;
+                $data[$key]['candidate_name'] = $candidate->first_name . ' ' . $candidate->last_name;
+                $data[$key]['job_id'] = $job->id;
+                $data[$key]['job_title'] = $job->job_title;
+                $data[$key]['job_location'] = $job->job_location;
+                $data[$key]['job_salary'] = $job->job_salary;
+                $data[$key]['job_start_date'] = $job->job_start_date;
+                $data[$key]['job_end_date'] = $job->job_end_date;
+            }
+        }
+        return response()->json([
+            'message' => 'Booked Candidate',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $data
+        ], 200);
+    }
 
     /********* Candidate Reject function *********/
 

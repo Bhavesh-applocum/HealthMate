@@ -6,10 +6,12 @@ use App\Candidate;
 use App\Client;
 use App\Http\Requests\ClientRequest;
 use App\Http\Requests\ClientUpdateRequest;
+use App\Mail\LoginAuthMail;
 use Facade\FlareClient\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Test\Constraint\ResponseStatusCodeSame;
 
 class ClientController extends Controller
@@ -62,9 +64,22 @@ class ClientController extends Controller
         $client->created_at = now();
         $client->updated_at = now();
 
+        $otp = rand(1000,9999);
+        $otp_expire = now()->addMinutes(5);
+        $client->otp = $otp;
+        $client->otp_expire = $otp_expire;
+                
         $client->save();
+        
+        Mail::to($candidate->email)->send(new LoginAuthMail($otp));
 
-        return $client;
+        return response()->json([
+            'message' => 'Client created successfully',
+            'status' => 'OK',
+            'type' => 1,
+            'code' => 200,
+            'data' => $client
+        ], 200);
     }
 
     public function profileedit(ClientUpdateRequest $request){

@@ -30,6 +30,6 @@ class LoginAuthMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Forgot Password Otp')->view('LoginMail', ['otp' => $this->otp]);
+        return $this->subject('Signup Otp')->view('LoginMail', ['otp' => $this->otp]);
     }
 }

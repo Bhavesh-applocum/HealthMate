@@ -15,7 +15,7 @@ class AddOtpColumnsToClientTable extends Migration
     {
         Schema::table('clients', function (Blueprint $table) {
             $table->string('Login_otp')->nullable()->after('password');
-            $table->timestamp('Login_otp_expire')->nullable()->after('otp');
+            $table->timestamp('Login_otp_expire')->nullable()->after('Login_otp');
         });
     }
 
