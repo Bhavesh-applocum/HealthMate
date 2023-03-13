@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application;
 use App\Candidate;
 use App\Client;
+use App\Helpers\ApplicationStatusHelper;
 use App\Job;
 use Illuminate\Http\Request;
 
@@ -51,19 +52,39 @@ class ClientApplicationController extends Controller
                 $applications = Job::with('applications')->find($jobs->id);
                 $applicationforstatus = Application::where('job_id', $jobs->id)->where('status', 2)->get();
                 if ($applicationforstatus) {
-                    $data[$key]['job_id']           = $jobs->id;
+                    $data[$key]['job_id']           = $applications->job->id;
                     $data[$key]['job_title']        = $jobs->job_title;
                     $data[$key]['job_location']     = $jobs->job_location;
                     $data[$key]['job_salary']       = $jobs->job_salary;
                     $data[$key]['job_start_date']   = $jobs->job_start_date;
                     $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['total_bookings']   = count($applicationforstatus);
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(1);
                     // dd($applicationforstatus);
                 }
             }
             // dd($data);
             return response()->json([
                 'message' => 'Booking for client',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        } else {
+            foreach ($job->jobs as $key => $jobs) {
+                $applications = Job::with('applications')->find($jobs->id);
+                $applicationforstatus = Application::where('job_id', $jobs->id)->where('status', 3)->get();
+                if ($applicationforstatus) {
+                    $data[$key]['job_id']           = $jobs->id;
+                    $data[$key]['job_title']        = $jobs->job_title;
+                    $data[$key]['job_location']     = $jobs->job_location;
+                    $data[$key]['job_salary']       = $jobs->job_salary;
+                    $data[$key]['job_start_date']   = $jobs->job_start_date;
+                    $data[$key]['job_end_date']     = $jobs->job_end_date;
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                }
+            }
+            return response()->json([
+                'message' => 'Timesheet for candidate',
                 'status' => 'OK',
                 'code' => 200,
                 'data' => $data
@@ -99,7 +120,7 @@ class ClientApplicationController extends Controller
 
     public function BookingCandidate($id)
     {
-        $job = Job::with('applications')->find($id);
+        $job = Job::with('applications')->with('timesheets')->find($id);
         // dd($job);
 
         if (!$job) {
@@ -109,28 +130,63 @@ class ClientApplicationController extends Controller
                 'code' => 400
             ], 400);
         }
-
         $data = [];
-
-        foreach ($job->applications as $key => $application) {
-            if ($application->status == 2) {
+        $status = '';
+        $applicationsS2 = Application::where(['job_id'=>$job->id, 'status'=>2])->get();
+        $applicationsS3 = Application::where(['job_id'=>$job->id, 'status'=>3])->get();
+        // dd(count($applications));
+        if(count($applicationsS2) !== 0){
+            // dd('if');
+            foreach ($applicationsS2 as $key => $application) {
                 $candidate = Candidate::find($application->candidate_id);
-                $data[$key]['candidate_id'] = $candidate->id;
-                $data[$key]['candidate_name'] = $candidate->first_name . ' ' . $candidate->last_name;
-                $data[$key]['job_id'] = $job->id;
-                $data[$key]['job_title'] = $job->job_title;
-                $data[$key]['job_location'] = $job->job_location;
-                $data[$key]['job_salary'] = $job->job_salary;
-                $data[$key]['job_start_date'] = $job->job_start_date;
-                $data[$key]['job_end_date'] = $job->job_end_date;
+                    $data[$key]['candidate_id'] = $candidate->id;
+                    $data[$key]['candidate_name'] = $candidate->first_name . ' ' . $candidate->last_name;
+                    $data[$key]['job_id'] = $job->id;
+                    $data[$key]['job_title'] = $job->job_title;
+                    $data[$key]['job_location'] = $job->job_location;
+                    $data[$key]['job_salary'] = $job->job_salary;
+                    $data[$key]['job_start_date'] = $job->job_start_date;
+                    $data[$key]['job_end_date'] = $job->job_end_date;
+                    $data[$key]['Work_status'] = ApplicationStatusHelper::getAfterStatusByStatus(1);
             }
+            return response()->json([
+                'message' => 'Booked Candidate',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
         }
-        return response()->json([
-            'message' => 'Booked Candidate',
-            'status' => 'OK',
-            'code' => 200,
-            'data' => $data
-        ], 200);
+        elseif(count($applicationsS3) !== 0){
+            foreach ($applicationsS3 as $key => $application) {
+                    $candidate = Candidate::find($application->candidate_id);
+                    $data[$key]['candidate_id'] = $candidate->id;
+                    $data[$key]['candidate_name'] = $candidate->first_name . ' ' . $candidate->last_name;
+                    $data[$key]['job_id'] = $job->id;
+                    $data[$key]['job_title'] = $job->job_title;
+                    $data[$key]['job_location'] = $job->job_location;
+                    $data[$key]['job_salary'] = $job->job_salary;
+                    $data[$key]['job_start_date'] = $job->job_start_date;
+                    $data[$key]['job_end_date'] = $job->job_end_date;
+                    $data[$key]['Work_status'] = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                    $data[$key]['timesheet'] = $job->timesheets->id;
+                    $data[$key]['timesheet_start_time'] = $job->timesheets->start_time;
+                    $data[$key]['timesheet_end_time'] = $job->timesheets->end_time;
+                    $data[$key]['timesheet_break_time'] = $job->timesheets->break_time;
+            }
+            return response()->json([
+                'message' => 'Worked Done Candidate',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        }else{
+            return response()->json([
+                'message' => 'No Candidate Booked',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        }
     }
 
     /********* Candidate Reject function *********/

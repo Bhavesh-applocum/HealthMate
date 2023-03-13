@@ -15,6 +15,6 @@ class Application extends Model
     }
 
     public function timesheet(){
-        return $this->belongsToMany('App\TimeSheet');
+        return $this->belongsToMany('App\Timesheet');
     }
 }

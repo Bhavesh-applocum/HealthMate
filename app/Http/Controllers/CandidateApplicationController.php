@@ -6,6 +6,7 @@ use App\Application;
 use App\Candidate;
 use App\Helpers\ApplicationStatusHelper;
 use App\Job;
+use App\Timesheet;
 use Illuminate\Http\Request;
 
 class CandidateApplicationController extends Controller
@@ -143,16 +144,16 @@ class CandidateApplicationController extends Controller
     
             if (!$isBookedExistsForThisJob) {
                 $job = Job::with('applications')->find($application->job_id);
-                $data[$key]['job_id'] = $job->id;
-                $data[$key]['job_title'] = $job->job_title;
-                $data[$key]['job_description'] = $job->job_description;
-                $data[$key]['job_start_date'] = $job->job_start_date;
-                $data[$key]['job_start_time'] = $job->job_start_time;
-                $data[$key]['job_end_date'] = $job->job_end_date;
-                $data[$key]['job_end_time'] = $job->job_end_time;
-                $data[$key]['job_location'] = $job->job_location;
-                $data[$key]['job_status'] = $job->job_status;
-                $data[$key]['job_created_at'] = $job->created_at;
+                $data[$key]['job_id']           = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_description']  = $job->job_description;
+                $data[$key]['job_start_date']   = $job->job_start_date;
+                $data[$key]['job_start_time']   = $job->job_start_time;
+                $data[$key]['job_end_date']     = $job->job_end_date;
+                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_location']     = $job->job_location;
+                $data[$key]['job_status']       = $job->job_status;
+                $data[$key]['job_created_at']   = $job->created_at;
             }
         }
         foreach ($candidateApplication as $key => $application) {
@@ -161,16 +162,16 @@ class CandidateApplicationController extends Controller
     
             if ($isBookedExistsForThisJob) {
                 $job = Job::with('applications')->find($application->job_id);
-                $data[$key]['job_id'] = $job->id;
-                $data[$key]['job_title'] = $job->job_title;
-                $data[$key]['job_description'] = $job->job_description;
-                $data[$key]['job_start_date'] = $job->job_start_date;
-                $data[$key]['job_start_time'] = $job->job_start_time;
-                $data[$key]['job_end_date'] = $job->job_end_date;
-                $data[$key]['job_end_time'] = $job->job_end_time;
-                $data[$key]['job_location'] = $job->job_location;
-                $data[$key]['job_status'] = $job->job_status;
-                $data[$key]['job_created_at'] = $job->created_at;
+                $data[$key]['job_id']           = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_description']  = $job->job_description;
+                $data[$key]['job_start_date']   = $job->job_start_date;
+                $data[$key]['job_start_time']   = $job->job_start_time;
+                $data[$key]['job_end_date']     = $job->job_end_date;
+                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_location']     = $job->job_location;
+                $data[$key]['job_status']       = $job->job_status;
+                $data[$key]['job_created_at']   = $job->created_at;
             }
         }
         // dd($data);
@@ -197,6 +198,32 @@ class CandidateApplicationController extends Controller
                 'status' => 'Bad Request',
                 'code' => 400,
                 'data' => $data
+            ]);
+        }
+    }
+
+    public function genaratetimesheet($id){
+        $job = Job::with('applications')->with('timesheets')->find($id);
+        if(!$job){
+            return response()->json([
+                'message' => 'Job Not Found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ]);
+        }
+        $checkdetail = Timesheet::where(['job_id'=>$job->id])->first();
+        
+        if($checkdetail){
+            // update application status to 3
+            $application = Application::where(['job_id'=>$job->id,'status'=>2])->first();
+            $application->status = 3;
+            $application->save();
+
+            return response()->json([
+                'message' => 'Application status updated to 3',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $application
             ]);
         }
     }
@@ -230,8 +257,26 @@ class CandidateApplicationController extends Controller
      * @param  \App\Application  $application
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Application $application)
+    public function destroy(Request $request,Application $application)
     {
-        //
+        $applicationId = $request->id;
+        $application = Application::find($applicationId);
+
+        if (!$application) {
+            return response()->json([
+                'message' => 'Application Not Found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ]);
+        }
+
+        $application->delete();
+
+        return response()->json([
+            'message' => 'Application Deleted Successfully',
+            'status' => 'OK',
+            'code' => 200
+        ]);
+
     }
 }

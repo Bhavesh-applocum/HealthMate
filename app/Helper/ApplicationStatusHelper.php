@@ -62,4 +62,15 @@ class ApplicationStatusHelper
         };
         return $applicationStatus;
     }
+
+    public static function getAfterStatusByStatus($id){
+        $bookingStatus = config('constant.After_Booking_status');
+        $afterStatus = '';
+        for($i = 0; $i <= count($bookingStatus); $i++){
+            if($id == $i){
+                $afterStatus = $bookingStatus[$i];
+            }
+        };
+        return $afterStatus;
+    }
 }

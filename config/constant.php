@@ -45,4 +45,21 @@ return [
         2 => 'Booked', // booked
         3 => 'Worked', // worked
     ],
+
+    'After_Booking_status' => [
+        1 => "Booked", // default status
+        2 => 'Pending', //client side (After booking candidate default status is booked and if candidate click on sign off button then after status is changed to pending)
+    ],
+
+    'After_Worked_candidate_status' => [
+        1 => 'Pending', //candidate side (After worked candidate default status is Pendidg )
+        2 => 'Processing', //client check timesheet and approve
+        3 => 'Paid', //client click on mark as paid button
+        4 => 'Rejected', //client click on reject timesheet button
+    ],
+
+    'After_Worked_client_status' => [
+        1 => 'Processing', //client side (After approve timesheet default status in invoice block is Processing )        
+        2 => 'Paid', //client click on mark as paid button
+    ]
 ];

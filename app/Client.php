@@ -31,7 +31,7 @@ class Client extends Model
     }
 
     public function timesheets(){
-        return $this->hasMany('App\TimeSheet');
+        return $this->hasMany('App\Timesheet');
     }
 
     public function candidates(){

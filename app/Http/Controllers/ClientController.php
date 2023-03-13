@@ -66,12 +66,12 @@ class ClientController extends Controller
 
         $otp = rand(1000,9999);
         $otp_expire = now()->addMinutes(5);
-        $client->otp = $otp;
-        $client->otp_expire = $otp_expire;
+        $client->Login_otp = $otp;
+        $client->Login_otp_expire = $otp_expire;
                 
         $client->save();
         
-        Mail::to($candidate->email)->send(new LoginAuthMail($otp));
+        Mail::to($client->email)->send(new LoginAuthMail($otp));
 
         return response()->json([
             'message' => 'Client created successfully',

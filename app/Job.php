@@ -32,7 +32,7 @@ class Job extends Model
     }
 
     public function timesheets(){
-        return $this->hasMany('App\TimeSheet');
+        return $this->hasOne('App\Timesheet');
     }
 
     public function candidates(){

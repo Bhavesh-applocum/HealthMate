@@ -35,6 +35,7 @@ Route::post('/candidate/editprofile', 'CandidateController@profileedit');
 Route::post('/client/editprofile', 'ClientController@profileedit');
 
 Route::resource('job', JobController::class);
+Route::resource('timesheet', TimesheetController::class);
 
 Route::resource('application', CandidateApplicationController::class);
 Route::resource('client/application', ClientApplicationController::class);
@@ -46,6 +47,7 @@ Route::get('/booking/{id}/index', 'ClientApplicationController@BookingCandidate'
 Route::post('/job/update/{id}', 'JobController@jobupdate');
 Route::get('/job/{id}/index', 'JobController@clientJobs');
 Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');
+Route::get('/check/timesheet/{id}','CandidateApplicationController@genaratetimesheet');
 
 Route::get('/hello', function () {
     return 'Hello World';
