@@ -35,6 +35,7 @@ Route::post('/candidate/editprofile', 'CandidateController@profileedit');
 Route::post('/client/editprofile', 'ClientController@profileedit');
 
 Route::resource('job', JobController::class);
+Route::get('/job/index/all', 'JobController@findJobs');
 Route::resource('timesheet', TimesheetController::class);
 
 Route::resource('application', CandidateApplicationController::class);

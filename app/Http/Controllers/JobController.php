@@ -20,22 +20,25 @@ class JobController extends Controller
      */
     public function index()
     {
-        $job = Job::all();
+        //
+    }
 
-        if(!$job) {
+    public function findJobs(){
+        $job = Job::all();
+            if($job){
+                return response()->json([
+                    'message' => 'Jobs found',
+                    'status' => 'OK',
+                    'code' => 200,
+                    'data' => $job
+                ], 200);
+            }
             return response()->json([
                 'message' => 'No jobs found',
                 'status' => 'Bad Request',
                 'code' => 400
             ], 400);
-        }
-
-        return response()->json([
-            'message' => 'Jobs found',
-            'status' => 'OK',
-            'code' => 200,
-            'data' => $job
-        ], 200);
+        
     }
 
     public function specificJob($id)
@@ -64,7 +67,15 @@ class JobController extends Controller
                    
                 }
             }
-            if ($candidate->role == $job->job_category && !$isBooked && $job->job_start_date > Carbon::now()) {
+
+            $isWorked = false;
+            foreach($job->applications as $application) {
+                if($application->status == 3) {
+                    $isWorked = true;
+                }
+            }
+
+            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_start_date > Carbon::now()) {
                 $data[$key]['client_id']        = $job->client->practice_name; 
                 $data[$key]['job_id']           = $job->id; 
                 $data[$key]['job_title']        = $job->job_title;
