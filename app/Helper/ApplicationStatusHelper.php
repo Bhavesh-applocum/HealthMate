@@ -73,4 +73,15 @@ class ApplicationStatusHelper
         };
         return $afterStatus;
     }
+
+    public static function getPaymentStatusByName($id){
+        $allPaymentStatus = config('constant.After_Worked_candidate_status');
+        $paymentStatus = '';
+        for($i = 0; $i <= count($allPaymentStatus); $i++){
+            if($id == $i){
+                $paymentStatus = $allPaymentStatus[$i];
+            }
+        };
+        return $paymentStatus;
+    }
 }

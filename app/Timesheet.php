@@ -25,4 +25,9 @@ class Timesheet extends Model
     {
         return $this->belongsTo('App\Job');
     }
+
+    public function application()
+    {
+        return $this->belongsTo('App\Application');
+    }
 }

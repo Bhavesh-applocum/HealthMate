@@ -49,6 +49,7 @@ return [
     'After_Booking_status' => [
         1 => "Booked", // default status
         2 => 'Pending', //client side (After booking candidate default status is booked and if candidate click on sign off button then after status is changed to pending)
+        3 => 'Dispute', //client side (After booking candidate default status is booked and if candidate click on sign off button then after status is changed to pending)
     ],
 
     'After_Worked_candidate_status' => [

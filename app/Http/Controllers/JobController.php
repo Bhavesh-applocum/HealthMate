@@ -10,6 +10,7 @@ use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
 use App\Job;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
@@ -24,21 +25,51 @@ class JobController extends Controller
     }
 
     public function findJobs(){
-        $job = Job::all();
-            if($job){
-                return response()->json([
-                    'message' => 'Jobs found',
-                    'status' => 'OK',
-                    'code' => 200,
-                    'data' => $job
-                ], 200);
-            }
+        $job = DB::table("jobs")->paginate(10);
+        // dd($job);
+        if(!$job){
             return response()->json([
                 'message' => 'No jobs found',
                 'status' => 'Bad Request',
                 'code' => 400
             ], 400);
-        
+        }
+        $data = [];
+
+        $totalPages = $job->lastPage();
+        $isFirstPage = ($job->currentPage() == 1);
+        $nextPageNumber = $job->nextPageUrl() ? $job->currentPage() + 1 : 0;
+        $previousPageNumber = $job->previousPageUrl() ? $job->currentPage() - 1 : 0;
+
+        $pagination = [
+            'total' => $job->total(),
+            'total_pages' => $totalPages,
+            'first_page' => $isFirstPage,
+            'last_page' => $job->hasMorePages(),
+            'previous_page' => $previousPageNumber,
+            'next_page' => $nextPageNumber,
+            // 'out_of_bounds' => $job->hasPages() && ! ($job->currentPage()),
+            // 'offset' => ($job->currentPage() - 1) * $job->perPage(),
+        ];
+
+        foreach ($job as $key => $value) {
+            $data[$key]['id'] = $value->id;
+            $data[$key]['ref_no'] = $value->ref_no;
+            $data[$key]['job_title'] = $value->job_title;
+            $data[$key]['job_location'] = $value->job_location;
+            $data[$key]['job_salary'] = $value->job_salary;
+            $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
+            $data[$key]['job_start_time'] = $value->job_start_time;
+            $data[$key]['job_end_time'] = $value->job_end_time;
+        }
+            if($job){
+                return response()->json([
+                    'message' => 'Jobs found',
+                    'status' => 'OK',
+                    'code' => 200,
+                    'data' => $data
+                ], 200)->header('X-pagination', json_encode($pagination));
+            }
     }
 
     public function specificJob($id)
@@ -95,7 +126,7 @@ class JobController extends Controller
         // for particular candidate 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => [$data]
         ], 200);
 
     }

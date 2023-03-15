@@ -126,8 +126,9 @@ class CandidateApplicationController extends Controller
     {
         $candidateId = $request->candidate_id;
         $status = $request->status;
-
-        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status])->get();
+        // dd(Application::where(['candidate_id' => $candidateId, 'status' => $status])->with('timesheet')->whereNotNull('timesheet_id')->toSql());
+        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status])->whereNotNull('timesheet_id')->get();
+        // dd($candidateApplication);
         if (!$candidateApplication) {
             return response()->json([
                 'message' => 'Candidate Not Found',
@@ -157,34 +158,14 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_created_at']   = $job->created_at;
                 }
             }
-        } else if ($status == 2) {
+        } elseif ($status == 2) {
             foreach ($candidateApplication as $key => $application) {
 
                 // $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
                 $isWorkedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 3])->exists();
                 $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->exists();
-
-                if (!$isWorkedExistsForThisJob && !$isAppliedForThisJob) {
-                    $job = Job::with('applications')->find($application->job_id);
-                    $data[$key]['job_id']           = $job->id;
-                    $data[$key]['job_title']        = $job->job_title;
-                    $data[$key]['job_description']  = $job->job_description;
-                    $data[$key]['job_start_date']   = $job->job_start_date;
-                    $data[$key]['job_start_time']   = $job->job_start_time;
-                    $data[$key]['job_end_date']     = $job->job_end_date;
-                    $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = $job->job_location;
-                    // $data[$key]['job_status']       = $job->job_status;
-                    $data[$key]['job_created_at']   = $job->created_at;
-                }
-            }
-        } else if ($status == 3) {
-            foreach ($candidateApplication as $key => $application) {
-
-                $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->get();
-                $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->get();
-
-                if (!$isBookedExistsForThisJob && !$isAppliedForThisJob) {
+                // dd($isWorkedExistsForThisJob);
+                if (!$isWorkedExistsForThisJob || !$isAppliedForThisJob) {
                     $job = Job::with('applications')->find($application->job_id);
                     $data[$key]['job_id']           = $job->id;
                     $data[$key]['job_title']        = $job->job_title;
@@ -195,7 +176,31 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_end_time']     = $job->job_end_time;
                     $data[$key]['job_location']     = $job->job_location;
                     $data[$key]['job_status']       = $job->job_status;
-                    // $data[$key]['job_created_at']   = $job->created_at;
+                    $data[$key]['job_created_at']   = $job->created_at;
+                }
+            }
+        } elseif ($status == 3) {
+            foreach ($candidateApplication as $key => $application) {
+
+                $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
+                $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->exists();
+
+                $ApplicationTimesheet = Timesheet::where('id',$application->timesheet_id)->first();
+                // dd($ApplicationTimesheet->status);
+                if (!$isBookedExistsForThisJob || !$isAppliedForThisJob) {
+                    $job = Job::with('applications')->find($application->job_id);
+                    $data[$key]['job_id']           = $job->id;
+                    $data[$key]['job_title']        = $job->job_title;
+                    $data[$key]['job_description']  = $job->job_description;
+                    $data[$key]['job_start_date']   = $job->job_start_date;
+                    $data[$key]['job_start_time']   = $job->job_start_time;
+                    $data[$key]['job_end_date']     = $job->job_end_date;
+                    $data[$key]['job_end_time']     = $job->job_end_time;
+                    $data[$key]['job_location']     = $job->job_location;
+                    $data[$key]['job_status']       = $job->job_status;
+                    $data[$key]['job_created_at']   = $job->created_at;
+                    $data[$key]['Payment_status']   = ApplicationStatusHelper::getPaymentStatusByName($ApplicationTimesheet->status);
+
                 }
             }
         }
@@ -230,6 +235,7 @@ class CandidateApplicationController extends Controller
     public function genaratetimesheet($id)
     {
         $job = Job::with('applications')->with('timesheets')->find($id);
+        // dd($job);
         if (!$job) {
             return response()->json([
                 'message' => 'Job Not Found',
@@ -237,12 +243,13 @@ class CandidateApplicationController extends Controller
                 'code' => 400
             ]);
         }
-        $checkdetail = Timesheet::where(['job_id' => $job->id])->first();
+        $timesheet = Timesheet::where(['job_id' => $job->id])->first();
 
-        if ($checkdetail) {
+        if ($timesheet) {
             // update application status to 3
             $application = Application::where(['job_id' => $job->id, 'status' => 2])->first();
             $application->status = 3;
+            $application->timesheet_id = $timesheet->id;
             $application->save();
 
             return response()->json([
