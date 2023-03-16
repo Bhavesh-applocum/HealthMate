@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Candidate;
 use App\Client;
+use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Mail\ForgotPasswordMail;
@@ -29,6 +30,7 @@ class LoginController extends Controller
         $client = Client::where('email', $request->email)->first();
         if ($candidate) {
             if (Hash::check($request->password, $candidate->password)) {
+                $candidate->roleName = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
                 return response()->json([
                     'message' => 'Login Successful',
                     'type' => 2,

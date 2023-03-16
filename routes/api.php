@@ -49,7 +49,7 @@ Route::post('/job/update/{id}', 'JobController@jobupdate');
 Route::get('/job/{id}/index', 'JobController@clientJobs');
 Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');
 Route::get('/check/timesheet/{id}','CandidateApplicationController@genaratetimesheet');
-
+Route::post('/timesheet/approve','ClientApplicationController@approveTimesheet');
 Route::get('/hello', function () {
     return 'Hello World';
 });

@@ -38,6 +38,7 @@ class CandidateUpdateRequest extends FormRequest
                 'regex:/[0-9]/',      // must contain at least one digit
                 'regex:/[@$!%*#?&]/', // must contain a special character
             ],
+            'confirm_password' => 'same:password',
         ];
     }
 }

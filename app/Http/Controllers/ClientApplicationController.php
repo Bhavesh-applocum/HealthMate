@@ -7,6 +7,8 @@ use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
 use App\Job;
+use App\Timesheet;
+use Facade\FlareClient\Time\Time;
 use Illuminate\Http\Request;
 
 class ClientApplicationController extends Controller
@@ -28,10 +30,16 @@ class ClientApplicationController extends Controller
         $jobcheckApplication1 = $jobcheckApplication->jobs;
         // dd($jobcheckApplication1);
         // dd($job);
+        $StatusType = $request->statustype;
+
+        if($StatusType == 1){
         $status = $request->status;
-        // dd($status);
+        }else{
+            $timesheetstatus = $request->timesheet_status;
+        }
 
         $data = [];
+        if($StatusType == 1){
 
         if ($status == 1) {
             foreach ($jobcheckApplication1 as $key => $jobs) {
@@ -116,6 +124,44 @@ class ClientApplicationController extends Controller
                 'data' => $data
             ], 200);
         }
+    }elseif($StatusType == 2){
+        if($timesheetstatus == 2){
+            // dd($jobcheckApplication1); 
+            foreach ($jobcheckApplication1 as $key => $jobs) {
+                dd($jobs->applications);
+                foreach($jobs->applications as $application){
+                    $timesheet_id = Application::where('timesheet_id',$application->timesheet_id )->get();
+                }
+                dd($timesheet_id);
+                $checkStatus = $jobs->applications->where('timesheet_id',$timesheet_id->timesheet_id )->first();
+                if($checkStatus){
+                    $TimesheetStatusForClient = Timesheet::where('status',2)->get();
+                }
+                dd($TimesheetStatusForClient);
+                if ($TimesheetStatusForClient) {
+                    $data[$key]['job_id']           = $jobs->id;
+                    $data[$key]['job_title']        = $jobs->job_title;
+                    $data[$key]['job_location']     = $jobs->job_location;
+                    $data[$key]['job_salary']       = $jobs->job_salary;
+                    $data[$key]['job_start_date']   = $jobs->job_start_date;
+                    $data[$key]['job_end_date']     = $jobs->job_end_date;
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                }
+            }
+            return response()->json([
+                'message' => 'Timesheet Approve for candidate but payment is not done',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        }
+        return response()->json([
+            'message' => 'No Timesheet for candidate',
+            'status' => 'OK',
+            'code' => 200,
+            'data' => $data
+        ], 200);
+    }
     }
 
 
@@ -329,6 +375,32 @@ class ClientApplicationController extends Controller
     //         'code' => 200
     //     ], 200);
     // }
+
+    public function approveTimesheet(Request $request)
+    {
+        $timesheetID = $request->timesheet_id;
+
+        $timesheet = Timesheet::find($timesheetID);
+
+        if (!$timesheet) {
+            return response()->json([
+                'message' => 'Timesheet not found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+
+        $timesheet->status = 2;
+
+        $timesheet->save();
+
+        return response()->json([
+            'message' => 'Timesheet successfully approved',
+            'status' => 'OK',
+            'code' => 200
+        ], 200);
+    }
+
 
     /**
      * Show the form for creating a new resource.

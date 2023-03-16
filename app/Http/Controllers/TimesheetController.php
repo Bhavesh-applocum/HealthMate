@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Application;
 use App\Candidate;
 use App\Job;
 use App\Timesheet;
@@ -65,12 +66,18 @@ class TimesheetController extends Controller
 
         $timesheet->save();
 
+        $timesheet->ref_no = 'TMS-' . ($timesheet->id + 10000);
+        $timesheet->save();
+
+        $application = Application::where(['candidate_id' => $candidate->id, 'job_id' => $job->id])->first();
+        $application->timesheet_id = $timesheet->id;
+        $application->save();
+
         return response()->json([
             'message' => 'Timesheet created successfully',
             'status' => 'OK',
             'code' => 200
         ], 200);
-        
     }
 
     /**

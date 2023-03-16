@@ -180,13 +180,14 @@ class CandidateApplicationController extends Controller
                 }
             }
         } elseif ($status == 3) {
+            // dd($candidateApplication);
             foreach ($candidateApplication as $key => $application) {
 
                 $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
                 $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->exists();
 
                 $ApplicationTimesheet = Timesheet::where('id',$application->timesheet_id)->first();
-                // dd($ApplicationTimesheet->status);
+                // dd($ApplicationTimesheet);
                 if (!$isBookedExistsForThisJob || !$isAppliedForThisJob) {
                     $job = Job::with('applications')->find($application->job_id);
                     $data[$key]['job_id']           = $job->id;

@@ -106,7 +106,7 @@ class JobController extends Controller
                 }
             }
 
-            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_start_date > Carbon::now()) {
+            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked) {
                 $data[$key]['client_id']        = $job->client->practice_name; 
                 $data[$key]['job_id']           = $job->id; 
                 $data[$key]['job_title']        = $job->job_title;

@@ -23,8 +23,6 @@ class CreateJobTable extends Migration
             $table->integer('job_type')->unsigned();
             $table->integer('job_category')->unsigned();
             $table->string('job_location');
-            $table->date('job_start_date')->date_format('d-m-Y');
-            $table->date('job_end_date')->date_format('d-m-Y');
             $table->time('job_start_time');
             $table->time('job_end_time');
             $table->string('job_salary');

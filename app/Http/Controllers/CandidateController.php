@@ -125,6 +125,8 @@ class CandidateController extends Controller
 
         $candidate->first_name = $request->first_name;
         $candidate->last_name = $request->last_name;
+        $candidate->gender = $request->gender;
+        $candidate->email = $request->email;
         $candidate->phone = $request->phone;
         $candidate->password = Hash::make($request->password);
         $candidate->updated_at = now();
