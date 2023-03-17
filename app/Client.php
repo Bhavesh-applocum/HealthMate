@@ -20,8 +20,8 @@ class Client extends Model
     protected $hidden = [
         'password',
         'remember_token',
-        'otp',
-        'otp_expire',
+        'Login_otp',
+        'Login_otp_expire',
         'forgot_password_otp',
         'forgot_password_otp_expire'
     ];

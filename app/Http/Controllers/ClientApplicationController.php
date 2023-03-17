@@ -8,7 +8,6 @@ use App\Client;
 use App\Helpers\ApplicationStatusHelper;
 use App\Job;
 use App\Timesheet;
-use Facade\FlareClient\Time\Time;
 use Illuminate\Http\Request;
 
 class ClientApplicationController extends Controller

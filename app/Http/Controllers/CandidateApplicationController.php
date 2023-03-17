@@ -232,7 +232,7 @@ class CandidateApplicationController extends Controller
             ]);
         }
     }
-
+    
     public function genaratetimesheet($id)
     {
         $job = Job::with('applications')->with('timesheets')->find($id);
