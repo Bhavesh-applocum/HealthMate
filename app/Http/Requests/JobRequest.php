@@ -28,16 +28,19 @@ class JobRequest extends FormRequest
     {
         return [
             'job_title' => 'required',
-            'job_type' => 'required',
+            // 'job_type' => 'required',
             'job_description' => 'required',
             'job_category' => 'required',
             'job_salary' => 'required',
             'job_location' => 'required',
             'job_date' => 'required',
-            'job_status' => 'required',
+            // 'job_status' => 'required',
             'job_start_time' => 'required',
             'job_end_time' => 'required',
             'break_time' => 'required',
+            'visits' => 'required',
+            'parking' => 'required',
+            'meals' => 'required',
         ];
     }
 }

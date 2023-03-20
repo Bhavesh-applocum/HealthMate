@@ -19,15 +19,14 @@ class CreateJobTable extends Migration
             $table->string('job_title');
             $table->integer('client_id')->unsigned();
             $table->string('job_description');
-            $table->integer('job_status')->unsigned();
-            $table->integer('job_type')->unsigned();
+            // $table->integer('job_type')->unsigned();
             $table->integer('job_category')->unsigned();
             $table->string('job_location');
             $table->time('job_start_time');
             $table->time('job_end_time');
             $table->string('job_salary');
             $table->time('break_time');
-            $table->time('admin_time');
+            // $table->time('admin_time');
             $table->timestamps();
         });
     }

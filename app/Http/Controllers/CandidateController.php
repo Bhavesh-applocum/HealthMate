@@ -8,6 +8,7 @@ use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
 use App\Mail\LoginAuthMail;
+use Dotenv\Store\File\Paths;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -131,13 +132,13 @@ class CandidateController extends Controller
         $candidate->password = Hash::make($request->password);
         $candidate->updated_at = now();
 
-        $candidate->avatar = $request->avatar->move('images', $request->avatar->getClientOriginalName());
+        $candidate->avatar = $request->avatar->store('images', $request->avatar->getClientOriginalName());
 
 
         $candidate->save();
 
         return response()->json([
-            'message' => 'Candidate updated successfully',
+            'message' => 'Profile updated successfully',
             'status' => 'OK',
             'code' => 200   
         ], 200);
@@ -153,14 +154,24 @@ class CandidateController extends Controller
     public function show($id)
     {
         $candidate = Candidate::find($id);
+        $data = new \stdClass();
 
-        if($candidate){
-            $candidate->role = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
+        if($candidate != null){
+        $data->avatar = $candidate->avatar;
+        $data->first_name = $candidate->first_name;
+        $data->last_name = $candidate->last_name;
+        $data->email = $candidate->email;
+        $data->phone = $candidate->phone;
+        $data->gender = $candidate->gender;
+
+        // foreach($candidates as $key => $candidate){
+        //     $data[$key]['avatar'] => $candidate->
+        // }
         return response()->json([
             'message' => 'Candidate found',
             'status' => 'OK',
             'code' => 200,
-            'data' => $candidate
+            'data' => $data
         ], 200);
     }else{
         return response()->json([

@@ -203,7 +203,7 @@ class JobController extends Controller
      */
     public function store(JobRequest $request)
     {
-        $id = $request->id;
+        $id = $request->client_id;
         // dd('done');
 
         $client = Client::find($id);
@@ -213,9 +213,10 @@ class JobController extends Controller
                 'message' => 'No client found'
             ], 400);
         }
-        $allJobtypes = config('constant.job_type');
+        // $allJobtypes = config('constant.job_type');
         $allJobCategory = config('constant.job_Category');
         $allJobStatus = config('constant.job_status');
+        $parking = config('constant.parking');
 
         $job = new Job;
         $jobStatus = '';
@@ -232,30 +233,41 @@ class JobController extends Controller
             }
         };
 
-        $jobType = '';
-        for ($i = 1; $i <= count($allJobtypes); $i++) {
-            if ($request->job_type == $i) {
-                $jobType = $allJobtypes[$i];
+        $parkingStatus = '';
+        for ($i = 1; $i <= count($parking); $i++) {
+            if ($request->parking == $i) {
+                $parkingStatus = $parking[$i];
             }
         };
+
+        // $jobType = '';
+        // for ($i = 1; $i <= count($allJobtypes); $i++) {
+        //     if ($request->job_type == $i) {
+        //         $jobType = $allJobtypes[$i];
+        //     }
+        // };
 
         $job->job_title = $request->job_title;
         $job->job_description = $request->job_description;
         $job->job_location = $request->job_location;
-        $job->job_type = $request->job_type;
+        // $job->job_type = $request->job_type;
         
         $job->job_salary = $request->job_salary;
-        $job->job_start_date = $request->job_start_date;
-        $job->job_end_date = $request->job_end_date;
-        $job->job_status = $request->job_status;
+        $job->job_date = $request->job_date;
+        // $job->job_end_date = $request->job_end_date;
+        // $job->job_status = $request->job_status;
 
         $job->job_category = $request->job_category;
         $job->job_start_time = $request->job_start_time;
         $job->job_end_time = $request->job_end_time;
         $job->break_time = $request->break_time;
         
-        $job->admin_time = $request->admin_time;
+        // $job->admin_time = $request->admin_time;
         $job->client_id = $client->id;
+        $job->visits = $request->visits;
+        $job->parking = $request->parking;
+        $job->meals = $request->meals;
+
         $job->created_at =  now();
         $job->updated_at = now();
 
@@ -287,7 +299,8 @@ class JobController extends Controller
         if ($job) {
             $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
             $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-            $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
+            // $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
+            $job->parking = ApplicationStatusHelper::getParkingByName($job->parking);
 
             return response()->json([
                 'message'   => 'Job Details',

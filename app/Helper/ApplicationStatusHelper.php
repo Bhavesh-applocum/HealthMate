@@ -52,6 +52,17 @@ class ApplicationStatusHelper
         return $jobStatus;
     }
 
+    public static function getparkingByName($id){
+        $parking = config('constant.parking');
+        $parkingStatus = '';
+        for($i = 0; $i <= count($parking); $i++){
+            if($id == $i){
+                $parkingStatus = $parking[$i];
+            }
+        };
+        return $parkingStatus;
+    }
+
     public static function getApplicationStatusByName($id){
         $allApplicationStatus = config('constant.Application_status');
         $applicationStatus = '';
@@ -63,8 +74,8 @@ class ApplicationStatusHelper
         return $applicationStatus;
     }
 
-    public static function getAfterStatusByStatus($id){
-        $bookingStatus = config('constant.After_Booking_status');
+    public static function getTimesheetStatusByStatus($id){
+        $bookingStatus = config('constant.Timesheet_status_client');
         $afterStatus = '';
         for($i = 0; $i <= count($bookingStatus); $i++){
             if($id == $i){
@@ -74,8 +85,8 @@ class ApplicationStatusHelper
         return $afterStatus;
     }
 
-    public static function getPaymentStatusByName($id){
-        $allPaymentStatus = config('constant.After_Worked_candidate_status');
+    public static function getAfterWorkingStatusByName($id){
+        $allPaymentStatus = config('constant.Working_status_candidate');
         $paymentStatus = '';
         for($i = 0; $i <= count($allPaymentStatus); $i++){
             if($id == $i){
@@ -83,5 +94,16 @@ class ApplicationStatusHelper
             }
         };
         return $paymentStatus;
+    }
+
+    public static function getInvoiceStatusByName($id){
+        $allInvoiceStatus = config('constant.Invoice_status');
+        $invoiceStatus = '';
+        for($i = 0; $i <= count($allInvoiceStatus); $i++){
+            if($id == $i){
+                $invoiceStatus = $allInvoiceStatus[$i];
+            }
+        };
+        return $invoiceStatus;
     }
 }

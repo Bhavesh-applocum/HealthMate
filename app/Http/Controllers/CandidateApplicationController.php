@@ -59,7 +59,7 @@ class CandidateApplicationController extends Controller
             ], 400);
         }
 
-        if ($job->job_start_date < now() && $job->job_start_time <= now()) {
+        if ($job->job_date < now() && $job->job_start_time <= now()) {
             return response()->json([
                 'message' => 'Job already started',
                 'status' => 'Bad Request',
@@ -72,8 +72,10 @@ class CandidateApplicationController extends Controller
         $application->candidate_id = $candidate->id;
         $application->job_id = $job->id;
         $application->status = 1;
+        $job->job_status = 1;
 
         $application->save();
+        $job->save();
 
         return response()->json([
             'message' => 'Application successfully created',
@@ -200,7 +202,7 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_location']     = $job->job_location;
                     $data[$key]['job_status']       = $job->job_status;
                     $data[$key]['job_created_at']   = $job->created_at;
-                    $data[$key]['Payment_status']   = ApplicationStatusHelper::getPaymentStatusByName($ApplicationTimesheet->status);
+                    $data[$key]['Payment_status']   = ApplicationStatusHelper::getAfterWorkingStatusByName($ApplicationTimesheet->status);
 
                 }
             }

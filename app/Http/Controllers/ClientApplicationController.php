@@ -91,7 +91,7 @@ class ClientApplicationController extends Controller
                     $data[$key]['job_salary']       = $jobs->job_salary;
                     $data[$key]['job_start_date']   = $jobs->job_start_date;
                     $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(1);
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
                 }
             }
             return response()->json([
@@ -113,7 +113,7 @@ class ClientApplicationController extends Controller
                     $data[$key]['job_salary']       = $jobs->job_salary;
                     $data[$key]['job_start_date']   = $jobs->job_start_date;
                     $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(2);
                 }
             }
             return response()->json([
@@ -144,7 +144,7 @@ class ClientApplicationController extends Controller
                     $data[$key]['job_salary']       = $jobs->job_salary;
                     $data[$key]['job_start_date']   = $jobs->job_start_date;
                     $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
                 }
             }
             return response()->json([
@@ -300,7 +300,7 @@ class ClientApplicationController extends Controller
                 $data[$key]['job_salary'] = $job->job_salary;
                 $data[$key]['job_start_date'] = $job->job_start_date;
                 $data[$key]['job_end_date'] = $job->job_end_date;
-                $data[$key]['Work_status'] = ApplicationStatusHelper::getAfterStatusByStatus(1);
+                $data[$key]['Work_status'] = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
             }
             return response()->json([
                 'message' => 'Booked Candidate',
@@ -319,7 +319,7 @@ class ClientApplicationController extends Controller
                 $data[$key]['job_salary'] = $job->job_salary;
                 $data[$key]['job_start_date'] = $job->job_start_date;
                 $data[$key]['job_end_date'] = $job->job_end_date;
-                $data[$key]['Work_status'] = ApplicationStatusHelper::getAfterStatusByStatus(2);
+                $data[$key]['Work_status'] = ApplicationStatusHelper::getTimesheetStatusByStatus(2);
                 $data[$key]['timesheet'] = $job->timesheets;
             }
             return response()->json([
