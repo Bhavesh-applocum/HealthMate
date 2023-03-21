@@ -32,6 +32,7 @@ Route::post('/verifyforgototp','LoginController@verifyforgototp'); // forgot pas
 Route::post('/resendforgotpasswordotp', 'LoginController@resendforgotpasswordotp'); //resend forgot password otp
 Route::post('/resetPassword', 'LoginController@resetpassword'); 
 Route::post('/candidate/editprofile', 'CandidateController@profileedit');
+Route::post('/candidate/upload/image', 'CandidateController@uploadImage');
 Route::post('/client/editprofile', 'ClientController@profileedit');
 
 Route::resource('job', JobController::class);

@@ -9,6 +9,7 @@ use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
 use App\Mail\LoginAuthMail;
 use Dotenv\Store\File\Paths;
+use Facade\FlareClient\Stacktrace\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -104,6 +105,32 @@ class CandidateController extends Controller
         ], 200);
         // return $candidate;
     }
+    public function uploadImage(CandidateUpdateRequest $request){
+
+        $id = $request->id;
+
+        $candidate = Candidate::find($id);
+
+        $oldProfile = $candidate->avatar;
+        if(file_exists($oldProfile)){
+            unlink($oldProfile);
+        }
+        if($request->avatar){
+        $imageName =  time().'_'.str_replace(" ",'',$request->avatar->getClientOriginalName());
+        $candidate->avatar = $request->avatar->move('images', $imageName);
+        }else{
+            $candidate->avatar = NULL;
+        }
+
+        $candidate->save();
+
+        return response()->json([
+            'message' => 'Profile Image updated successfully',
+            'status' => 'OK',
+            'newImage' => $candidate->avatar,
+            'code' => 200   
+        ], 200);
+    }
 
     public function profileedit(CandidateUpdateRequest $request){
 
@@ -119,21 +146,15 @@ class CandidateController extends Controller
             ], 400);
         }
 
-        $oldProfile = $candidate->avatar;
-        if($oldProfile != null){
-            unlink($oldProfile);
-        }
-
         $candidate->first_name = $request->first_name;
         $candidate->last_name = $request->last_name;
         $candidate->gender = $request->gender;
         $candidate->email = $request->email;
         $candidate->phone = $request->phone;
-        $candidate->password = Hash::make($request->password);
+        // $candidate->password = Hash::make($request->password);
         $candidate->updated_at = now();
 
-        $candidate->avatar = $request->avatar->store('images', $request->avatar->getClientOriginalName());
-
+        // create unique name for image 
 
         $candidate->save();
 
