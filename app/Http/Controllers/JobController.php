@@ -90,7 +90,7 @@ class JobController extends Controller
         $data = [];
 
         foreach ($jobs as $key => $job) {
-            
+            // dd($job);
             $isBooked = false;
             foreach($job->applications as $application) {
                 if($application->status == 2) {
@@ -105,8 +105,12 @@ class JobController extends Controller
                     $isWorked = true;
                 }
             }
-
-            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_end_time > Carbon::now()) {
+            // dd($candidate->role == $job->job_category);
+            // dd($job->job_end_time > Carbon::now()->toDateTimeString());
+            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
+                // print_r($job->id);
+                // dd($candidate->role);
+                // dd($job->job_category);
                 $data[$key]['client_id']        = $job->client->practice_name; 
                 $data[$key]['job_id']           = $job->id; 
                 $data[$key]['job_title']        = $job->job_title;
@@ -119,10 +123,10 @@ class JobController extends Controller
                 $data[$key]['job_end_time']     = $job->job_end_time;
                 $data[$key]['break_time']       = $job->break_time;
                 $data[$key]['job_status']       = ApplicationStatusHelper::getJobStatusByName($job->job_status);
-                $data[$key]['job_type']         = ApplicationStatusHelper::getJobTypeByName($job->job_type);
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         }
+        // dd($data);
         // for particular candidate 
         return response()->json([
             'success' => true,
@@ -249,7 +253,7 @@ class JobController extends Controller
 
         $job->job_title = $request->job_title;
         $job->job_description = $request->job_description;
-        $job->job_location = $request->job_location;
+        // $job->job_location = $request->job_location;
         // $job->job_type = $request->job_type;
         
         $job->job_salary = $request->job_salary;
@@ -266,7 +270,8 @@ class JobController extends Controller
         $job->client_id = $client->id;
         $job->visits = $request->visits;
         $job->parking = $request->parking;
-        $job->meals = $request->meals;
+        $job->unit = $request->unit;
+        // $job->meals = $request->meals;
 
         $job->created_at =  now();
         $job->updated_at = now();

@@ -14,10 +14,11 @@ class AddMoreFieldsInJobTable extends Migration
     public function up()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->integer('job_status')->unsigned()->default(0);
-            $table->integer('visits');
-            $table->boolean('parking')->default(0);
-            $table->integer('meals');
+            $table->integer('job_status')->unsigned()->default(0)->after('ref_no');
+            $table->integer('visits')->after('break_time');
+            $table->boolean('parking')->default(0)->after('visits');
+            $table->integer('unit')->unsigned()->after('job_salary');
+            // $table->integer('meals');
 
         });
     }

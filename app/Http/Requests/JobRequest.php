@@ -32,7 +32,7 @@ class JobRequest extends FormRequest
             'job_description' => 'required',
             'job_category' => 'required',
             'job_salary' => 'required',
-            'job_location' => 'required',
+            // 'job_location' => 'required',
             'job_date' => 'required',
             // 'job_status' => 'required',
             'job_start_time' => 'required',
@@ -40,7 +40,8 @@ class JobRequest extends FormRequest
             'break_time' => 'required',
             'visits' => 'required',
             'parking' => 'required',
-            'meals' => 'required',
+            'unit' => 'required',
+            // 'meals' => 'required',
         ];
     }
 }
