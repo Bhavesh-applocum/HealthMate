@@ -25,8 +25,9 @@ class JobController extends Controller
     }
 
     public function findJobs(){
-        $job = DB::table("jobs")->paginate(10);
-        // dd($job);
+        $job = Job::with('client')->latest()->paginate(10);
+        // $job1 = Job::with('client')->get();
+        // dd($job1);
         if(!$job){
             return response()->json([
                 'message' => 'No jobs found',
@@ -56,7 +57,8 @@ class JobController extends Controller
             $data[$key]['id'] = $value->id;
             $data[$key]['ref_no'] = $value->ref_no;
             $data[$key]['job_title'] = $value->job_title;
-            $data[$key]['job_location'] = $value->job_location;
+            $data[$key]['job_location'] = $value->client->address;
+            // $data[$key]['job_location'] = $value->job_location;
             $data[$key]['job_salary'] = $value->job_salary;
             $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
             $data[$key]['job_start_time'] = $value->job_start_time;
@@ -140,7 +142,7 @@ class JobController extends Controller
 
         $client = Client::find($id);
         // dd($client);
-        $jobs = Job::where('client_id', $id)->paginate(5);
+        $jobs = Job::where('client_id', $id)->latest()->paginate(5);
         // dd($jobs);
         if (!$client) {
             return response()->json([
@@ -175,11 +177,16 @@ class JobController extends Controller
         $data = [];
         // echo "<pre>";
         foreach ($jobs as $key => $job) {
-            if($job->job_date > Carbon::now() || $job->job_end_time > Carbon::now()){
-                $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
-                $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
+            if($job->job_date >= Carbon::now() || $job->job_end_time >= Carbon::now()){
+                // $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
                 $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                $data[$key]        = $job;
+                $data[$key]['job_id']           = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_location']     = $client->address;
+                $data[$key]['job_salary']       = $job->job_salary;
+                $data[$key]['job_start_time']   = $job->job_start_time;
+                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_category']     = $job->job_category;
             }
         }
 

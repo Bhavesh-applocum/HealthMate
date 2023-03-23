@@ -16,7 +16,7 @@ class AddJobDateColumnToJobTable extends Migration
     public function up()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->date('job_date')->default(date('Y-m-d'))->after('job_location');
+            $table->date('job_date')->default(date('Y-m-d'))->after('job_category');
         });
     }
 
