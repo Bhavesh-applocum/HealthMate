@@ -30,8 +30,8 @@ return [
         13 => 'Radiologist',
         14 => 'Surgeon',
         15 => 'Urologist',
-        16 => 'Other',
-        17 => 'Nurse',
+        16 => 'Nurse',
+        17 => 'Other',
 
     ],
 
