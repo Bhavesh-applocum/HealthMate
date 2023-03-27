@@ -17,7 +17,7 @@ class AddMoreFieldsInJobTable extends Migration
             $table->integer('job_status')->unsigned()->default(0)->after('ref_no');
             $table->integer('visits')->after('break_time');
             $table->boolean('parking')->default(0)->after('visits');
-            $table->integer('unit')->unsigned()->after('job_salary');
+            $table->double('unit')->unsigned()->after('job_salary');
             // $table->integer('meals');
 
         });

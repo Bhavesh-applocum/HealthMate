@@ -6,10 +6,13 @@ use App\Application;
 use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
+use App\Http\Requests\JobListRequest;
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
 use App\Job;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
@@ -78,7 +81,6 @@ class JobController extends Controller
     public function specificJob($id)
     {
         $candidate = Candidate::find($id);
-        // dd($candidate);
 
         if (!$candidate) {
             return response()->json([
@@ -89,14 +91,12 @@ class JobController extends Controller
         }
 
         $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications')->latest()->paginate(5);
-        // dd($jobs);
 
         $data = [];
         $pagination = [];
 
         
         foreach ($jobs as $key => $job) {
-            // dd($job);
             $isBooked = false;
             foreach ($job->applications as $application) {
                 if ($application->status == 2) {
@@ -110,8 +110,7 @@ class JobController extends Controller
                     $isWorked = true;
                 }
             }
-            // dd($candidate->role == $job->job_category);
-            // dd($job->job_end_time > Carbon::now()->toDateTimeString());
+
             if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
                 $totalPages = $jobs->lastPage();
                 $isFirstPage = ($jobs->currentPage() == 1);
@@ -125,28 +124,18 @@ class JobController extends Controller
                     'last_page' => $jobs->hasMorePages(),
                     'previous_page' => $previousPageNumber,
                     'next_page' => $nextPageNumber,
-                    // 'out_of_bounds' => $job->hasPages() && ! ($job->currentPage()),
-                    // 'offset' => ($job->currentPage() - 1) * $job->perPage(),
                 ];
-                // print_r($job->id);
-                // dd($candidate->role);
-                // dd($job->job_category);
-                // $data[$key]['client_id']        = $job->client->practice_name; 
+
                 $data[$key]['job_id']           = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
-                // $data[$key]['job_description']  = $job->job_description;
                 $data[$key]['job_location']     = $job->client->address;
                 $data[$key]['job_salary']       = $job->job_salary;
                 $data[$key]['job_date']         = $job->job_date;
-                // $data[$key]['job_end_date']     = $job->job_end_date;
                 $data[$key]['job_start_time']   = $job->job_start_time;
                 $data[$key]['job_end_time']     = $job->job_end_time;
-                // $data[$key]['break_time']       = $job->break_time;
-                // $data[$key]['job_status']       = ApplicationStatusHelper::getJobStatusByName($job->job_status);
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         }
-        // dd($data);
         // for particular candidate 
         return response()->json([
             'success' => true,
@@ -154,13 +143,29 @@ class JobController extends Controller
         ], 200)->header('X-pagination', json_encode($pagination));
     }
 
-    public function clientJobs($id)
+    public function clientJobs(JobListRequest $request)
     {
-
+        $id = $request->id;
+        // dd($id);
         $client = Client::find($id);
-        // dd($client);
-        $jobs = Job::where('client_id', $id)->latest()->paginate(5);
-        // dd($jobs);
+        $offset = 0;
+        if($request->offset){
+            $offset = $request->offset;
+        }
+        // dd($offset);
+        $perpage = 10;
+        $page = 1;
+        if($request->page){
+            $page = $request->page;
+        }
+        $jobs = Job::where('client_id', $id);
+        $lastPage = ceil($jobs->count()/$perpage);
+        dd($lastPage);
+        // $jobs = Job::where('client_id', $id)->skip($offset)->take($limit)->orderBy('id', 'desc')->get();
+        $jobs = $jobs->orderBy('id', 'desc')->offset(($page-1)*$perpage)->limit($perpage)->get();
+
+        $data = [];
+        $pagination = [];
         if (!$client) {
             return response()->json([
                 'success' => false,
@@ -171,46 +176,34 @@ class JobController extends Controller
         if (!$jobs || sizeof($jobs) == 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'No job found'
+                'message' => 'No job found',
+                'lastPage' => $lastPage,
             ], 400);
         }
 
-        $totalPages = $jobs->lastPage();
-        $isFirstPage = ($jobs->currentPage() == 1);
-        $nextPageNumber = $jobs->nextPageUrl() ? $jobs->currentPage() + 1 : 0;
-        $previousPageNumber = $jobs->previousPageUrl() ? $jobs->currentPage() - 1 : 0;
-
-
-        $pagination = [
-            'total' => $jobs->total(),
-            'total_pages' => $totalPages,
-            'first_page' => $isFirstPage,
-            'last_page' => $jobs->hasMorePages(),
-            'previous_page' => $previousPageNumber,
-            'next_page' => $nextPageNumber,
-            // 'out_of_bounds' => $job->hasPages() && ! ($job->currentPage()),
-            // 'offset' => ($job->currentPage() - 1) * $job->perPage(),
-        ];
-        $data = [];
         // echo "<pre>";
+        $data1 = [];
         foreach ($jobs as $key => $job) {
             if ($job->job_date >= Carbon::now() || $job->job_end_time >= Carbon::now()) {
-                // $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
-                $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                $data[$key]['job_id']           = $job->id;
-                $data[$key]['job_title']        = $job->job_title;
-                $data[$key]['job_location']     = $client->address;
-                $data[$key]['job_salary']       = $job->job_salary;
-                $data[$key]['job_start_time']   = $job->job_start_time;
-                $data[$key]['job_end_time']     = $job->job_end_time;
-                $data[$key]['job_category']     = $job->job_category;
+                
+                $data['job_id']           = $job->id;
+                $data['job_title']        = $job->job_title;
+                $data['job_location']     = $job->client->address;
+                $data['job_salary']       = $job->job_salary;
+                $data['job_start_time']   = $job->job_start_time;
+                $data['job_end_time']     = $job->job_end_time;
+                $data['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                $data1[] = $data;
             }
+            // $data1 = [$data];
         }
-
+        // dd($data);
         return response()->json([
+            'message' => 'Jobs retrieved successfully',
             'success' => true,
-            'data' => $data,
-        ], 200)->header('X-pagination', json_encode($pagination));
+            'code' => 200,
+            'data' => $data1,
+        ], 200);
     }
 
     /**
@@ -323,19 +316,24 @@ class JobController extends Controller
      */
     public function show($id)
     {
-        $job = Job::find($id);
-
+        $job = Job::where('id', $id)->with('client')->first();
         if ($job) {
-            $job->job_status = ApplicationStatusHelper::getJobStatusByName($job->job_status);
-            $job->job_category = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-            // $job->job_type = ApplicationStatusHelper::getJobTypeByName($job->job_type);
-            $job->parking = ApplicationStatusHelper::getParkingByName($job->parking);
+            $data['job_title'] = $job->job_title;
+            $data['job_description'] = $job->job_description;
+            $data['job_location'] = $job->client->address;
+            $data['job_salary'] = $job->job_salary;
+            $data['job_start_time'] = $job->job_start_time;
+            $data['job_end_time'] = $job->job_end_time;
+            $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+            $data['parking'] = ApplicationStatusHelper::getParkingByName($job->parking);
+            $data['unit'] = $job->unit;
+            $data['visits'] = $job->visits;
 
             return response()->json([
                 'message'   => 'Job Details',
                 'status'    => 'OK',
                 'code'      => 200,
-                'data'      => ['job' => $job]
+                'data'      => $data
             ], 200);
         } else {
             return response()->json([
