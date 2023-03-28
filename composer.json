@@ -43,7 +43,8 @@
             "database/factories"
         ],
         "files": [
-            "app/Helper/ApplicationStatusHelper.php"
+            "app/Helper/ApplicationStatusHelper.php",
+            "app/Helper/CustomPaginationHelper.php"
         ]
     },
     "autoload-dev": {

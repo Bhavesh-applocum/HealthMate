@@ -6,6 +6,7 @@ use App\Application;
 use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
+use App\Helpers\CustomPaginationHelper;
 use App\Http\Requests\JobListRequest;
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
@@ -29,52 +30,46 @@ class JobController extends Controller
 
     public function findJobs()
     {
-        $job = Job::with('client')->latest()->paginate(10);
+        $jobs = Job::with('client');
         // $job1 = Job::with('client')->get();
         // dd($job1);
-        if (!$job) {
+        if (!$jobs) {
             return response()->json([
                 'message' => 'No jobs found',
                 'status' => 'Bad Request',
                 'code' => 400
             ], 400);
         }
+        $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
+        // dd($paginatedData);
+        if (count($paginatedData['data']) == 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No job found',
+            ], 400);
+        }
         $data = [];
 
-        $totalPages = $job->lastPage();
-        $isFirstPage = ($job->currentPage() == 1);
-        $nextPageNumber = $job->nextPageUrl() ? $job->currentPage() + 1 : 0;
-        $previousPageNumber = $job->previousPageUrl() ? $job->currentPage() - 1 : 0;
-
-        $pagination = [
-            'total' => $job->total(),
-            'total_pages' => $totalPages,
-            'first_page' => $isFirstPage,
-            'last_page' => $job->hasMorePages(),
-            'previous_page' => $previousPageNumber,
-            'next_page' => $nextPageNumber,
-            // 'out_of_bounds' => $job->hasPages() && ! ($job->currentPage()),
-            // 'offset' => ($job->currentPage() - 1) * $job->perPage(),
-        ];
-
-        foreach ($job as $key => $value) {
+        foreach ($paginatedData['data'] as $key => $value) {
             $data[$key]['id'] = $value->id;
             $data[$key]['ref_no'] = $value->ref_no;
             $data[$key]['job_title'] = $value->job_title;
             $data[$key]['job_location'] = $value->client->address;
-            // $data[$key]['job_location'] = $value->job_location;
             $data[$key]['job_salary'] = $value->job_salary;
             $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
             $data[$key]['job_start_time'] = $value->job_start_time;
             $data[$key]['job_end_time'] = $value->job_end_time;
         }
-        if ($job) {
+        if ($jobs) {
             return response()->json([
                 'message' => 'Jobs found',
                 'status' => 'OK',
                 'code' => 200,
-                'data' => $data
-            ], 200)->header('X-pagination', json_encode($pagination));
+                'data' => $data,
+                'curent_page' => $paginatedData['current_page'],
+                'last_page' => $paginatedData['last_page'],
+                'is_last_page' => $paginatedData['is_last_page'],
+            ], 200);
         }
     }
 
@@ -89,14 +84,26 @@ class JobController extends Controller
                 'code' => 400
             ], 400);
         }
-
-        $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications')->latest()->paginate(5);
-
+        $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications');
+        $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
+        if (count($paginatedData['data']) == 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No job found',
+            ], 400);
+        }
         $data = [];
-        $pagination = [];
 
         
-        foreach ($jobs as $key => $job) {
+        foreach ($paginatedData['data'] as $key => $job) {
+
+            $isCandidate = false;
+            foreach ($job->applications as $application) {
+                if ($application->candidate_id == $candidate->id && $application->job_id == $job->id) {
+                    $isCandidate = true;
+                }
+            }
+
             $isBooked = false;
             foreach ($job->applications as $application) {
                 if ($application->status == 2) {
@@ -111,22 +118,8 @@ class JobController extends Controller
                 }
             }
 
-            if ($candidate->role == $job->job_category && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
-                $totalPages = $jobs->lastPage();
-                $isFirstPage = ($jobs->currentPage() == 1);
-                $nextPageNumber = $jobs->nextPageUrl() ? $jobs->currentPage() + 1 : 0;
-                $previousPageNumber = $jobs->previousPageUrl() ? $jobs->currentPage() - 1 : 0;
-
-                $pagination = [
-                    'total' => $jobs->total(),
-                    'total_pages' => $totalPages,
-                    'first_page' => $isFirstPage,
-                    'last_page' => $jobs->hasMorePages(),
-                    'previous_page' => $previousPageNumber,
-                    'next_page' => $nextPageNumber,
-                ];
-
-                $data[$key]['job_id']           = $job->id;
+            if ($candidate->role == $job->job_category &&!$isCandidate && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
+                $data[$key]['id']           = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
                 $data[$key]['job_location']     = $job->client->address;
                 $data[$key]['job_salary']       = $job->job_salary;
@@ -139,33 +132,96 @@ class JobController extends Controller
         // for particular candidate 
         return response()->json([
             'success' => true,
-            'data' => $data
-        ], 200)->header('X-pagination', json_encode($pagination));
+            'message' => 'Jobs found',
+            'data' => $data,
+            'curent_page' => $paginatedData['current_page'],
+            'last_page' => $paginatedData['last_page'],
+            'is_last_page' => $paginatedData['is_last_page'],
+        ], 200);
     }
 
-    public function clientJobs(JobListRequest $request)
+    public function candidateDashboard($id)
     {
-        $id = $request->id;
-        // dd($id);
-        $client = Client::find($id);
-        $offset = 0;
-        if($request->offset){
-            $offset = $request->offset;
-        }
-        // dd($offset);
-        $perpage = 10;
-        $page = 1;
-        if($request->page){
-            $page = $request->page;
-        }
-        $jobs = Job::where('client_id', $id);
-        $lastPage = ceil($jobs->count()/$perpage);
-        dd($lastPage);
-        // $jobs = Job::where('client_id', $id)->skip($offset)->take($limit)->orderBy('id', 'desc')->get();
-        $jobs = $jobs->orderBy('id', 'desc')->offset(($page-1)*$perpage)->limit($perpage)->get();
+        $candidate = Candidate::find($id);
 
+        if (!$candidate) {
+            return response()->json([
+                'message' => 'Candidate not found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+        $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications');
+        $paginatedData = CustomPaginationHelper::mainPage_data($jobs, request()->query('page') ?? 1);
+        if (count($paginatedData['data']) == 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No job found',
+            ], 400);
+        }
         $data = [];
-        $pagination = [];
+
+        
+        foreach ($paginatedData['data'] as $key => $job) {
+
+            $isCandidate = false;
+            foreach ($job->applications as $application) {
+                if ($application->candidate_id == $candidate->id && $application->job_id == $job->id ) {
+                    $isCandidate = true;
+                }
+            }
+
+            $isBooked = false;
+            foreach ($job->applications as $application) {
+                if ($application->status == 2) {
+                    $isBooked = true;
+                }
+            }
+
+            $isWorked = false;
+            foreach ($job->applications as $application) {
+                if ($application->status == 3) {
+                    $isWorked = true;
+                }
+            }
+
+            if ($candidate->role == $job->job_category &&!$isCandidate && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
+                $data[$key]['id']           = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_location']     = $job->client->address;
+                $data[$key]['job_salary']       = $job->job_salary;
+                $data[$key]['job_date']         = $job->job_date;
+                $data[$key]['job_start_time']   = $job->job_start_time;
+                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+            }
+        }
+        // for particular candidate 
+        return response()->json([
+            'success' => true,
+            'message' => 'Jobs found',
+            'data' => $data,
+            'curent_page' => $paginatedData['current_page'],
+            'last_page' => $paginatedData['last_page'],
+            'is_last_page' => $paginatedData['is_last_page'],
+        ], 200);
+    }
+
+    public function clientJobs($id)
+    {
+        $client = Client::find($id);
+        $jobs = Job::where('client_id', $id);
+        $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
+
+        if (count($paginatedData['data']) == 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No job found',
+            ], 400);
+        }
+        $avatars=[];
+        // dd($paginatedData);
+        $data = [];
         if (!$client) {
             return response()->json([
                 'success' => false,
@@ -173,20 +229,14 @@ class JobController extends Controller
             ], 400);
         }
 
-        if (!$jobs || sizeof($jobs) == 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No job found',
-                'lastPage' => $lastPage,
-            ], 400);
-        }
+        
 
         // echo "<pre>";
         $data1 = [];
-        foreach ($jobs as $key => $job) {
+        foreach ($paginatedData['data'] as $key => $job) {
             if ($job->job_date >= Carbon::now() || $job->job_end_time >= Carbon::now()) {
                 
-                $data['job_id']           = $job->id;
+                $data['id']           = $job->id;
                 $data['job_title']        = $job->job_title;
                 $data['job_location']     = $job->client->address;
                 $data['job_salary']       = $job->job_salary;
@@ -203,6 +253,9 @@ class JobController extends Controller
             'success' => true,
             'code' => 200,
             'data' => $data1,
+            'curent_page' => $paginatedData['current_page'],
+            'last_page' => $paginatedData['last_page'],
+            'is_last_page' => $paginatedData['is_last_page'],
         ], 200);
     }
 

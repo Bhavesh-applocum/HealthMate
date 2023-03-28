@@ -47,8 +47,9 @@ Route::post('/application/{id}/index', 'ClientApplicationController@statusforcli
 Route::post('/application/status/jobs' , 'CandidateApplicationController@showstautsjob');
 Route::get('/booking/{id}/index', 'ClientApplicationController@BookingCandidate');
 Route::post('/job/update/{id}', 'JobController@jobupdate');
-Route::post('/job/index/client', 'JobController@clientJobs');
+Route::get('/job/index/{id}/client', 'JobController@clientJobs');
 Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');
+Route::get('/job/{id}/specific/candidate/dashboard', 'JobController@candidateDashboard');
 Route::get('/check/timesheet/{id}','CandidateApplicationController@genaratetimesheet');
 Route::post('/timesheet/approve','ClientApplicationController@approveTimesheet');
 Route::get('/hello', function () {
