@@ -84,7 +84,12 @@ class JobController extends Controller
                 'code' => 400
             ], 400);
         }
-        $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications');
+        $today = date('Y,m-d');
+        $jobs = Job::with('client','applications')
+                    ->where('job_category', $candidate->role)
+                    ->whereNotIn('jobs.job_status',[1,2,3])
+                    ->where('job_date', '>=', $today);
+
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
@@ -93,32 +98,8 @@ class JobController extends Controller
             ], 400);
         }
         $data = [];
-
         
         foreach ($paginatedData['data'] as $key => $job) {
-
-            $isCandidate = false;
-            foreach ($job->applications as $application) {
-                if ($application->candidate_id == $candidate->id && $application->job_id == $job->id) {
-                    $isCandidate = true;
-                }
-            }
-
-            $isBooked = false;
-            foreach ($job->applications as $application) {
-                if ($application->status == 2) {
-                    $isBooked = true;
-                }
-            }
-
-            $isWorked = false;
-            foreach ($job->applications as $application) {
-                if ($application->status == 3) {
-                    $isWorked = true;
-                }
-            }
-
-            if ($candidate->role == $job->job_category &&!$isCandidate && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
                 $data[$key]['id']           = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
                 $data[$key]['job_location']     = $job->client->address;
@@ -128,7 +109,6 @@ class JobController extends Controller
                 $data[$key]['job_end_time']     = $job->job_end_time;
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
-        }
         // for particular candidate 
         return response()->json([
             'success' => true,
@@ -151,7 +131,12 @@ class JobController extends Controller
                 'code' => 400
             ], 400);
         }
-        $jobs = Job::where('job_category', $candidate->role)->with('client')->with('applications');
+        $today = date('Y-m-d');
+        $jobs = Job::with('client','applications')
+                    ->where('job_category', $candidate->role)
+                    ->whereNotIn('jobs.job_status',[1,2,3])
+                    ->whereDate('jobs.job_date','>=',$today);
+        
         $paginatedData = CustomPaginationHelper::mainPage_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
@@ -163,38 +148,14 @@ class JobController extends Controller
 
         
         foreach ($paginatedData['data'] as $key => $job) {
-
-            $isCandidate = false;
-            foreach ($job->applications as $application) {
-                if ($application->candidate_id == $candidate->id && $application->job_id == $job->id ) {
-                    $isCandidate = true;
-                }
-            }
-
-            $isBooked = false;
-            foreach ($job->applications as $application) {
-                if ($application->status == 2) {
-                    $isBooked = true;
-                }
-            }
-
-            $isWorked = false;
-            foreach ($job->applications as $application) {
-                if ($application->status == 3) {
-                    $isWorked = true;
-                }
-            }
-
-            if ($candidate->role == $job->job_category &&!$isCandidate && !$isBooked && !$isWorked && $job->job_date > Carbon::now()->toDateTimeString()) {
-                $data[$key]['id']           = $job->id;
-                $data[$key]['job_title']        = $job->job_title;
-                $data[$key]['job_location']     = $job->client->address;
-                $data[$key]['job_salary']       = $job->job_salary;
-                $data[$key]['job_date']         = $job->job_date;
-                $data[$key]['job_start_time']   = $job->job_start_time;
-                $data[$key]['job_end_time']     = $job->job_end_time;
-                $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-            }
+            $data[$key]['id']           = $job->id;
+            $data[$key]['job_title']        = $job->job_title;
+            $data[$key]['job_location']     = $job->client->address;
+            $data[$key]['job_salary']       = $job->job_salary;
+            $data[$key]['job_date']         = $job->job_date;
+            $data[$key]['job_start_time']   = $job->job_start_time;
+            $data[$key]['job_end_time']     = $job->job_end_time;
+            $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
         // for particular candidate 
         return response()->json([

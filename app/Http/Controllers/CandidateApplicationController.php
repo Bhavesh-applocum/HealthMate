@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application;
 use App\Candidate;
 use App\Helpers\ApplicationStatusHelper;
+use App\Helpers\CustomPaginationHelper;
 use App\Job;
 use App\Timesheet;
 use Illuminate\Http\Request;
@@ -128,9 +129,16 @@ class CandidateApplicationController extends Controller
     {
         $candidateId = $request->candidate_id;
         $status = $request->status;
-        // dd(Application::where(['candidate_id' => $candidateId, 'status' => $status])->with('timesheet')->whereNotNull('timesheet_id')->toSql());
-        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status])->whereNotNull('timesheet_id')->get();
-        // dd($candidateApplication);
+    
+        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status]);
+        $paginateData = CustomPaginationHelper::paginate_data($candidateApplication, request()->query('page') ?? 1);
+        if (count($paginateData['data']) == 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No job found',
+            ], 400);
+        }
+        
         if (!$candidateApplication) {
             return response()->json([
                 'message' => 'Candidate Not Found',
@@ -140,48 +148,32 @@ class CandidateApplicationController extends Controller
         }
         $data = [];
         if ($status == 1) {
-            foreach ($candidateApplication as $key => $application) {
-
-                $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
-                $isWorkedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 3])->exists();
-
-
-                if (!$isBookedExistsForThisJob && !$isWorkedExistsForThisJob) {
+            foreach ($paginateData['data'] as $key => $application) {
                     $job = Job::with('applications')->find($application->job_id);
-                    $data[$key]['job_id']           = $job->id;
+                    $data[$key]['application_id']   =$application->id;
+                    $data[$key]['id']               = $job->id;
                     $data[$key]['job_title']        = $job->job_title;
-                    $data[$key]['job_description']  = $job->job_description;
-                    $data[$key]['job_start_date']   = $job->job_start_date;
+                    $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                    $data[$key]['job_date']         = $job->job_date;
                     $data[$key]['job_start_time']   = $job->job_start_time;
-                    $data[$key]['job_end_date']     = $job->job_end_date;
                     $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = $job->job_location;
-                    $data[$key]['job_status']       = $job->job_status;
-                    $data[$key]['job_created_at']   = $job->created_at;
-                }
+                    $data[$key]['job_location']     = $job->client->address;
+                    $data[$key]['job_salary']       = $job->job_salary;
             }
         } elseif ($status == 2) {
-            foreach ($candidateApplication as $key => $application) {
-
-                // $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
-                $isWorkedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 3])->exists();
-                $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->exists();
-                // dd($isWorkedExistsForThisJob);
-                if (!$isWorkedExistsForThisJob || !$isAppliedForThisJob) {
-                    $job = Job::with('applications')->find($application->job_id);
-                    $data[$key]['job_id']           = $job->id;
-                    $data[$key]['job_title']        = $job->job_title;
-                    $data[$key]['job_description']  = $job->job_description;
-                    $data[$key]['job_start_date']   = $job->job_start_date;
-                    $data[$key]['job_start_time']   = $job->job_start_time;
-                    $data[$key]['job_end_date']     = $job->job_end_date;
-                    $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = $job->job_location;
-                    $data[$key]['job_status']       = $job->job_status;
-                    $data[$key]['job_created_at']   = $job->created_at;
+            foreach ($paginateData['data'] as $key => $application) {
+                $job = Job::with('applications')->find($application->job_id);
+                $data[$key]['id']           = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_description']  = $job->job_description;
+                $data[$key]['job_date']         = $job->job_date;
+                $data[$key]['job_start_time']   = $job->job_start_time;
+                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_location']     = $job->client->address;
+                $data[$key]['job_salary']       = $job->job_salary;
                 }
             }
-        } elseif ($status == 3) {
+         elseif ($status == 3) {
             // dd($candidateApplication);
             foreach ($candidateApplication as $key => $application) {
 
@@ -208,22 +200,16 @@ class CandidateApplicationController extends Controller
             }
         }
         // dd($data);
-        if (count($candidateApplication) > 0) {
-            // if ($status == 2)
-            //     return response()->json([
-            //         'message' => 'Applied Jobs',
-            //         'Application_status' => ApplicationStatusHelper::getApplicationStatusByName($status),
-            //         'Rejected_reason' => $application->reject_reason,
-            //         'status' => 'OK',
-            //         'code' => 200,
-            //         'data' => $data
-            //     ]);
+        if (count($paginateData) > 0) {
             return response()->json([
                 'message' => 'All Jobs',
                 'Application_status' => ApplicationStatusHelper::getApplicationStatusByName($status),
                 'status' => 'OK',
                 'code' => 200,
-                'data' => $data
+                'data' => $data,
+                'curent_page' => $paginateData['current_page'],
+                'last_page' => $paginateData['last_page'],
+                'is_last_page' => $paginateData['is_last_page'],
             ]);
         } else {
             return response()->json([
@@ -301,8 +287,10 @@ class CandidateApplicationController extends Controller
      */
     public function destroy($id)
     {
-        $application = Application::find($id);
-
+        $application = Application::with('job')->find($id);
+        // dd($application);
+        $job = Job::with('applications')->where('id', $application->job->id)->first();
+        // dd($job);
         if (!$application) {
             return response()->json([
                 'message' => 'Application Not Found',
@@ -310,6 +298,9 @@ class CandidateApplicationController extends Controller
                 'code' => 400
             ]);
         }
+
+        $job->job_status = 0;
+        $job->save();
 
         $application->delete();
 

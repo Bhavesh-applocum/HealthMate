@@ -34,7 +34,8 @@ class CustomPaginationHelper
         $is_last_page = false; // default last page is false
         $limit = 5; // limit also workd as count per page
         $page = (int)$page; // this will convert page to int from string
-        $offset = ($page*$limit)-$limit; 
+        $offset = ($page*$limit)-$limit;
+        // dd($offset); 
         $lastPage = ceil($query->count()/$limit); // divided total by limitto get last page
         if($page == $lastPage){ // is page and last_page is equal then make is_last_page true
             $is_last_page = true;
@@ -43,6 +44,7 @@ class CustomPaginationHelper
             $lastPage = 0;
         }
         $query = $query->skip($offset)->take($limit)->orderBy('id', 'desc')->get();
+        // dd($query);
         $paginatedData = [];
         $paginatedData['data'] = $query;
         $paginatedData['is_last_page'] = $is_last_page;

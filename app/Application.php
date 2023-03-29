@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Application extends Model
 {
     public function job(){
-        return $this->belongsToMany('App\Job');
+        return $this->belongsTo('App\Job');
     }
 
     public function candidate(){
