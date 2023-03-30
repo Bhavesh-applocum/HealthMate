@@ -6,6 +6,9 @@ use App\Application;
 use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
+use App\Helpers\CandidateHelper;
+use App\Helpers\CustomPaginationHelper;
+use App\Helpers\JobHelper;
 use App\Job;
 use App\Timesheet;
 use Illuminate\Http\Request;
@@ -22,145 +25,192 @@ class ClientApplicationController extends Controller
         //
     }
 
-    public function statusforclient($id, Request $request)
+    public function statusforclient(Request $request)
     {
-        $job = Job::with('applications')->with('client')->get();
-        $jobcheckApplication = Client::with('jobs')->find($id);
-        $jobcheckApplication1 = $jobcheckApplication->jobs;
-        // dd($jobcheckApplication1);
-        // dd($job);
-        $StatusType = $request->statustype;
-
-        if($StatusType == 1){
+        $client = Client::with('jobs')->find($request->id);
         $status = $request->status;
-        }else{
-            $timesheetstatus = $request->timesheet_status;
-        }
+        $jobs = Job::with('applications', 'client')->where(['client_id' => $client->id, 'job_status' => $status]);
+        $paginateData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
 
         $data = [];
-        if($StatusType == 1){
-
-        if ($status == 1) {
-            foreach ($jobcheckApplication1 as $key => $jobs) {
-                // dd($jobs);
-                $checkStatus = $jobs->applications->where('status', 1)->first();
-                $isBooked =  false;
-                foreach ($jobs->applications as $application) {
-                    if ($application->status == 2) {
-                        $isBooked = true;
-                    }
-                }
-                $isWorked =  false;
-                foreach ($jobs->applications as $application) {
-                    if ($application->status == 3) {
-                        $isWorked = true;
-                    }
-                }
-                // dd($checkStatus);
-                if ($checkStatus && !$isBooked && !$isWorked) {
-                    $data[$key]['job_id']           = $jobs->id;
-                    $data[$key]['job_title']        = $jobs->job_title;
-                    $data[$key]['job_location']     = $jobs->job_location;
-                    $data[$key]['job_salary']       = $jobs->job_salary;
-                    $data[$key]['job_start_date']   = $jobs->job_start_date;
-                    $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['total_applications']   = count($jobs->applications);
-                }
+        foreach ($paginateData['data'] as $key => $job) {
+            $dataObj = [];
+            // dd($job->applications[0]->candidate_id);
+            // dd($job);
+            $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
+            // dd($applicationsIDS);
+            $candidatesForJob = JobHelper::getCandidateDataForJob($job);
+            $candidateObj = [];
+            foreach ($candidatesForJob as $key => $can) {
+                $canData = CandidateHelper::getCandidateField($can['id'],['avatar']);
+                $candidateObj[$key]['candidate_id'] = $can['id'];
+                $candidateObj[$key]['application_id'] = $can['application_id'];
+                $candidateObj[$key]['avatar'] = $canData['avatar'];
             }
-            return response()->json([
-                'message' => 'Applications for client',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $data
-            ], 200);
-        } elseif ($status == 2) {
-            foreach ($jobcheckApplication1 as $key => $jobs) {
-                // dd($jobs);
-                $checkStatus = $jobs->applications->where('status', 2)->first();
-                // dd($checkStatus);
-                $isWorked =  false;
-                foreach ($jobs->applications as $application) {
-                    if ($application->status == 3) {
-                        $isWorked = true;
-                    }
-                }
-                if ($checkStatus && !$isWorked) {
-                    $data[$key]['job_id']           = $jobs->id;
-                    $data[$key]['job_title']        = $jobs->job_title;
-                    $data[$key]['job_location']     = $jobs->job_location;
-                    $data[$key]['job_salary']       = $jobs->job_salary;
-                    $data[$key]['job_start_date']   = $jobs->job_start_date;
-                    $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
-                }
-            }
-            return response()->json([
-                'message' => 'Applications for client',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $data
-            ], 200);
-        }
-        elseif ($status == 3) {
-            foreach ($jobcheckApplication1 as $key => $jobs) {
-                // dd($jobs);
-                $checkStatus = $jobs->applications->where('status', 3)->first();
-                // dd($checkStatus);
-                if ($checkStatus) {
-                    $data[$key]['job_id']           = $jobs->id;
-                    $data[$key]['job_title']        = $jobs->job_title;
-                    $data[$key]['job_location']     = $jobs->job_location;
-                    $data[$key]['job_salary']       = $jobs->job_salary;
-                    $data[$key]['job_start_date']   = $jobs->job_start_date;
-                    $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(2);
-                }
-            }
-            return response()->json([
-                'message' => 'Check Timesheet for candidate',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $data
-            ], 200);
-        }
-    }elseif($StatusType == 2){
-        if($timesheetstatus == 2){
-            // dd($jobcheckApplication1); 
-            foreach ($jobcheckApplication1 as $key => $jobs) {
-                dd($jobs->applications);
-                foreach($jobs->applications as $application){
-                    $timesheet_id = Application::where('timesheet_id',$application->timesheet_id )->get();
-                }
-                dd($timesheet_id);
-                $checkStatus = $jobs->applications->where('timesheet_id',$timesheet_id->timesheet_id )->first();
-                if($checkStatus){
-                    $TimesheetStatusForClient = Timesheet::where('status',2)->get();
-                }
-                dd($TimesheetStatusForClient);
-                if ($TimesheetStatusForClient) {
-                    $data[$key]['job_id']           = $jobs->id;
-                    $data[$key]['job_title']        = $jobs->job_title;
-                    $data[$key]['job_location']     = $jobs->job_location;
-                    $data[$key]['job_salary']       = $jobs->job_salary;
-                    $data[$key]['job_start_date']   = $jobs->job_start_date;
-                    $data[$key]['job_end_date']     = $jobs->job_end_date;
-                    $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
-                }
-            }
-            return response()->json([
-                'message' => 'Timesheet Approve for candidate but payment is not done',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $data
-            ], 200);
+            // $candidate = Candidate::with('applications')->where('id', $job->applications->candidate_id)->get();
+            // dd($candidate);
+            $dataObj['id']                  = $job->id;
+            $dataObj['candidates']          = array_slice($candidateObj,0,3);
+            $dataObj['job_title']           = $job->job_title;
+            $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+            $dataObj['job_location']        = $job->client->address;
+            $dataObj['job_salary']          = $job->job_salary;
+            $dataObj['job_date']            = $job->job_date;
+            $dataObj['job_end_time']        = $job->job_end_time;
+            $dataObj['job_start_time']      = $job->job_start_time;
+            $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
+            $dataObj['total_applications']  = count($job->applications);
+            array_push($data,$dataObj);
         }
         return response()->json([
-            'message' => 'No Timesheet for candidate',
-            'status' => 'OK',
-            'code' => 200,
-            'data' => $data
-        ], 200);
-    }
+            'message' => 'Perfect',
+            'sucess' => true,
+            'data' => $data,
+            'curent_page' => $paginateData['current_page'],
+            'last_page' => $paginateData['last_page'],
+            'is_last_page' => $paginateData['is_last_page'],
+        ],200);
+
+
+
+
+        //     $job = Job::with('applications')->with('client')->get();
+        //     $jobcheckApplication = Client::with('jobs')->find($id);
+        //     $jobcheckApplication1 = $jobcheckApplication->jobs;
+        //     // dd($jobcheckApplication1);
+        //     // dd($job);
+        //     $StatusType = $request->statustype;
+
+        //     if($StatusType == 1){
+        //     $status = $request->status;
+        //     }else{
+        //         $timesheetstatus = $request->timesheet_status;
+        //     }
+
+        //     $data = [];
+        //     if($StatusType == 1){
+
+        //     if ($status == 1) {
+        //         foreach ($jobcheckApplication1 as $key => $jobs) {
+        //             // dd($jobs);
+        //             $checkStatus = $jobs->applications->where('status', 1)->first();
+        //             $isBooked =  false;
+        //             foreach ($jobs->applications as $application) {
+        //                 if ($application->status == 2) {
+        //                     $isBooked = true;
+        //                 }
+        //             }
+        //             $isWorked =  false;
+        //             foreach ($jobs->applications as $application) {
+        //                 if ($application->status == 3) {
+        //                     $isWorked = true;
+        //                 }
+        //             }
+        //             // dd($checkStatus);
+        //             if ($checkStatus && !$isBooked && !$isWorked) {
+        //                 $data[$key]['job_id']           = $jobs->id;
+        //                 $data[$key]['job_title']        = $jobs->job_title;
+        //                 $data[$key]['job_location']     = $jobs->job_location;
+        //                 $data[$key]['job_salary']       = $jobs->job_salary;
+        //                 $data[$key]['job_start_date']   = $jobs->job_start_date;
+        //                 $data[$key]['job_end_date']     = $jobs->job_end_date;
+        //                 $data[$key]['total_applications']   = count($jobs->applications);
+        //             }
+        //         }
+        //         return response()->json([
+        //             'message' => 'Applications for client',
+        //             'status' => 'OK',
+        //             'code' => 200,
+        //             'data' => $data
+        //         ], 200);
+        //     } elseif ($status == 2) {
+        //         foreach ($jobcheckApplication1 as $key => $jobs) {
+        //             // dd($jobs);
+        //             $checkStatus = $jobs->applications->where('status', 2)->first();
+        //             // dd($checkStatus);
+        //             $isWorked =  false;
+        //             foreach ($jobs->applications as $application) {
+        //                 if ($application->status == 3) {
+        //                     $isWorked = true;
+        //                 }
+        //             }
+        //             if ($checkStatus && !$isWorked) {
+        //                 $data[$key]['job_id']           = $jobs->id;
+        //                 $data[$key]['job_title']        = $jobs->job_title;
+        //                 $data[$key]['job_location']     = $jobs->job_location;
+        //                 $data[$key]['job_salary']       = $jobs->job_salary;
+        //                 $data[$key]['job_start_date']   = $jobs->job_start_date;
+        //                 $data[$key]['job_end_date']     = $jobs->job_end_date;
+        //                 $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
+        //             }
+        //         }
+        //         return response()->json([
+        //             'message' => 'Applications for client',
+        //             'status' => 'OK',
+        //             'code' => 200,
+        //             'data' => $data
+        //         ], 200);
+        //     }
+        //     elseif ($status == 3) {
+        //         foreach ($jobcheckApplication1 as $key => $jobs) {
+        //             // dd($jobs);
+        //             $checkStatus = $jobs->applications->where('status', 3)->first();
+        //             // dd($checkStatus);
+        //             if ($checkStatus) {
+        //                 $data[$key]['job_id']           = $jobs->id;
+        //                 $data[$key]['job_title']        = $jobs->job_title;
+        //                 $data[$key]['job_location']     = $jobs->job_location;
+        //                 $data[$key]['job_salary']       = $jobs->job_salary;
+        //                 $data[$key]['job_start_date']   = $jobs->job_start_date;
+        //                 $data[$key]['job_end_date']     = $jobs->job_end_date;
+        //                 $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(2);
+        //             }
+        //         }
+        //         return response()->json([
+        //             'message' => 'Check Timesheet for candidate',
+        //             'status' => 'OK',
+        //             'code' => 200,
+        //             'data' => $data
+        //         ], 200);
+        //     }
+        // }elseif($StatusType == 2){
+        //     if($timesheetstatus == 2){
+        //         // dd($jobcheckApplication1); 
+        //         foreach ($jobcheckApplication1 as $key => $jobs) {
+        //             dd($jobs->applications);
+        //             foreach($jobs->applications as $application){
+        //                 $timesheet_id = Application::where('timesheet_id',$application->timesheet_id )->get();
+        //             }
+        //             dd($timesheet_id);
+        //             $checkStatus = $jobs->applications->where('timesheet_id',$timesheet_id->timesheet_id )->first();
+        //             if($checkStatus){
+        //                 $TimesheetStatusForClient = Timesheet::where('status',2)->get();
+        //             }
+        //             dd($TimesheetStatusForClient);
+        //             if ($TimesheetStatusForClient) {
+        //                 $data[$key]['job_id']           = $jobs->id;
+        //                 $data[$key]['job_title']        = $jobs->job_title;
+        //                 $data[$key]['job_location']     = $jobs->job_location;
+        //                 $data[$key]['job_salary']       = $jobs->job_salary;
+        //                 $data[$key]['job_start_date']   = $jobs->job_start_date;
+        //                 $data[$key]['job_end_date']     = $jobs->job_end_date;
+        //                 $data[$key]['Work_status']      = ApplicationStatusHelper::getTimesheetStatusByStatus(1);
+        //             }
+        //         }
+        //         return response()->json([
+        //             'message' => 'Timesheet Approve for candidate but payment is not done',
+        //             'status' => 'OK',
+        //             'code' => 200,
+        //             'data' => $data
+        //         ], 200);
+        //     }
+        //     return response()->json([
+        //         'message' => 'No Timesheet for candidate',
+        //         'status' => 'OK',
+        //         'code' => 200,
+        //         'data' => $data
+        //     ], 200);
+        // }
     }
 
 

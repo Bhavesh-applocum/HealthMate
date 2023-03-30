@@ -44,7 +44,9 @@
         ],
         "files": [
             "app/Helper/ApplicationStatusHelper.php",
-            "app/Helper/CustomPaginationHelper.php"
+            "app/Helper/CustomPaginationHelper.php",
+            "app/Helper/JobHelper.php",
+            "app/Helper/CandidateHelper.php"
         ]
     },
     "autoload-dev": {

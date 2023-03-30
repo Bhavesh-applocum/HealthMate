@@ -38,7 +38,7 @@ class JobRequest extends FormRequest
             'job_start_time' => 'required',
             'job_end_time' => 'required',
             'break_time' => 'required',
-            'visits' => 'required',
+            // 'visits' => 'required',
             'parking' => 'required',
             'unit' => 'required',
             // 'meals' => 'required',

@@ -6,7 +6,9 @@ use App\Application;
 use App\Candidate;
 use App\Client;
 use App\Helpers\ApplicationStatusHelper;
+use App\Helpers\CandidateHelper;
 use App\Helpers\CustomPaginationHelper;
+use App\Helpers\JobHelper;
 use App\Http\Requests\JobListRequest;
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
@@ -299,7 +301,7 @@ class JobController extends Controller
 
         // $job->admin_time = $request->admin_time;
         $job->client_id = $client->id;
-        $job->visits = $request->visits;
+        // $job->visits = $request->visits;
         $job->parking = $request->parking;
         $job->unit = $request->unit;
         // $job->meals = $request->meals;
@@ -332,7 +334,19 @@ class JobController extends Controller
     {
         $job = Job::where('id', $id)->with('client')->first();
         if ($job) {
+            $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
+            // dd($applicationsIDS);
+            $candidatesForJob = JobHelper::getCandidateDataForJob($job);
+            $candidateObj = [];
+            foreach ($candidatesForJob as $key => $can) {
+                $canData = CandidateHelper::getCandidateField($can['id'],['avatar','full_name','role']);
+                // $candidateObj[$key]['avatar'] = $candidateAvatar;  
+                $canData['application_id'] = $can['application_id'];
+                array_push($candidateObj,$canData);
+            }
             $data['job_title'] = $job->job_title;
+            // $data['application_ids']     = $applicationsIDS;
+            $data['candidates']          = $candidateObj;
             $data['job_description'] = $job->job_description;
             $data['job_location'] = $job->client->address;
             $data['job_salary'] = $job->job_salary;
@@ -341,7 +355,7 @@ class JobController extends Controller
             $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             $data['parking'] = ApplicationStatusHelper::getParkingByName($job->parking);
             $data['unit'] = $job->unit;
-            $data['visits'] = $job->visits;
+            // $data['visits'] = $job->visits;
 
             return response()->json([
                 'message'   => 'Job Details',

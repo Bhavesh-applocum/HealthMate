@@ -15,8 +15,8 @@ class AddMoreFieldsInJobTable extends Migration
     {
         Schema::table('jobs', function (Blueprint $table) {
             $table->integer('job_status')->unsigned()->default(0)->after('ref_no');
-            $table->integer('visits')->after('break_time');
-            $table->boolean('parking')->default(0)->after('visits');
+            // $table->integer('visits')->after('break_time');
+            $table->boolean('parking')->default(0)->after('break_time');
             $table->double('unit')->unsigned()->after('job_salary');
             // $table->integer('meals');
 
