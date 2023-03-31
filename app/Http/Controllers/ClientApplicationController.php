@@ -9,6 +9,7 @@ use App\Helpers\ApplicationStatusHelper;
 use App\Helpers\CandidateHelper;
 use App\Helpers\CustomPaginationHelper;
 use App\Helpers\JobHelper;
+use App\Http\Requests\ApproveRequest;
 use App\Job;
 use App\Timesheet;
 use Illuminate\Http\Request;
@@ -27,40 +28,43 @@ class ClientApplicationController extends Controller
 
     public function statusforclient(Request $request)
     {
-        $client = Client::with('jobs')->find($request->id);
+        $client = Client::with('jobs','address')->find($request->id);
+        // dd($client);
         $status = $request->status;
         $jobs = Job::with('applications', 'client')->where(['client_id' => $client->id, 'job_status' => $status]);
         $paginateData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
 
         $data = [];
-        foreach ($paginateData['data'] as $key => $job) {
-            $dataObj = [];
-            // dd($job->applications[0]->candidate_id);
-            // dd($job);
-            $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
-            // dd($applicationsIDS);
-            $candidatesForJob = JobHelper::getCandidateDataForJob($job);
-            $candidateObj = [];
-            foreach ($candidatesForJob as $key => $can) {
-                $canData = CandidateHelper::getCandidateField($can['id'],['avatar']);
-                $candidateObj[$key]['candidate_id'] = $can['id'];
-                $candidateObj[$key]['application_id'] = $can['application_id'];
-                $candidateObj[$key]['avatar'] = $canData['avatar'];
+        if ($status == 1) {
+            foreach ($paginateData['data'] as $key => $job) {
+                $dataObj = [];
+                // dd($job->applications[0]->candidate_id);
+                // dd($job);
+                $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
+                // dd($applicationsIDS);
+                $candidatesForJob = JobHelper::getCandidateDataForJob($job);
+                $candidateObj = [];
+                foreach ($candidatesForJob as $key => $can) {
+                    $canData = CandidateHelper::getCandidateField($can['id'], ['avatar']);
+                    $candidateObj[$key]['candidate_id'] = $can['id'];
+                    $candidateObj[$key]['application_id'] = $can['application_id'];
+                    $candidateObj[$key]['avatar'] = $canData['avatar'] ?? '';
+                }
+                // $candidate = Candidate::with('applications')->where('id', $job->applications->candidate_id)->get();
+                // dd($candidate);
+                $dataObj['id']                  = $job->id;
+                $dataObj['candidates']          = array_slice($candidateObj, 0, 3);
+                $dataObj['job_title']           = $job->job_title;
+                $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                $dataObj['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                $dataObj['job_salary']          = $job->job_salary;
+                $dataObj['job_date']            = $job->job_date;
+                $dataObj['job_end_time']        = $job->job_end_time;
+                $dataObj['job_start_time']      = $job->job_start_time;
+                $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
+                $dataObj['total_applications']  = count($job->applications);
+                array_push($data, $dataObj);
             }
-            // $candidate = Candidate::with('applications')->where('id', $job->applications->candidate_id)->get();
-            // dd($candidate);
-            $dataObj['id']                  = $job->id;
-            $dataObj['candidates']          = array_slice($candidateObj,0,3);
-            $dataObj['job_title']           = $job->job_title;
-            $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-            $dataObj['job_location']        = $job->client->address;
-            $dataObj['job_salary']          = $job->job_salary;
-            $dataObj['job_date']            = $job->job_date;
-            $dataObj['job_end_time']        = $job->job_end_time;
-            $dataObj['job_start_time']      = $job->job_start_time;
-            $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
-            $dataObj['total_applications']  = count($job->applications);
-            array_push($data,$dataObj);
         }
         return response()->json([
             'message' => 'Perfect',
@@ -69,7 +73,7 @@ class ClientApplicationController extends Controller
             'curent_page' => $paginateData['current_page'],
             'last_page' => $paginateData['last_page'],
             'is_last_page' => $paginateData['is_last_page'],
-        ],200);
+        ], 200);
 
 
 
@@ -295,12 +299,11 @@ class ClientApplicationController extends Controller
         }
         */
 
-    public function approveApplication(Request $request)
+    public function approveApplication(ApproveRequest $request)
     {
-
         $applicationID = $request->application_id;
 
-        $application = Application::find($applicationID);
+        $application = Application::with('job')->find($applicationID);
 
         if (!$application) {
             return response()->json([
@@ -311,8 +314,10 @@ class ClientApplicationController extends Controller
         }
 
         $application->status = 2;
+        $application->job->job_status = 2;
 
         $application->save();
+        $application->job->save();
 
         return response()->json([
             'message' => 'Application successfully approved',

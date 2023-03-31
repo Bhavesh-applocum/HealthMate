@@ -157,7 +157,7 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_date']         = $job->job_date;
                     $data[$key]['job_start_time']   = $job->job_start_time;
                     $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = $job->client->address;
+                    $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
                     $data[$key]['job_salary']       = $job->job_salary;
             }
         } elseif ($status == 2) {
@@ -169,7 +169,7 @@ class CandidateApplicationController extends Controller
                 $data[$key]['job_date']         = $job->job_date;
                 $data[$key]['job_start_time']   = $job->job_start_time;
                 $data[$key]['job_end_time']     = $job->job_end_time;
-                $data[$key]['job_location']     = $job->client->address;
+                $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 }
             }

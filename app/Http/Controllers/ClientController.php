@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Address;
 use App\Candidate;
 use App\Client;
 use App\Http\Requests\ClientRequest;
@@ -35,7 +36,8 @@ class ClientController extends Controller
     public function store(ClientRequest $request, Candidate $candidate)
     {
 
-        $client = Client::where('email', $request->email)->get();
+        $client = Client::with('address')->where('email', $request->email)->get();
+        dd($client);
 
         if(sizeof($client) > 0) {
             return response()->json([
@@ -59,7 +61,7 @@ class ClientController extends Controller
         $client->practice_name = $request->practice_name;
         $client->email = $request->email;
         $client->phone = $request->phone;
-        $client->address = $request->address;
+        // $client->address = $request->address;
         $client->password = Hash::make($request->password);
         $client->created_at = now();
         $client->updated_at = now();
@@ -70,7 +72,16 @@ class ClientController extends Controller
         $client->Login_otp_expire = $otp_expire;
                 
         $client->save();
+
+        $address = new Address;
+        $address->address = $request->address;
+        $address->client_id = $client->id;
+
+        $address->save();
         
+        $client->address_id = $address->id;
+        $client->save();
+
         Mail::to($client->email)->send(new LoginAuthMail($otp));
 
         return response()->json([
@@ -103,7 +114,7 @@ class ClientController extends Controller
 
         $client->practice_name = $request->practice_name;
         $client->phone = $request->phone;
-        $client->address = $request->address;
+        // $client->address = $request->address;
         $client->password = Hash::make($request->password);
 
         $client->avatar = $request->avatar->move('images', $request->avatar->getClientOriginalName());
@@ -164,4 +175,24 @@ class ClientController extends Controller
     {
         //
     }
+
+    // public function getAddress(Request $request){
+    //     $clients = Client::all();
+    //     // dd($clients);
+    //     // get address from cilent one by one add in address table and add new address id in address column in client
+    //     foreach($clients as $client){
+    //         $address = new Address();
+    //         $address->address = $client->address;
+    //         $address->client_id = $client->id;
+    //         $address->save();
+    //         $client->address_id = $address->id;
+    //         $client->save();
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Address added successfully',
+    //         'status' => 'OK',
+    //         'code' => 200
+    //     ], 200);
+    // }
 }

@@ -41,4 +41,8 @@ class Client extends Model
     public function applications(){
         return $this->hasMany('App\Application');
     }
+
+    public function address(){
+        return $this->hasMany('App\Address');
+    }
 }

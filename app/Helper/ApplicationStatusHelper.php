@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Address;
 use App\Client;
 use App\Job;
 use GuzzleHttp\Psr7\Request;
@@ -105,5 +106,10 @@ class ApplicationStatusHelper
             }
         };
         return $invoiceStatus;
+    }
+
+    public static function getFullClientAddress($address_id){
+        $address = Address::find($address_id);
+        return $address->address;
     }
 }

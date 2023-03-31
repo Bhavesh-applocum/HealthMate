@@ -52,6 +52,8 @@ Route::get('/job/{id}/specific/candidate', 'JobController@specificJob');
 Route::get('/job/{id}/specific/candidate/dashboard', 'JobController@candidateDashboard');
 Route::get('/check/timesheet/{id}','CandidateApplicationController@genaratetimesheet');
 Route::post('/timesheet/approve','ClientApplicationController@approveTimesheet');
+
+Route::post('/get/all/address', 'ClientController@getAddress');
 Route::get('/hello', function () {
     return 'Hello World';
 });

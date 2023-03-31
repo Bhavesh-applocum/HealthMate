@@ -7,7 +7,7 @@ use App\Candidate;
 class CandidateHelper {
     public static function getAvatarFromCandidateId($candidateId){
         $candidate = Candidate::find($candidateId);
-        return $candidate->avatar;
+        return $candidate->avatar ?? "";
     }
     public static function getFullName($can){
         $name = $can->first_name." ".$can->last_name;
@@ -22,6 +22,9 @@ class CandidateHelper {
             }
             else if($f == 'role'){
                 $obj[$f] = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
+            }
+            else if($f == 'avatar'){
+                $obj[$f] = CandidateHelper::getAvatarFromCandidateId($candidate->id);
             }
              else {
                 $obj[$f] = $candidate->$f;

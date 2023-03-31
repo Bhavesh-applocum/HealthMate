@@ -56,7 +56,7 @@ class JobController extends Controller
             $data[$key]['id'] = $value->id;
             $data[$key]['ref_no'] = $value->ref_no;
             $data[$key]['job_title'] = $value->job_title;
-            $data[$key]['job_location'] = $value->client->address;
+            $data[$key]['job_location'] = ApplicationStatusHelper::getFullClientAddress($value->client->address_id);
             $data[$key]['job_salary'] = $value->job_salary;
             $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
             $data[$key]['job_start_time'] = $value->job_start_time;
@@ -104,7 +104,7 @@ class JobController extends Controller
         foreach ($paginatedData['data'] as $key => $job) {
                 $data[$key]['id']           = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
-                $data[$key]['job_location']     = $job->client->address;
+                $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 $data[$key]['job_date']         = $job->job_date;
                 $data[$key]['job_start_time']   = $job->job_start_time;
@@ -152,7 +152,7 @@ class JobController extends Controller
         foreach ($paginatedData['data'] as $key => $job) {
             $data[$key]['id']           = $job->id;
             $data[$key]['job_title']        = $job->job_title;
-            $data[$key]['job_location']     = $job->client->address;
+            $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
             $data[$key]['job_salary']       = $job->job_salary;
             $data[$key]['job_date']         = $job->job_date;
             $data[$key]['job_start_time']   = $job->job_start_time;
@@ -201,7 +201,7 @@ class JobController extends Controller
                 
                 $data['id']           = $job->id;
                 $data['job_title']        = $job->job_title;
-                $data['job_location']     = $job->client->address;
+                $data['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
                 $data['job_salary']       = $job->job_salary;
                 $data['job_start_time']   = $job->job_start_time;
                 $data['job_end_time']     = $job->job_end_time;
@@ -348,7 +348,7 @@ class JobController extends Controller
             // $data['application_ids']     = $applicationsIDS;
             $data['candidates']          = $candidateObj;
             $data['job_description'] = $job->job_description;
-            $data['job_location'] = $job->client->address;
+            $data['job_location'] = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
             $data['job_salary'] = $job->job_salary;
             $data['job_start_time'] = $job->job_start_time;
             $data['job_end_time'] = $job->job_end_time;
