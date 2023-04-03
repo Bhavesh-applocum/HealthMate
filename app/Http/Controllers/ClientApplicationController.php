@@ -12,6 +12,7 @@ use App\Helpers\JobHelper;
 use App\Http\Requests\ApproveRequest;
 use App\Job;
 use App\Timesheet;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ClientApplicationController extends Controller
@@ -56,11 +57,11 @@ class ClientApplicationController extends Controller
                 $dataObj['candidates']          = array_slice($candidateObj, 0, 3);
                 $dataObj['job_title']           = $job->job_title;
                 $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                $dataObj['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                 $dataObj['job_salary']          = $job->job_salary;
                 $dataObj['job_date']            = $job->job_date;
-                $dataObj['job_end_time']        = $job->job_end_time;
-                $dataObj['job_start_time']      = $job->job_start_time;
+                $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+                $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
                 $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
                 $dataObj['total_applications']  = count($job->applications);
                 array_push($data, $dataObj);

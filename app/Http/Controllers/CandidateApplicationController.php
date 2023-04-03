@@ -8,6 +8,7 @@ use App\Helpers\ApplicationStatusHelper;
 use App\Helpers\CustomPaginationHelper;
 use App\Job;
 use App\Timesheet;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CandidateApplicationController extends Controller
@@ -155,21 +156,22 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_title']        = $job->job_title;
                     $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                     $data[$key]['job_date']         = $job->job_date;
-                    $data[$key]['job_start_time']   = $job->job_start_time;
-                    $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                    $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+                    $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+                    $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                     $data[$key]['job_salary']       = $job->job_salary;
             }
         } elseif ($status == 2) {
             foreach ($paginateData['data'] as $key => $application) {
                 $job = Job::with('applications')->find($application->job_id);
-                $data[$key]['id']           = $job->id;
+                $data[$key]['application_id']   =$application->id;
+                $data[$key]['id']               = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
-                $data[$key]['job_description']  = $job->job_description;
+                $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                 $data[$key]['job_date']         = $job->job_date;
-                $data[$key]['job_start_time']   = $job->job_start_time;
-                $data[$key]['job_end_time']     = $job->job_end_time;
-                $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+                $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+                $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 }
             }
@@ -298,9 +300,12 @@ class CandidateApplicationController extends Controller
                 'code' => 400
             ]);
         }
-
-        $job->job_status = 0;
-        $job->save();
+        $ifMultipleApplication = Application::where('job_id',$job->id)->count();
+        // dd($ifMultipleApplication);
+        if($ifMultipleApplication == 1){
+            $job->job_status = 0;
+            $job->save();
+        }
 
         $application->delete();
 

@@ -108,8 +108,13 @@ class ApplicationStatusHelper
         return $invoiceStatus;
     }
 
+    public static function getOnlyArea($address_id){
+        $address = Address::find($address_id);
+        return $address->area;
+    }
+
     public static function getFullClientAddress($address_id){
         $address = Address::find($address_id);
-        return $address->address;
+        return $address->address . ', ' . $address->area . ', ' . $address->post_code;
     }
 }

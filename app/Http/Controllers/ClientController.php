@@ -74,8 +74,10 @@ class ClientController extends Controller
         $client->save();
 
         $address = new Address;
-        $address->address = $request->address;
         $address->client_id = $client->id;
+        $address->address = $request->address;
+        $address->area = $request->area;
+        $address->post_code = $request->post_code;
 
         $address->save();
         

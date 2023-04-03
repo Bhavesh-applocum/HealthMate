@@ -56,11 +56,11 @@ class JobController extends Controller
             $data[$key]['id'] = $value->id;
             $data[$key]['ref_no'] = $value->ref_no;
             $data[$key]['job_title'] = $value->job_title;
-            $data[$key]['job_location'] = ApplicationStatusHelper::getFullClientAddress($value->client->address_id);
+            $data[$key]['job_location'] = ApplicationStatusHelper::getOnlyArea($value->client->address_id);
             $data[$key]['job_salary'] = $value->job_salary;
             $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
-            $data[$key]['job_start_time'] = $value->job_start_time;
-            $data[$key]['job_end_time'] = $value->job_end_time;
+            $data[$key]['job_start_time'] = Carbon::createFromFormat('H:i:s',$value->job_start_time)->format('H:i');
+            $data[$key]['job_end_time'] = Carbon::createFromFormat('H:i:s',$value->job_end_time)->format('H:i');
         }
         if ($jobs) {
             return response()->json([
@@ -88,10 +88,20 @@ class JobController extends Controller
         }
         $today = date('Y,m-d');
         $jobs = Job::with('client','applications')
+                    ->select('jobs.*')
+                    ->leftJoin('applications','applications.job_id',"jobs.id")
                     ->where('job_category', $candidate->role)
-                    ->whereNotIn('jobs.job_status',[1,2,3])
-                    ->where('job_date', '>=', $today);
-
+                    ->whereIn('jobs.job_status',[0,1])
+                    ->whereNotIn('jobs.id', function($query) use($id){
+                        $query->select('job_id')
+                        ->from(with(new Application())->getTable())
+                        ->where(function($q1) use ($id){
+                            $q1->where("status",1)
+                               ->where("candidate_id","=",$id);
+                            });
+                        })
+                    ->whereDate('jobs.job_date','>=',$today)
+                    ->groupBy('jobs.id');
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
@@ -104,11 +114,11 @@ class JobController extends Controller
         foreach ($paginatedData['data'] as $key => $job) {
                 $data[$key]['id']           = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
-                $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 $data[$key]['job_date']         = $job->job_date;
-                $data[$key]['job_start_time']   = $job->job_start_time;
-                $data[$key]['job_end_time']     = $job->job_end_time;
+                $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+                $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         // for particular candidate 
@@ -133,12 +143,26 @@ class JobController extends Controller
                 'code' => 400
             ], 400);
         }
+        
         $today = date('Y-m-d');
         $jobs = Job::with('client','applications')
+                    ->select('jobs.*')
+                    ->leftJoin('applications','applications.job_id',"jobs.id")
                     ->where('job_category', $candidate->role)
-                    ->whereNotIn('jobs.job_status',[1,2,3])
-                    ->whereDate('jobs.job_date','>=',$today);
-        
+                    ->whereIn('jobs.job_status',[0,1])
+                    
+
+                    ->whereNotIn('jobs.id', function($query) use($id){
+                        $query->select('job_id')
+                        ->from(with(new Application())->getTable())
+                        ->where(function($q1) use ($id){
+                            $q1->where("status",1)
+                               ->where("candidate_id","=",$id);
+                            });
+                        })
+                    ->whereDate('jobs.job_date','>=',$today)
+                    ->groupBy('jobs.id')
+                    ->whereNotIn('jobs.job_status',[2,3]);
         $paginatedData = CustomPaginationHelper::mainPage_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
@@ -152,11 +176,11 @@ class JobController extends Controller
         foreach ($paginatedData['data'] as $key => $job) {
             $data[$key]['id']           = $job->id;
             $data[$key]['job_title']        = $job->job_title;
-            $data[$key]['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+            $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
             $data[$key]['job_salary']       = $job->job_salary;
             $data[$key]['job_date']         = $job->job_date;
-            $data[$key]['job_start_time']   = $job->job_start_time;
-            $data[$key]['job_end_time']     = $job->job_end_time;
+            $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+            $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
         // for particular candidate 
@@ -197,14 +221,14 @@ class JobController extends Controller
         // echo "<pre>";
         $data1 = [];
         foreach ($paginatedData['data'] as $key => $job) {
-            if ($job->job_date >= Carbon::now() || $job->job_end_time >= Carbon::now()) {
+            if ($job->job_date >= Carbon::now() || $job->Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i') >= Carbon::now()) {
                 
                 $data['id']           = $job->id;
                 $data['job_title']        = $job->job_title;
-                $data['job_location']     = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+                $data['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                 $data['job_salary']       = $job->job_salary;
-                $data['job_start_time']   = $job->job_start_time;
-                $data['job_end_time']     = $job->job_end_time;
+                $data['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+                $data['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
                 $data['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                 $data1[] = $data;
             }
@@ -303,7 +327,10 @@ class JobController extends Controller
         $job->client_id = $client->id;
         // $job->visits = $request->visits;
         $job->parking = $request->parking;
-        $job->unit = $request->unit;
+        
+        if($request->unit != 0){
+            $job->unit = $request->unit;
+        }
         // $job->meals = $request->meals;
 
         $job->created_at =  now();
@@ -350,11 +377,12 @@ class JobController extends Controller
             $data['job_description'] = $job->job_description;
             $data['job_location'] = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
             $data['job_salary'] = $job->job_salary;
-            $data['job_start_time'] = $job->job_start_time;
-            $data['job_end_time'] = $job->job_end_time;
+            $data['job_start_time'] = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+            $data['job_end_time'] = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
             $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             $data['parking'] = ApplicationStatusHelper::getParkingByName($job->parking);
             $data['unit'] = $job->unit;
+            $data['break_time'] = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');
             // $data['visits'] = $job->visits;
 
             return response()->json([
