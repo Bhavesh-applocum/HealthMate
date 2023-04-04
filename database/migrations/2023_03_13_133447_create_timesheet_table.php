@@ -17,10 +17,10 @@ class CreateTimesheetTable extends Migration
             $table->id();
             $table->bigInteger('candidate_id')->unsigned();
             $table->bigInteger('job_id')->unsigned();
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->time('break_time');
-            $table->integer('status')->default(1);
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->time('break_time')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

@@ -374,15 +374,17 @@ class JobController extends Controller
             $data['job_title'] = $job->job_title;
             // $data['application_ids']     = $applicationsIDS;
             $data['candidates']          = $candidateObj;
-            $data['job_description'] = $job->job_description;
-            $data['job_location'] = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
-            $data['job_salary'] = $job->job_salary;
-            $data['job_start_time'] = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
-            $data['job_end_time'] = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
-            $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-            $data['parking'] = ApplicationStatusHelper::getParkingByName($job->parking);
-            $data['unit'] = $job->unit;
-            $data['break_time'] = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');
+            $data['job_description']     = $job->job_description;
+            $data['job_salary']          = $job->job_salary;
+            $data['unit']                = $job->unit;
+            $data['cordinates']          = ApplicationStatusHelper::getLatitudeAndLongtitude();
+            $data['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->client->address_id);
+            $data['job_date']            = Carbon::createFromFormat('Y-m-d',$job->job_date)->format('d-m-Y');
+            $data['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+            $data['job_end_time']        = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+            $data['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+            $data['parking']             = ApplicationStatusHelper::getParkingByName($job->parking);
+            $data['break_time']          = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');
             // $data['visits'] = $job->visits;
 
             return response()->json([

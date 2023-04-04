@@ -40,6 +40,8 @@ class TimesheetController extends Controller
     {
         $candidate = Candidate::find($request->candidate_id);
         $job = Job::find($request->job_id);
+        $application = Application::find($request->application_id);
+
 
         if (!$candidate) {
             return response()->json([
@@ -56,18 +58,24 @@ class TimesheetController extends Controller
                 'code' => 400
             ], 400);
         }
-
+        if (!$application) {
+            return response()->json([
+                'message' => 'Application not found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
         $timesheet = new Timesheet();
+        $timesheet->application_id = $application->id;
         $timesheet->candidate_id = $candidate->id;
         $timesheet->job_id = $job->id;
-        $timesheet->start_time = $request->start_time;
-        $timesheet->end_time = $request->end_time;
-        $timesheet->break_time = $request->break_time;
+        $timesheet->status = 0;
 
         $timesheet->save();
 
         $timesheet->ref_no = 'TMS-' . ($timesheet->id + 10000);
         $timesheet->save();
+
 
         $application = Application::where(['candidate_id' => $candidate->id, 'job_id' => $job->id])->first();
         $application->timesheet_id = $timesheet->id;
@@ -111,7 +119,19 @@ class TimesheetController extends Controller
      */
     public function update(Request $request, Timesheet $timesheet)
     {
-        //
+
+        $timesheet->start_time = $request->start_time;
+        $timesheet->end_time = $request->end_time;
+        $timesheet->break_time = $request->break_time;
+        $timesheet->status = 1;
+
+        $timesheet->save();
+
+        return response()->json([
+            'message' => 'Timesheet updated successfully',
+            'status' => 'OK',
+            'code' => 200
+        ], 200);
     }
 
     /**

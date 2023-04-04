@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Application;
 use App\Candidate;
 
 class JobHelper {
@@ -43,5 +44,24 @@ class JobHelper {
             array_push($candidates,$obj);
         }
         return $candidates;
+    }
+
+    public static function getCandidateForBookedJobByApplicationID($applicationId){
+        // dd($application);
+        $application = Application::find($applicationId);
+
+        // $candidate = Candidate::find($application->candidate_id);
+        // dd($candidate);
+
+        $obj = [];
+        $obj['id'] = $application->candidate->id;
+        $obj['first_name'] = $application->candidate->first_name;
+        $obj['last_name'] = $application->candidate->last_name;
+        $obj['role'] = ApplicationStatusHelper::getCandidateCategoryByName($application->candidate->role);
+        $obj['avatar'] = $application->candidate->avatar;
+        $obj['application_id'] = $application->id;
+
+        // dd($obj);
+        return $obj;
     }
 }

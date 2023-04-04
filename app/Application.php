@@ -11,10 +11,10 @@ class Application extends Model
     }
 
     public function candidate(){
-        return $this->belongsToMany('App\Candidate');
+        return $this->belongsTo('App\Candidate');
     }
 
-    public function timesheet(){
-        return $this->hasOne('App\Timesheet');
+    public function timesheets(){
+        return $this->hasOne('App\Timesheet','id');
     }
 }

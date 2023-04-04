@@ -117,4 +117,13 @@ class ApplicationStatusHelper
         $address = Address::find($address_id);
         return $address->address . ', ' . $address->area . ', ' . $address->post_code;
     }
+
+    public static function getLatitudeAndLongtitude(){
+        $address = config('constant.LatLong')[rand(0,count(config('constant.LatLong')))];
+        $addressArr = explode(',',$address);
+        $data = [];
+        $data['Latitude'] = (Double)$addressArr[0];
+        $data['Longtitude'] = (Double)$addressArr[1];
+        return $data;
+    }
 }

@@ -124,12 +124,17 @@ class AddressController extends Controller
      */
     public function destroy(Address $address)
     {
-        $totalAddressCount = Address::count();
         $address = Address::findOrFail($address);
+        $deleteAddressId = $address->id;
+        $client_id = $address->client_id;
         $address->delete();
-
-        if($totalAddressCount == 2){
-            // $
+        $totalAddressCount = Address::where('client_id',$client_id)->count();
+        $client = Client::findOrFail($client_id);
+        $isDeletedDefault = $client->address_id == $deleteAddressId;
+        if($totalAddressCount != 0 && !$isDeletedDefault){
+            $lastAddress = Address::where('client_id',$client_id)->first();
+            $client->address_id = $lastAddress->id;
+            $client->save();
         }
 
         return response()->json([

@@ -29,7 +29,7 @@ class ClientApplicationController extends Controller
 
     public function statusforclient(Request $request)
     {
-        $client = Client::with('jobs','address')->find($request->id);
+        $client = Client::with('jobs', 'address')->find($request->id);
         // dd($client);
         $status = $request->status;
         $jobs = Job::with('applications', 'client')->where(['client_id' => $client->id, 'job_status' => $status]);
@@ -60,13 +60,63 @@ class ClientApplicationController extends Controller
                 $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
                 $dataObj['job_salary']          = $job->job_salary;
                 $dataObj['job_date']            = $job->job_date;
-                $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
-                $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+                $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i');
+                $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i');
                 $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
                 $dataObj['total_applications']  = count($job->applications);
                 array_push($data, $dataObj);
             }
+        } else if ($status == 2) {
+            foreach ($paginateData['data'] as $key => $job) {
+                $dataObj = [];
+                $candidateID = $job->applications;
+                foreach ($candidateID as $IDForCan) {
+                    $candidateID = $IDForCan->candidate_id;
+                }
+            
+                $application = Application::with('candidate', 'job')->where(['status' => 2, 'candidate_id' => $candidateID])->first();
+                if ($application) {
+                    $can = JobHelper::getCandidateForBookedJobByApplicationID($application->id);
+                    $candidateObj = [];
+
+                    $canData = CandidateHelper::getCandidateField($can['id'], ['avatar']);
+                    $candidateObj['candidate_id'] = $can['id'];
+                    $candidateObj['application_id'] = $can['application_id'];
+                    $candidateObj['avatar'] = $canData['avatar'] ?? '';
+
+
+                    $dataObj['id']                  = $job->id;
+                    $dataObj['candidate']           = $candidateObj;
+                    $dataObj['job_title']           = $job->job_title;
+                    $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                    $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
+                    $dataObj['Job_status']          = ApplicationStatusHelper::getTimesheetStatusByStatus($application->status);
+                    $dataObj['job_salary']          = $job->job_salary;
+                    $dataObj['job_date']            = $job->job_date;
+                    $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i');
+                    $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i');
+
+                    // $timesheet = Application::with('timesheets')->first();
+                    // dd($timesheet);
+                    // foreach($application as $checkTime){
+                    //     $checkApplication = $checkTime->timesheet_id;
+                    // }
+                    // dd($checkApplication);
+                    // foreach($checkApplication as $time){
+                    //     $dataObj['timesheet_id'] = $time->timesheet_id;
+                    // }
+                    // dd($dataObj);
+                    // if($checkApplication == null){
+                    //     $dataObj['Job_status']          = ApplicationStatusHelper::getApplicationStatusByName($application->status);
+                    // }
+                    // else{
+                    //     $dataObj['Job_status']          = ApplicationStatusHelper::getTimesheetStatusByStatus($application->status);
+                    // }
+                    array_push($data, $dataObj);
+                }
+            }
         }
+        // dd($data);
         return response()->json([
             'message' => 'Perfect',
             'sucess' => true,
@@ -330,7 +380,7 @@ class ClientApplicationController extends Controller
     public function BookingCandidate($id)
     {
         $job = Job::with('applications')->with('timesheets')->find($id);
-        // dd($job);
+        dd($job);
 
         if (!$job) {
             return response()->json([
