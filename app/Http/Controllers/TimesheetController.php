@@ -37,10 +37,13 @@ class TimesheetController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $candidate = Candidate::find($request->candidate_id);
-        $job = Job::find($request->job_id);
-        $application = Application::find($request->application_id);
+    {   
+        $candidate = $request->candidate_id;
+        $job = $request->job_id;
+        $application = $request->application_id;
+        $Maincandidate = Candidate::find($candidate);
+        $Mainjob = Job::find($job);
+        $Mainapplication = Application::find($application);
 
 
         if (!$candidate) {
@@ -66,9 +69,9 @@ class TimesheetController extends Controller
             ], 400);
         }
         $timesheet = new Timesheet();
-        $timesheet->application_id = $application->id;
-        $timesheet->candidate_id = $candidate->id;
-        $timesheet->job_id = $job->id;
+        $timesheet->application_id = $Mainapplication;
+        $timesheet->candidate_id = $Maincandidate;
+        $timesheet->job_id = $Mainjob;
         $timesheet->status = 0;
 
         $timesheet->save();

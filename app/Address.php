@@ -15,4 +15,9 @@ class Address extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function job()
+    {
+        return $this->belongsTo(Job::class);
+    }
 }

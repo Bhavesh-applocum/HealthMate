@@ -57,7 +57,7 @@ class ClientApplicationController extends Controller
                 $dataObj['candidates']          = array_slice($candidateObj, 0, 3);
                 $dataObj['job_title']           = $job->job_title;
                 $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
+                $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $dataObj['job_salary']          = $job->job_salary;
                 $dataObj['job_date']            = $job->job_date;
                 $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i');
@@ -89,7 +89,7 @@ class ClientApplicationController extends Controller
                     $dataObj['candidate']           = $candidateObj;
                     $dataObj['job_title']           = $job->job_title;
                     $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                    $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
+                    $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->address_id);
                     $dataObj['Job_status']          = ApplicationStatusHelper::getTimesheetStatusByStatus($application->status);
                     $dataObj['job_salary']          = $job->job_salary;
                     $dataObj['job_date']            = $job->job_date;

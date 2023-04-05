@@ -1,6 +1,7 @@
 <?php
 
 use App\Client;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,12 @@ Route::post('/client/editprofile', 'ClientController@profileedit');
 Route::resource('job', JobController::class);
 Route::get('/job/index/all', 'JobController@findJobs');
 Route::resource('timesheet', TimesheetController::class);
+Route::get('/address/{id}/index', 'AddressController@index');
+Route::post('/address/store', 'AddressController@store');
+Route::post('/setas/default', 'AddressController@isDefault');
+Route::post('/address/update', 'AddressController@update');
+Route::delete('/address/{id}/delete', 'AddressController@destroy');
+Route::get('/edit/{id}/address', 'AddressController@edit');
 
 Route::resource('application', CandidateApplicationController::class);
 Route::resource('client/application', ClientApplicationController::class);

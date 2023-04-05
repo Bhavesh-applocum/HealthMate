@@ -37,7 +37,7 @@ class ClientController extends Controller
     {
 
         $client = Client::with('address')->where('email', $request->email)->get();
-        dd($client);
+        // dd($client);
 
         if(sizeof($client) > 0) {
             return response()->json([
@@ -65,11 +65,6 @@ class ClientController extends Controller
         $client->password = Hash::make($request->password);
         $client->created_at = now();
         $client->updated_at = now();
-
-        $otp = rand(1000,9999);
-        $otp_expire = now()->addMinutes(5);
-        $client->Login_otp = $otp;
-        $client->Login_otp_expire = $otp_expire;
                 
         $client->save();
 
@@ -82,8 +77,14 @@ class ClientController extends Controller
         $address->save();
         
         $client->address_id = $address->id;
+        
+        $otp = rand(1000,9999);
+        $otp_expire = now()->addMinutes(5);
+        $client->Login_otp = $otp;
+        $client->Login_otp_expire = $otp_expire;
+        
         $client->save();
-
+        
         Mail::to($client->email)->send(new LoginAuthMail($otp));
 
         return response()->json([

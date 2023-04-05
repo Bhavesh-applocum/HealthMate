@@ -38,4 +38,8 @@ class Job extends Model
     public function candidates(){
         return $this->belongsToMany('App\Candidate');
     }
+
+    public function address(){
+        return $this->hasMany('App\Address');
+    }
 }

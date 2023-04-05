@@ -32,7 +32,7 @@ class ClientRequest extends FormRequest
             'email' => 'required|email',
             'avatar' => 'mimes:jpg,png,jpeg,svg,webp',
             'phone' => 'required|numeric|digits:10',
-            'address' => 'required',
+            // 'address' => 'required',
             'password' => [
                 'required',
                 'string',

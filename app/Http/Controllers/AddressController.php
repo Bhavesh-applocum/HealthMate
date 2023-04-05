@@ -15,10 +15,35 @@ class AddressController extends Controller
      */
     public function index($id)
     {
-        $address = Address::where('client_id', $id)->all();
+        $address = Address::with('client')->where('client_id', $id)->get();
+        // $client = Client::with('address')->where('id', $id)->get();
 
+        // address count
+        if (sizeof($address) > 0){
         return response()->json([
-            'address' => $address
+            'address' => $address,
+        ], 200);
+        }else{
+            return response()->json([
+                'message' => 'No address found',
+                'status' => 'Bad Request',
+                'code' => 400
+            ], 400);
+        }
+    }
+
+    public function isDefault(Request $request){
+        $id = $request->client_id;
+        $client = Client::with('address')->where('id', $id)->get();
+
+        if ($request->is_default == true){
+            $client = Client::findOrFail($id);
+            $client->address_id = $request->address_id;
+            $client->save();
+            }
+        return response()->json([
+            'status' => 'success',
+            'code' => 200
         ], 200);
     }
 
@@ -49,16 +74,18 @@ class AddressController extends Controller
 
         $address->save();
 
-        if($request->is_default){
+        if($request->is_default == true){
             $client = Client::findOrFail($id);
             $client->address_id = $address->id;
             $client->save();
         }
 
         return response()->json([
+            'status' => 'success',
+            'code'   => 200,
             'message' => 'Address created successfully',
             'address' => $address
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -78,9 +105,9 @@ class AddressController extends Controller
      * @param  \App\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function edit(Address $address)
+    public function edit($id)
     {
-        $address = Address::findOrFail($address);
+        $address = Address::with('client')->findOrFail($id);
         return response()->json([
             'address' => $address
         ], 200);
@@ -93,8 +120,9 @@ class AddressController extends Controller
      * @param  \App\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Address $address)
+    public function update(Request $request)
     {
+        $address = $request->address_id;
         $address = Address::findOrFail($address);
 
         $address->address = $request->address;
@@ -103,15 +131,9 @@ class AddressController extends Controller
 
         $address->save();
 
-        if($request->is_default)
-        {
-            $client = Client::findOrFail($request->client_id);
-            $client->address_id = $address->id;
-            $client->save();
-        }
-
         return response()->json([
             'message' => 'Address updated successfully',
+            'code'    => 200,
             'address' => $address
         ], 200);
     }
@@ -122,23 +144,28 @@ class AddressController extends Controller
      * @param  \App\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Address $address)
+    public function destroy($address)
     {
         $address = Address::findOrFail($address);
         $deleteAddressId = $address->id;
+
         $client_id = $address->client_id;
-        $address->delete();
-        $totalAddressCount = Address::where('client_id',$client_id)->count();
         $client = Client::findOrFail($client_id);
+        
+        
+        $totalAddressCount = Address::where('client_id',$client_id)->count();
         $isDeletedDefault = $client->address_id == $deleteAddressId;
-        if($totalAddressCount != 0 && !$isDeletedDefault){
+        
+        if($totalAddressCount != 0 && $isDeletedDefault){
             $lastAddress = Address::where('client_id',$client_id)->first();
             $client->address_id = $lastAddress->id;
             $client->save();
         }
-
+        $address->delete();
+        
         return response()->json([
             'message' => 'Address deleted successfully',
+            'code'    => 200,
             'address' => $address
         ], 200);
     }

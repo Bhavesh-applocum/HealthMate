@@ -158,7 +158,7 @@ class CandidateApplicationController extends Controller
                     $data[$key]['job_date']         = $job->job_date;
                     $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
                     $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
-                    $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
+                    $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
                     $data[$key]['job_salary']       = $job->job_salary;
             }
         } elseif ($status == 2) {
@@ -171,7 +171,7 @@ class CandidateApplicationController extends Controller
                 $data[$key]['job_date']         = $job->job_date;
                 $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
                 $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
-                $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->client->address_id);
+                $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 }
             }

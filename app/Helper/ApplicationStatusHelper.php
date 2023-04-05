@@ -115,7 +115,10 @@ class ApplicationStatusHelper
 
     public static function getFullClientAddress($address_id){
         $address = Address::find($address_id);
-        return $address->address . ', ' . $address->area . ', ' . $address->post_code;
+        // dd($address);
+        $fullAdd =  $address->address . ', ' . $address->area . '- ' . $address->post_code;
+        // dd($fullAdd);
+        return $fullAdd;
     }
 
     public static function getLatitudeAndLongtitude(){
