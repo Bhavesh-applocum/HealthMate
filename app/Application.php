@@ -15,6 +15,6 @@ class Application extends Model
     }
 
     public function timesheets(){
-        return $this->hasOne('App\Timesheet','id');
+        return $this->hasOne('App\Timesheet');
     }
 }

@@ -15,7 +15,7 @@ class AddressController extends Controller
      */
     public function index($id)
     {
-        $address = Address::with('client')->where('client_id', $id)->get();
+        $address = Address::with('client')->where('client_id', $id)->orderBy('id','desc')->get();
         // $client = Client::with('address')->where('id', $id)->get();
 
         // address count

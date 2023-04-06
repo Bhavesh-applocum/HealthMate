@@ -60,8 +60,8 @@ class JobController extends Controller
             $data[$key]['job_location'] = ApplicationStatusHelper::getOnlyArea($value->address_id);
             $data[$key]['job_salary'] = $value->job_salary;
             $data[$key]['job_category'] = ApplicationStatusHelper::getJobCategoryByName($value->job_category);
-            $data[$key]['job_start_time'] = Carbon::createFromFormat('H:i:s',$value->job_start_time)->format('H:i');
-            $data[$key]['job_end_time'] = Carbon::createFromFormat('H:i:s',$value->job_end_time)->format('H:i');
+            $data[$key]['job_start_time'] = Carbon::createFromFormat('H:i:s',$value->job_start_time)->format('H:i A');
+            $data[$key]['job_end_time'] = Carbon::createFromFormat('H:i:s',$value->job_end_time)->format('H:i A');
         }
         if ($jobs) {
             return response()->json([
@@ -119,8 +119,8 @@ class JobController extends Controller
                 $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 $data[$key]['job_date']         = $job->job_date;
-                $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
-                $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+                $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
+                $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             }
         // for particular candidate 
@@ -181,8 +181,8 @@ class JobController extends Controller
             $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
             $data[$key]['job_salary']       = $job->job_salary;
             $data[$key]['job_date']         = $job->job_date;
-            $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
-            $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+            $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
+            $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
         // for particular candidate 
@@ -223,14 +223,14 @@ class JobController extends Controller
         // echo "<pre>";
         $data1 = [];
         foreach ($paginatedData['data'] as $key => $job) {
-            if ($job->job_date >= Carbon::now() || $job->Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i') >= Carbon::now()) {
+            if ($job->job_date >= Carbon::now() || $job->job_end_time >= Carbon::now()) {
                 
                 $data['id']               = $job->id;
                 $data['job_title']        = $job->job_title;
                 $data['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $data['job_salary']       = $job->job_salary;
-                $data['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
-                $data['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
+                $data['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
+                $data['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
                 $data['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                 $data1[] = $data;
             }
@@ -361,7 +361,8 @@ class JobController extends Controller
      */
     public function show($id)
     {
-        $job = Job::where('id', $id)->with('client')->first();
+        $job = Job::where('id', $id)->with('client','timesheets')->first();
+        // dd($job);
         if ($job) {
             $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
             // dd($applicationsIDS);
@@ -383,8 +384,10 @@ class JobController extends Controller
             $data['cordinates']          = ApplicationStatusHelper::getLatitudeAndLongtitude();
             $data['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->address_id);
             $data['job_date']            = Carbon::createFromFormat('Y-m-d',$job->job_date)->format('d-m-Y');
-            $data['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i');
-            $data['job_end_time']        = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i');
+            // $data['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
+            $data['job_start_time']      = date("H:i",strtotime($job->job_start_time));
+            $data['job_end_time']        = date("H:i",strtotime($job->job_end_time));
+            $data['timesheet_status']    = (isset($job->timesheets) && isset($job->timesheets->status)) ? ApplicationStatusHelper::getTimesheetStatusByStatus($job->timesheets->status) : 'Not Started'; 
             $data['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             $data['parking']             = ApplicationStatusHelper::getParkingByName($job->parking);
             $data['break_time']          = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');

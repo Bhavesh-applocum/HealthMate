@@ -41,12 +41,13 @@ class TimesheetController extends Controller
         $candidate = $request->candidate_id;
         $job = $request->job_id;
         $application = $request->application_id;
+
         $Maincandidate = Candidate::find($candidate);
         $Mainjob = Job::find($job);
         $Mainapplication = Application::find($application);
 
 
-        if (!$candidate) {
+        if (!$Maincandidate) {
             return response()->json([
                 'message' => 'Candidate not found',
                 'status' => 'Bad Request',
@@ -54,14 +55,14 @@ class TimesheetController extends Controller
             ], 400);
         }
 
-        if (!$job) {
+        if (!$Mainjob) {
             return response()->json([
                 'message' => 'Job not found',
                 'status' => 'Bad Request',
                 'code' => 400
             ], 400);
         }
-        if (!$application) {
+        if (!$Mainapplication) {
             return response()->json([
                 'message' => 'Application not found',
                 'status' => 'Bad Request',
@@ -69,20 +70,20 @@ class TimesheetController extends Controller
             ], 400);
         }
         $timesheet = new Timesheet();
-        $timesheet->application_id = $Mainapplication;
-        $timesheet->candidate_id = $Maincandidate;
-        $timesheet->job_id = $Mainjob;
+        $timesheet->application_id = $application;
+        $timesheet->candidate_id = $candidate;
+        $timesheet->job_id = $job;
         $timesheet->status = 0;
 
         $timesheet->save();
-
         $timesheet->ref_no = 'TMS-' . ($timesheet->id + 10000);
         $timesheet->save();
 
-
-        $application = Application::where(['candidate_id' => $candidate->id, 'job_id' => $job->id])->first();
+        $application = Application::where(['candidate_id' => $candidate, 'job_id' => $job])->first();
         $application->timesheet_id = $timesheet->id;
         $application->save();
+        
+
 
         return response()->json([
             'message' => 'Timesheet created successfully',
@@ -120,8 +121,11 @@ class TimesheetController extends Controller
      * @param  \App\Timesheet  $timesheet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Timesheet $timesheet)
+    public function update(Request $request,$id)
     {
+        // $id = $request->timesheet_id;
+        $timesheet = Timesheet::with('job','application')->find($id);
+        // dd($timesheet);
 
         $timesheet->start_time = $request->start_time;
         $timesheet->end_time = $request->end_time;
@@ -130,6 +134,11 @@ class TimesheetController extends Controller
 
         $timesheet->save();
 
+        $timesheet->job->job_status = 3;
+        $timesheet->job->save();
+        $timesheet->application->status = 3;
+        $timesheet->application->save();
+        
         return response()->json([
             'message' => 'Timesheet updated successfully',
             'status' => 'OK',

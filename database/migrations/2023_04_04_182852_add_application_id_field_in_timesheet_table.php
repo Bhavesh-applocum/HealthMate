@@ -15,7 +15,7 @@ class AddApplicationIdFieldInTimesheetTable extends Migration
     {
         Schema::table('timesheets', function (Blueprint $table) {
             $table->bigInteger('application_id')->unsigned()->nullable()->after('ref_no');
-            $table->foreign('application_id')->references('id')->on('applications')->onDelete('cascade');
+            // $table->foreign('application_id')->references('id')->on('applications')->onDelete('cascade');
         });
     }
 

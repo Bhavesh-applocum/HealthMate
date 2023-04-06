@@ -60,21 +60,34 @@ class ClientApplicationController extends Controller
                 $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $dataObj['job_salary']          = $job->job_salary;
                 $dataObj['job_date']            = $job->job_date;
-                $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i');
-                $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i');
+                $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
+                $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
                 $dataObj['extra_count']         = count($job->applications) > 3 ? count($job->applications) - 3 : 0;
                 $dataObj['total_applications']  = count($job->applications);
                 array_push($data, $dataObj);
             }
         } else if ($status == 2) {
+            // dd($status);
             foreach ($paginateData['data'] as $key => $job) {
+                // dd($job);
                 $dataObj = [];
-                $candidateID = $job->applications;
-                foreach ($candidateID as $IDForCan) {
-                    $candidateID = $IDForCan->candidate_id;
+                $all_applications = $job->applications;
+                $candidateID = [];
+                foreach ($all_applications as $IDForCan) {
+                    $candidateID[] = $IDForCan->candidate_id;
                 }
-            
-                $application = Application::with('candidate', 'job')->where(['status' => 2, 'candidate_id' => $candidateID])->first();
+                $application = Application::with('job','candidate','timesheets')
+                                            ->where(['job_id'=>$job->id,'status'=>2])
+                                            ->first();
+
+
+
+                // $timesheet = $application->timesheet_id;
+                //dd($application->toArray());
+                
+                $TMSstatus = ($application != "" && isset($application->timesheets)) ? $application->timesheets->status : "";
+                
+                // dd($candidateID);
                 if ($application) {
                     $can = JobHelper::getCandidateForBookedJobByApplicationID($application->id);
                     $candidateObj = [];
@@ -84,17 +97,16 @@ class ClientApplicationController extends Controller
                     $candidateObj['application_id'] = $can['application_id'];
                     $candidateObj['avatar'] = $canData['avatar'] ?? '';
 
-
                     $dataObj['id']                  = $job->id;
                     $dataObj['candidate']           = $candidateObj;
                     $dataObj['job_title']           = $job->job_title;
                     $dataObj['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                     $dataObj['job_location']        = ApplicationStatusHelper::getOnlyArea($job->address_id);
-                    $dataObj['Job_status']          = ApplicationStatusHelper::getTimesheetStatusByStatus($application->status);
+                    $dataObj['Job_status']          = ApplicationStatusHelper::getTimesheetStatusByStatus($TMSstatus);
                     $dataObj['job_salary']          = $job->job_salary;
                     $dataObj['job_date']            = $job->job_date;
-                    $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i');
-                    $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i');
+                    $dataObj['job_end_time']        = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
+                    $dataObj['job_start_time']      = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
 
                     // $timesheet = Application::with('timesheets')->first();
                     // dd($timesheet);

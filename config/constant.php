@@ -52,7 +52,7 @@ return [
     ],
 
     'Timesheet_status_client' => [
-        0 => 'Booked', //client side  (After booking candidate default status is booked )
+        0 => 'Assigned', //client side  (After booking candidate default status is booked )
         1 => 'Pending', //client side (After booking candidate default status is booked and if candidate click on sign off button then after status is changed to pending)
         2 => 'Dispute', //client side (After booking candidate default status is booked and if candidate click on sign off button then after status is changed to pending)
     ],
