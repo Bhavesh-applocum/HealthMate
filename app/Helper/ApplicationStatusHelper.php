@@ -93,7 +93,7 @@ class ApplicationStatusHelper
         return $afterStatus;
     }
 
-    public static function getAfterWorkingStatusByName($id)
+    public static function getAfterWorkingStatusForCandidateByName($id)
     {
         $allPaymentStatus = config('constant.Working_status_candidate');
         $paymentStatus = '';
@@ -109,7 +109,7 @@ class ApplicationStatusHelper
     {
         $allInvoiceStatus = config('constant.Invoice_status');
         $invoiceStatus = '';
-        for ($i = 0; $i <= count($allInvoiceStatus); $i++) {
+        for ($i = 1; $i <= count($allInvoiceStatus); $i++) {
             if ($id == $i) {
                 $invoiceStatus = $allInvoiceStatus[$i];
             }

@@ -3,22 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
 
-class Timesheet extends Model
+class Invoice extends Model
 {
     protected $fillable = [
-        'candidate_id',
+        'client_id',
         'job_id',
-        'start_time',
-        'end_time',
-        'break_time',
+        'timesheet_id',
+        'amount',
         'status'
     ];
 
-    public function candidate()
+    public function client()
     {
-        return $this->belongsTo('App\Candidate');
+        return $this->belongsTo('App\Client');
     }
 
     public function job()
@@ -26,13 +24,18 @@ class Timesheet extends Model
         return $this->belongsTo('App\Job');
     }
 
+    public function timesheet()
+    {
+        return $this->belongsTo('App\Timesheet');
+    }
+
     public function application()
     {
         return $this->belongsTo('App\Application');
     }
 
-    public function invoice()
+    public function candidate()
     {
-        return $this->hasOne('App\Invoice');
+        return $this->belongsTo('App\Candidate');
     }
 }

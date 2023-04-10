@@ -15,6 +15,8 @@ class CandidateHelper {
     }
     public static function getCandidateField($candidateId,$field){
         $candidate = Candidate::find($candidateId);
+
+        if($candidateId){
         $obj = [];
         foreach($field as $f){
             if($f == 'full_name'){
@@ -31,5 +33,9 @@ class CandidateHelper {
             }
         }
         return $obj;
+        }
+        else{
+            return [];
+        }
     }
 }

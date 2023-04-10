@@ -51,7 +51,8 @@ class CandidateApplicationController extends Controller
             ], 400);
         }
 
-        $job = Job::find($request->job_id);
+        $job = Job::with('client')->find($request->job_id);
+        // dd($job);
 
         if (!$job) {
             return response()->json([
@@ -75,6 +76,7 @@ class CandidateApplicationController extends Controller
         $application->job_id = $job->id;
         $application->status = 1;
         $job->job_status = 1;
+        $job->clientJobWorkingStatus = 1;
 
         $application->save();
         $job->save();
@@ -131,7 +133,8 @@ class CandidateApplicationController extends Controller
         $candidateId = $request->candidate_id;
         $status = $request->status;
     
-        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status]);
+        $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status])->with('candidate');
+        // dd($candidateApplication->candidate);
         $paginateData = CustomPaginationHelper::paginate_data($candidateApplication, request()->query('page') ?? 1);
         if (count($paginateData['data']) == 0) {
             return response()->json([
@@ -155,7 +158,7 @@ class CandidateApplicationController extends Controller
                     $data[$key]['id']               = $job->id;
                     $data[$key]['job_title']        = $job->job_title;
                     $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                    $data[$key]['job_date']         = $job->job_date;
+                    $data[$key]['job_date']         = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
                     $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
                     $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
                     $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
@@ -168,37 +171,27 @@ class CandidateApplicationController extends Controller
                 $data[$key]['id']               = $job->id;
                 $data[$key]['job_title']        = $job->job_title;
                 $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-                $data[$key]['job_date']         = $job->job_date;
+                $data[$key]['job_date']         = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
                 $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
                 $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
                 $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
                 $data[$key]['job_salary']       = $job->job_salary;
                 }
             }
-         elseif ($status == 3) {
-            // dd($candidateApplication);
-            foreach ($candidateApplication as $key => $application) {
-
-                $isBookedExistsForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 2])->exists();
-                $isAppliedForThisJob = Application::where(['job_id' => $application->job_id, 'status' => 1])->exists();
-
-                $ApplicationTimesheet = Timesheet::where('id',$application->timesheet_id)->first();
-                // dd($ApplicationTimesheet);
-                if (!$isBookedExistsForThisJob || !$isAppliedForThisJob) {
-                    $job = Job::with('applications')->find($application->job_id);
-                    $data[$key]['job_id']           = $job->id;
-                    $data[$key]['job_title']        = $job->job_title;
-                    $data[$key]['job_description']  = $job->job_description;
-                    $data[$key]['job_start_date']   = $job->job_start_date;
-                    $data[$key]['job_start_time']   = $job->job_start_time;
-                    $data[$key]['job_end_date']     = $job->job_end_date;
-                    $data[$key]['job_end_time']     = $job->job_end_time;
-                    $data[$key]['job_location']     = $job->job_location;
-                    $data[$key]['job_status']       = $job->job_status;
-                    $data[$key]['job_created_at']   = $job->created_at;
-                    $data[$key]['Payment_status']   = ApplicationStatusHelper::getAfterWorkingStatusByName($ApplicationTimesheet->status);
-
-                }
+            elseif ($status == 3) {
+            //  dd($candidateApplication->candidate);
+             foreach ($paginateData['data'] as $key => $application) {
+                $job = Job::with('applications','invoices')->find($application->job_id);
+                $data[$key]['application_id']   = $application->id;
+                $data[$key]['id']               = $job->id;
+                $data[$key]['job_title']        = $job->job_title;
+                $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+                $data[$key]['job_date']         = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
+                $data[$key]['job_start_time']   = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
+                $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s',$job->job_end_time)->format('H:i A');
+                $data[$key]['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
+                $data[$key]['working_status']   = isset($application->candidate->working_status) ? ApplicationStatusHelper::getAfterWorkingStatusForCandidateByName($application->candidate->working_status) : '';
+                $data[$key]['job_salary']       = $job->job_salary;
             }
         }
         // dd($data);

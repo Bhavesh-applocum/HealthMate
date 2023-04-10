@@ -109,9 +109,15 @@ class TimesheetController extends Controller
      * @param  \App\Timesheet  $timesheet
      * @return \Illuminate\Http\Response
      */
-    public function edit(Timesheet $timesheet)
+    public function edit($id)
     {
-        //
+        $timesheet = Timesheet::with('job','application','candidate')->find($id);
+        // dd($timesheet);
+        return response()->json([
+            'timesheet' => $timesheet,
+            'status' => 'OK',
+            'code' => 200
+        ], 200);
     }
 
     /**
@@ -124,8 +130,11 @@ class TimesheetController extends Controller
     public function update(Request $request,$id)
     {
         // $id = $request->timesheet_id;
-        $timesheet = Timesheet::with('job','application')->find($id);
+        $timesheet = Timesheet::with('job','application','candidate')->find($id);
         // dd($timesheet);
+
+        $timesheet->candidate->working_status = 1;
+        $timesheet->candidate->save();
 
         $timesheet->start_time = $request->start_time;
         $timesheet->end_time = $request->end_time;
@@ -135,12 +144,13 @@ class TimesheetController extends Controller
         $timesheet->save();
 
         $timesheet->job->job_status = 3;
+        $timesheet->job->unit = $request->units;
         $timesheet->job->save();
         $timesheet->application->status = 3;
         $timesheet->application->save();
         
         return response()->json([
-            'message' => 'Timesheet updated successfully',
+            'message' => 'Work Completed',
             'status' => 'OK',
             'code' => 200
         ], 200);

@@ -35,12 +35,14 @@ class Candidate extends Model
     }
 
     public function timesheets(){
-        return $this->hasMany('App\Timesheet');
+        return $this->hasOne('App\Timesheet');
     }
 
     public function jobs(){
-        return $this->belongsToMany('App\Job');
+        return $this->hasMany('App\Job');
     }
 
-
+    public function invoices(){
+        return $this->hasOne('App\Invoice');
+    }
 }

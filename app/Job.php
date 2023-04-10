@@ -11,6 +11,7 @@ class Job extends Model
         'job_title',
         'client_id',
         'job_description',
+        'clientJobWorkingStatus',
         'job_status',
         'job_type',
         'job_category',
@@ -41,5 +42,9 @@ class Job extends Model
 
     public function address(){
         return $this->hasMany('App\Address');
+    }
+
+    public function invoices(){
+        return $this->hasMany('App\Invoice');
     }
 }

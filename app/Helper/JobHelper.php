@@ -47,9 +47,9 @@ class JobHelper {
     }
 
     public static function getCandidateForBookedJobByApplicationID($applicationId){
-        // dd($application);
+        // dd($applicationId);
         $application = Application::find($applicationId);
-
+        // dd($application);
         // $candidate = Candidate::find($application->candidate_id);
         // dd($candidate);
 
@@ -63,5 +63,48 @@ class JobHelper {
 
         // dd($obj);
         return $obj;
+    }
+
+    public static function getBookedCandidateToTheJob($job){
+        $application = Application::where(['job_id'=>$job->id, 'status'=>2, 'status' => 3])->first();
+        $canObj = [];
+        if($application){
+            $candidate = Candidate::find($application->candidate_id);
+            $obj = [];
+            $obj['id'] = $candidate->id;
+            $obj['first_name'] = $candidate->first_name;
+            $obj['last_name'] = $candidate->last_name;
+            $obj['role'] = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
+            $obj['avatar'] = $candidate->avatar;
+            $obj['application_id'] = $application->id;
+            array_push($canObj,$obj);
+            return $canObj;
+            // dd($obj);
+            // dd($obj);
+        }
+        else{
+            return null;
+        }
+    }
+    public static function getWorkedCandidateToTheJob($job){
+        $application = Application::where(['job_id'=>$job->id, 'status'=>3])->first();
+        $canObj = [];
+        if($application){
+            $candidate = Candidate::find($application->candidate_id);
+            $obj = [];
+            $obj['id'] = $candidate->id;
+            $obj['first_name'] = $candidate->first_name;
+            $obj['last_name'] = $candidate->last_name;
+            $obj['role'] = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
+            $obj['avatar'] = $candidate->avatar;
+            $obj['application_id'] = $application->id;
+            array_push($canObj,$obj);
+            return $canObj;
+            // dd($obj);
+            // dd($obj);
+        }
+        else{
+            return null;
+        }
     }
 }
