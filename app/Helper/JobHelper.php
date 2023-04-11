@@ -66,7 +66,7 @@ class JobHelper {
     }
 
     public static function getBookedCandidateToTheJob($job){
-        $application = Application::where(['job_id'=>$job->id, 'status'=>2, 'status' => 3])->first();
+        $application = Application::where(['job_id'=>$job->id])->whereIn('status',[2,3])->first();
         $canObj = [];
         if($application){
             $candidate = Candidate::find($application->candidate_id);

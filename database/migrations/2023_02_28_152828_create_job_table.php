@@ -18,7 +18,7 @@ class CreateJobTable extends Migration
             $table->string('ref_no')->unique()->nullable();
             $table->string('job_title');
             $table->integer('client_id')->unsigned();
-            $table->string('job_description');
+            $table->longText('job_description');
             // $table->integer('job_type')->unsigned();
             $table->integer('job_category')->unsigned();
             // $table->string('job_location');

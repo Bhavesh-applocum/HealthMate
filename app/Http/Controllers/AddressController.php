@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Client;
+use App\Job;
 use Illuminate\Http\Request;
 
 class AddressController extends Controller
@@ -151,15 +152,22 @@ class AddressController extends Controller
 
         $client_id = $address->client_id;
         $client = Client::findOrFail($client_id);
-        
-        
+        $jobs = Job::where('client_id',$client_id)->get();
         $totalAddressCount = Address::where('client_id',$client_id)->count();
         $isDeletedDefault = $client->address_id == $deleteAddressId;
+        $jobHasDeletedAddress = Job::where('address_id',$deleteAddressId)->count();
         
         if($totalAddressCount != 0 && $isDeletedDefault){
             $lastAddress = Address::where('client_id',$client_id)->first();
             $client->address_id = $lastAddress->id;
             $client->save();
+        }
+        if($jobHasDeletedAddress != 0){
+            $lastAddress = Address::where('client_id',$client_id)->first();
+            foreach($jobs as $job){
+                $job->address_id = $lastAddress->id;
+                $job->save();
+            }   
         }
         $address->delete();
         

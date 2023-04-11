@@ -13,6 +13,7 @@ use App\Helpers\JobHelper;
 use App\Http\Requests\JobListRequest;
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\JobUpdateRequest;
+use App\Invoice;
 use App\Job;
 use Carbon\Carbon;
 use GuzzleHttp\Psr7\Request;
@@ -185,11 +186,22 @@ class JobController extends Controller
             $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
+
+        $jobCount = Application::where(['candidate_id'=>$candidate->id,'status'=>1])->count();
+        $BookedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>2])->count();
+        $WorkedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>3])->count();
+        $totalPayment = Invoice::where(['candidate_id'=>$candidate->id,'invoice_status'=>2])->sum('invoice_amount');
+        // dd($totalPayment);
+
         // for particular candidate 
         return response()->json([
             'success' => true,
             'message' => 'Jobs found',
             'data' => $data,
+            'AppliedCount' => $jobCount,
+            'BookedCount' => $BookedCount,
+            'WorkedCount' => $WorkedCount,
+            'totalPayment' => $totalPayment,
             'curent_page' => $paginatedData['current_page'],
             'last_page' => $paginatedData['last_page'],
             'is_last_page' => $paginatedData['is_last_page'],
@@ -237,12 +249,25 @@ class JobController extends Controller
             }
             // $data1 = [$data];
         }
+        $payment = [];
+        $jobCount = Job::where(['client_id'=>$client->id])->count();
+        $TimesheetCount = Job::where(['client_id'=>$client->id,'clientJobWorkingStatus'=>2])->count();
+        $InvoiceCount = Job::where(['client_id'=>$client->id,'job_status'=>1,'clientJobWorkingStatus'=>1])->count();
+        $AllPayment  = Invoice::where(['client_id'=>$client->id,'invoice_status'=>2])->sum('invoice_amount');
+        // $payment = $AllPayment->invoice_amount->toArray();
+        // array_push($payment);
+        // dd($AllPayment);
+        // dd($jobCount);
         // dd($data);
         return response()->json([
             'message' => 'Jobs retrieved successfully',
             'success' => true,
             'code' => 200,
             'data' => $data1,
+            'ContractCount' => $jobCount,
+            'TimesheetCount' => $TimesheetCount,
+            'InvoiceCount' => $InvoiceCount,
+            'AllPayment' => $AllPayment,
             'curent_page' => $paginatedData['current_page'],
             'last_page' => $paginatedData['last_page'],
             'is_last_page' => $paginatedData['is_last_page'],
@@ -334,6 +359,7 @@ class JobController extends Controller
         if ($request->unit != 0) {
             $job->unit = $request->unit;
         }
+        // dd($job->unit);
         // $job->meals = $request->meals;
 
         $job->created_at =  now();
@@ -362,8 +388,8 @@ class JobController extends Controller
      */
     public function show($id)
     {
-        $job = Job::where('id', $id)->with('client', 'timesheets')->first();
-        // dd($job->timesheets->id);
+        $job = Job::where('id', $id)->with('client', 'timesheets','invoices')->first();
+        // dd($job);
         if ($job) {
             $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
             // dd($applicationsIDS);
@@ -380,6 +406,7 @@ class JobController extends Controller
                 }
                 // dd($cand);
             } else if ($job->job_status == 2) {
+                // dd($job);
                 $SingleCandidateForJob = JobHelper::getBookedCandidateToTheJob($job);
                 $canData = CandidateHelper::getCandidateField($SingleCandidateForJob[0]['id'],['avatar','full_name','role']);
 
@@ -409,7 +436,9 @@ class JobController extends Controller
             $data['timesheet_start_time']= isset($job->timesheets->start_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->start_time)->format('H:i A') : '';
             $data['timesheet_end_time']  = isset($job->timesheets->end_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->end_time)->format('H:i A') : '';
             $data['timesheet_break_time'] = isset($job->timesheets->break_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->break_time)->format('H:i') : '';
+            if($job->job_status == 2){
             $data['cordinates']          = ApplicationStatusHelper::getLatitudeAndLongtitude();
+            }
             $data['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->address_id);
             $data['job_date']            = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
             // $data['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
@@ -422,6 +451,7 @@ class JobController extends Controller
             $data['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             $data['parking']             = ApplicationStatusHelper::getParkingByName($job->parking);
             $data['break_time']          = Carbon::createFromFormat('H:i:s', $job->break_time)->format('H:i');
+            $data['reject_reason']       = isset($job->timesheets->reject_reason) ? $job->timesheets->reject_reason : '';
             // $data['visits'] = $job->visits;
 
             return response()->json([

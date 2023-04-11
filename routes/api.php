@@ -60,6 +60,8 @@ Route::get('/job/{id}/specific/candidate/dashboard', 'JobController@candidateDas
 Route::get('/check/timesheet/{id}','CandidateApplicationController@genaratetimesheet');
 Route::post('/timesheet/approve','ClientApplicationController@approveTimesheet');
 Route::post('/mark/as/paid', 'ClientApplicationController@MarkAsPaid');
+Route::post('/timesheet/reject','ClientApplicationController@rejectTimesheet');
+Route::post('/re-update/timesheet','ClientApplicationController@updateTimesheet');
 
 
 Route::post('/get/all/address', 'ClientController@getAddress');
