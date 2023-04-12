@@ -163,9 +163,9 @@ class AddressController extends Controller
             $client->save();
         }
         if($jobHasDeletedAddress != 0){
-            $lastAddress = Address::where('client_id',$client_id)->first();
+            $newJobAddress = $client->address_id;
             foreach($jobs as $job){
-                $job->address_id = $lastAddress->id;
+                $job->address_id = $newJobAddress;
                 $job->save();
             }   
         }

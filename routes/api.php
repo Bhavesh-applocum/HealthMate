@@ -62,6 +62,9 @@ Route::post('/timesheet/approve','ClientApplicationController@approveTimesheet')
 Route::post('/mark/as/paid', 'ClientApplicationController@MarkAsPaid');
 Route::post('/timesheet/reject','ClientApplicationController@rejectTimesheet');
 Route::post('/re-update/timesheet','ClientApplicationController@updateTimesheet');
+Route::get('/edit/candidate/{id}/role', 'CandidateController@editRole');
+Route::post('/update/candidate/{id}/role', 'CandidateController@updateRole');
+Route::get('/onchange/get/skills/{id}', 'CandidateController@getSkills');
 
 
 Route::post('/get/all/address', 'ClientController@getAddress');

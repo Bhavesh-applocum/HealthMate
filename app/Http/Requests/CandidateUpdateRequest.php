@@ -27,6 +27,7 @@ class CandidateUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'cv'    => 'mimes:.csv, .txt, .xlx, .xls, .pdf'|'size:2 MB',
             'avatar' => 'mimes:jpg,png,jpeg,svg,webp',
             'email' => 'email',
             'phone' => 'numeric|digits:10',

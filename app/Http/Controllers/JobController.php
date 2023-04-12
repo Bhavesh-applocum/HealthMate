@@ -187,7 +187,15 @@ class JobController extends Controller
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
 
-        $jobCount = Application::where(['candidate_id'=>$candidate->id,'status'=>1])->count();
+        $applicationWithJobs = Application::with('job')->where(['candidate_id'=>$candidate->id])->whereNotIn('status',[2,3])->get();
+        $jobCount = 0;
+            if($applicationWithJobs){
+                foreach($applicationWithJobs as $aplcnWithJob){
+                    if($aplcnWithJob->job->job_status == 1){
+                        $jobCount++;
+                    }
+                }
+            }
         $BookedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>2])->count();
         $WorkedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>3])->count();
         $totalPayment = Invoice::where(['candidate_id'=>$candidate->id,'invoice_status'=>2])->sum('invoice_amount');
@@ -250,7 +258,7 @@ class JobController extends Controller
             // $data1 = [$data];
         }
         $payment = [];
-        $jobCount = Job::where(['client_id'=>$client->id])->count();
+        $jobCount = Job::where('client_id',$client->id)->whereNotIn('job_status',[3])->count();
         $TimesheetCount = Job::where(['client_id'=>$client->id,'clientJobWorkingStatus'=>2])->count();
         $InvoiceCount = Job::where(['client_id'=>$client->id,'job_status'=>1,'clientJobWorkingStatus'=>1])->count();
         $AllPayment  = Invoice::where(['client_id'=>$client->id,'invoice_status'=>2])->sum('invoice_amount');

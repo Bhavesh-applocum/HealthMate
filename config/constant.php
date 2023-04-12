@@ -3,17 +3,16 @@
 return [
 
     'job_status' => [
-        0 => 'Published',// published
+        0 => 'Published', // published
         1 => 'Application', // application
-        2 => 'Booking',// booking
-        3 => 'Worked',// worked
+        2 => 'Booking', // booking
+        3 => 'Worked', // worked
     ],
 
     'parking' => [
         0 => 'Not Available',
         1 => 'Available',
     ],
-
     'job_Category' => [
         1 => 'Audiologist',
         2 => 'Cardiologists',
@@ -32,7 +31,153 @@ return [
         15 => 'Urologist',
         16 => 'Nurse',
         17 => 'Other',
+    ],
 
+    'job_Category for 2' => [
+        'Audiologist',
+        'Cardiologists',
+        'Cardiothoracic Surgeon',
+        'Dentist',
+        'Endocrinologist',
+        'Gynecologists',
+        'Neurologists',
+        'Ophthalmologists',
+        'Orthopedic Surgeon',
+        'Pediatrician',
+        'Physician',
+        'Psychiatrist',
+        'Radiologist',
+        'Surgeon',
+        'Urologist',
+        'Nurse',
+        'Other',
+    ],
+
+    'job_Skills' => [
+        [
+            'role_id' => 1,
+            'role_skills' => [
+                'Medical diagnosis',
+                'Clinical reasoning',
+                'Patient assessment',
+                'Treatment planning',
+                'Medical record keeping',
+            ]
+        ], [
+            'role_id' => 2,
+            'role_skills' => [
+                'Medical terminology',
+                'Pharmacology',
+                'Medical coding',
+            ]
+        ], [
+            'role_id' => 3,
+            'role_skills' => [
+                'Medical billing',
+                'Medical research',
+            ]
+        ], [
+            'role_id' => 4,
+            'role_skills' => [
+                'Clinical trials',
+                'Medical ethics',
+                'Patient communication',
+            ]
+        ],
+        [
+            'role_id' => 5,
+            'role_skills' => [
+                'Medical counseling',
+                'Medical documentation',
+                'Medical history taking',
+            ]
+        ], [
+            'role_id' => 6,
+            'role_skills' => [
+                'Medical examination',
+            ],
+        ], [
+            'role_id' => 7,
+            'role_skills' => [
+                'Patient education',
+                'Medical decision making',
+            ]
+        ], [
+            'role_id' => 8,
+            'role_skills' => [
+                'Emergency medicine',
+                'Surgery',
+                'Anesthesiology',
+                'Radiology'
+            ]
+        ], [
+            'role_id' => 9,
+            'role_skills' => [
+                'Cardiology',
+                'Neurology',
+                'Oncology',
+                'Gastroenterology',
+                'Dermatology'
+            ]
+        ], [
+            'role_id' => 10,
+            'role_skills' => [
+                'Endocrinology',
+                'Hematology',
+            ]
+        ], [
+            'role_id' => 11,
+            'role_skills' => [
+                'Infectious disease management',
+            ]
+        ], [
+            'role_id' => 12,
+            'role_skills' => [
+                'Medical imaging',
+                'Medical laboratory',
+                'Medical transcription',
+            ]
+        ], [
+            'role_id' => 13,
+            'role_skills' => [
+                'Medical device design',
+                'Medical device manufacturing',
+                'Medical device testing',
+            ]
+        ], [
+            'role_id' => 14,
+            'role_skills' => [
+                'Medical device sales',
+                'Medical device marketing',
+                'Medical device distribution',
+            ]
+        ], [
+            'role_id' => 15,
+            'role_skills' => [
+                'Nephrology',
+                'Obstetrics and gynecology',
+                'Pediatrics',
+                'Psychiatry',
+            ]
+        ], [
+            'role_id' => 16,
+            'role_skills' => [
+                'Health policy',
+                'Leadership',
+                'Teamwork',
+                'Communication',
+                'Critical thinking',
+                'Problem solving',
+                'Decision making',
+            ]
+        ], [
+            'role_id' => 17,
+            'role_skills' => [
+                'Time management',
+                'Interpersonal skills',
+                'Decision making under pressure.',
+            ]
+        ],
     ],
 
     'job_type' => [

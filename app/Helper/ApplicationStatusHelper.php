@@ -141,4 +141,21 @@ class ApplicationStatusHelper
         $data['Longtitude'] = (float)$addressArr[1];
         return $data;
     }
+
+    //helper for Role base skills using constants
+    public static function getRoleSkills($role)
+    {
+        $skl = [];
+        $skills = config('constant.job_Skills')[$role - 1];
+        // dd($skills);
+        array_push($skl,$skills);
+        // dd($skills);
+        // $roleSkills = [];
+        // foreach ($skills as $key => $value) {
+        //     if ($key == $role) {
+        //     }
+        //         $roleSkills = $value;
+        //     }
+        return $skl;
+    }
 }
