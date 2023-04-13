@@ -7,6 +7,7 @@ use App\Client;
 use App\Helpers\ApplicationStatusHelper;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
+use App\Http\Requests\UploadcvRequest;
 use App\Mail\LoginAuthMail;
 use Dotenv\Store\File\Paths;
 use Facade\FlareClient\Stacktrace\File;
@@ -134,7 +135,7 @@ class CandidateController extends Controller
     }
 
     //upload cv api for candidate with cv file in directory
-    public function uploadCv(CandidateUpdateRequest $request)
+    public function uploadCv(UploadcvRequest $request)
     {
 
         $id = $request->id;
@@ -155,9 +156,8 @@ class CandidateController extends Controller
         $candidate->save();
 
         return response()->json([
-            'message' => 'CV updated successfully',
+            'message' => 'CV uploaded successfully',
             'status' => 'OK',
-            'newCv' => $candidate->cv,
             'code' => 200
         ], 200);
     }

@@ -65,7 +65,7 @@ Route::post('/re-update/timesheet','ClientApplicationController@updateTimesheet'
 Route::get('/edit/candidate/{id}/role', 'CandidateController@editRole');
 Route::post('/update/candidate/{id}/role', 'CandidateController@updateRole');
 Route::get('/onchange/get/skills/{id}', 'CandidateController@getSkills');
-
+Route::post('/upload/cv', 'CandidateController@uploadCv');
 
 Route::post('/get/all/address', 'ClientController@getAddress');
 Route::get('/hello', function () {

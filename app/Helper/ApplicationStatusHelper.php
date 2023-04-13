@@ -146,9 +146,10 @@ class ApplicationStatusHelper
     public static function getRoleSkills($role)
     {
         $skl = [];
-        $skills = config('constant.job_Skills')[$role - 1];
+        intval($role);
+        $skills = config('constant.job_Skills')[$role-1];
         // dd($skills);
-        array_push($skl,$skills);
+        // array_push($skl,$skills);
         // dd($skills);
         // $roleSkills = [];
         // foreach ($skills as $key => $value) {
@@ -156,6 +157,6 @@ class ApplicationStatusHelper
         //     }
         //         $roleSkills = $value;
         //     }
-        return $skl;
+        return $skills;
     }
 }

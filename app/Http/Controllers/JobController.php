@@ -167,10 +167,27 @@ class JobController extends Controller
             ->groupBy('jobs.id')
             ->whereNotIn('jobs.job_status', [2, 3]);
         $paginatedData = CustomPaginationHelper::mainPage_data($jobs, request()->query('page') ?? 1);
+        $applicationWithJobs = Application::with('job')->where(['candidate_id'=>$candidate->id])->whereNotIn('status',[2,3])->get();
+        $jobCount = 0;
+            if($applicationWithJobs){
+                foreach($applicationWithJobs as $aplcnWithJob){
+                    if($aplcnWithJob->job->job_status == 1){
+                        $jobCount++;
+                    }
+                }
+            }
+            // dd($jobCount);
+        $BookedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>2])->count();
+        $WorkedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>3])->count();
+        $totalPayment = Invoice::where(['candidate_id'=>$candidate->id,'invoice_status'=>2])->sum('invoice_amount');
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
                 'message' => 'No job found',
+                'AppliedCount' => $jobCount,
+                'BookedCount' => $BookedCount,
+                'WorkedCount' => $WorkedCount,
+                'totalPayment' => $totalPayment,
             ], 400);
         }
         $data = [];
@@ -186,19 +203,6 @@ class JobController extends Controller
             $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
-
-        $applicationWithJobs = Application::with('job')->where(['candidate_id'=>$candidate->id])->whereNotIn('status',[2,3])->get();
-        $jobCount = 0;
-            if($applicationWithJobs){
-                foreach($applicationWithJobs as $aplcnWithJob){
-                    if($aplcnWithJob->job->job_status == 1){
-                        $jobCount++;
-                    }
-                }
-            }
-        $BookedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>2])->count();
-        $WorkedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>3])->count();
-        $totalPayment = Invoice::where(['candidate_id'=>$candidate->id,'invoice_status'=>2])->sum('invoice_amount');
         // dd($totalPayment);
 
         // for particular candidate 
