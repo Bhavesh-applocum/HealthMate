@@ -96,6 +96,34 @@ class ClientController extends Controller
         ], 200);
     }
 
+    public function uploadImageForClient(ClientUpdateRequest $request)
+    {
+
+        $id = $request->id;
+
+        $client = Client::find($id);
+
+        $oldProfile = $client->avatar;
+        if (file_exists($oldProfile)) {
+            unlink($oldProfile);
+        }
+        if ($request->avatar) {
+            $imageName =  time() . '_' . str_replace(" ", '', $request->avatar->getClientOriginalName());
+            $client->avatar = $request->avatar->move('images', $imageName);
+        } else {
+            $client->avatar = NULL;
+        }
+
+        $client->save();
+
+        return response()->json([
+            'message' => 'Profile Image updated successfully',
+            'status' => 'OK',
+            'newImage' => $client->avatar,
+            'code' => 200
+        ], 200);
+    }
+
     public function profileedit(ClientUpdateRequest $request){
 
         $id = $request->id;
@@ -110,17 +138,8 @@ class ClientController extends Controller
             ],400);
         }
 
-        $oldProfile = $client->avatar;
-        if($oldProfile != null){
-            unlink($oldProfile);
-        }
-
         $client->practice_name = $request->practice_name;
         $client->phone = $request->phone;
-        // $client->address = $request->address;
-        $client->password = Hash::make($request->password);
-
-        $client->avatar = $request->avatar->move('images', $request->avatar->getClientOriginalName());
 
         $client->save();
 
@@ -140,20 +159,29 @@ class ClientController extends Controller
     public function show($id)
     {
         $client = Client::find($id);
+        $data = new \stdClass();
 
-        if($client == null){
+        if($client != null){
+            $data->avatar = $client->avatar;
+            $data->practice_name = $client->practice_name;
+            $data->phone = $client->phone;
+            $data->email = $client->email;
+
+
+            return response()->json([
+                'message' => 'Client found',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $data
+            ], 200);
+        }
+        else{
             return response()->json([
                 'message' => 'Client not found',
                 'status' => 'Bad Request',
-                'code' => 400,
-            ], 400);
+                'code' => 400
+            ],400);
         }
-        return response()->json([
-            'message' => 'Client found',
-            'status' => 'OK',
-            'code' => 200,
-            'data' => $client
-        ], 200);
     }
 
     /**

@@ -35,6 +35,7 @@ Route::post('/resetPassword', 'LoginController@resetpassword');
 Route::post('/candidate/editprofile', 'CandidateController@profileedit');
 Route::post('/candidate/upload/image', 'CandidateController@uploadImage');
 Route::post('/client/editprofile', 'ClientController@profileedit');
+Route::post('/client/upload/image', 'ClientController@uploadImageForClient');
 
 Route::resource('job', JobController::class);
 Route::get('/job/index/all', 'JobController@findJobs');
