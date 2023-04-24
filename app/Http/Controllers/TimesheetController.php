@@ -112,7 +112,6 @@ class TimesheetController extends Controller
     public function edit($id)
     {
         $timesheet = Timesheet::with('job','application','candidate')->find($id);
-        // dd($timesheet);
         return response()->json([
             'timesheet' => $timesheet,
             'status' => 'OK',
@@ -129,9 +128,7 @@ class TimesheetController extends Controller
      */
     public function update(Request $request,$id)
     {
-        // $id = $request->timesheet_id;
         $timesheet = Timesheet::with('job','application','candidate')->find($id);
-        // dd($timesheet);
 
         $timesheet->candidate->working_status = 1;
         $timesheet->candidate->save();

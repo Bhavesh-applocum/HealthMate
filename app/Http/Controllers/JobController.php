@@ -35,8 +35,6 @@ class JobController extends Controller
     public function findJobs()
     {
         $jobs = Job::with('client', 'address');
-        // $job1 = Job::with('client')->get();
-        // dd($job1);
         if (!$jobs) {
             return response()->json([
                 'message' => 'No jobs found',
@@ -45,7 +43,6 @@ class JobController extends Controller
             ], 400);
         }
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
-        // dd($paginatedData);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
@@ -104,7 +101,6 @@ class JobController extends Controller
             })
             ->whereDate('jobs.job_date', '>=', $today)
             ->groupBy('jobs.id');
-        // dd($jobs->get());
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
@@ -124,7 +120,6 @@ class JobController extends Controller
             $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
-        // for particular candidate 
         return response()->json([
             'success' => true,
             'message' => 'Jobs found',
@@ -176,7 +171,6 @@ class JobController extends Controller
                     }
                 }
             }
-            // dd($jobCount);
         $BookedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>2])->count();
         $WorkedCount = Application::where(['candidate_id'=>$candidate->id,'status'=>3])->count();
         $totalPayment = Invoice::where(['candidate_id'=>$candidate->id,'invoice_status'=>2])->sum('invoice_amount');
@@ -192,7 +186,6 @@ class JobController extends Controller
         }
         $data = [];
 
-
         foreach ($paginatedData['data'] as $key => $job) {
             $data[$key]['id']           = $job->id;
             $data[$key]['job_title']        = $job->job_title;
@@ -203,9 +196,7 @@ class JobController extends Controller
             $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
-        // dd($totalPayment);
 
-        // for particular candidate 
         return response()->json([
             'success' => true,
             'message' => 'Jobs found',
@@ -233,7 +224,6 @@ class JobController extends Controller
             ], 400);
         }
         $avatars = [];
-        // dd($paginatedData);
         $data = [];
         if (!$client) {
             return response()->json([
@@ -241,10 +231,6 @@ class JobController extends Controller
                 'message' => 'Client not found'
             ], 400);
         }
-
-
-
-        // echo "<pre>";
         $data1 = [];
         foreach ($paginatedData['data'] as $key => $job) {
             if ($job->job_status != 3) {
@@ -259,18 +245,13 @@ class JobController extends Controller
                 $data['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
                 $data1[] = $data;
             }
-            // $data1 = [$data];
         }
         $payment = [];
         $jobCount = Job::where('client_id',$client->id)->whereNotIn('job_status',[3])->count();
         $TimesheetCount = Job::where(['client_id'=>$client->id,'clientJobWorkingStatus'=>2])->count();
         $InvoiceCount = Job::where(['client_id'=>$client->id,'job_status'=>1,'clientJobWorkingStatus'=>1])->count();
         $AllPayment  = Invoice::where(['client_id'=>$client->id,'invoice_status'=>2])->sum('invoice_amount');
-        // $payment = $AllPayment->invoice_amount->toArray();
-        // array_push($payment);
-        // dd($AllPayment);
-        // dd($jobCount);
-        // dd($data);
+
         return response()->json([
             'message' => 'Jobs retrieved successfully',
             'success' => true,
@@ -305,7 +286,6 @@ class JobController extends Controller
     public function store(JobRequest $request)
     {
         $id = $request->client_id;
-        // dd('done');
 
         $client = Client::find($id);
         if (!$client) {
@@ -314,7 +294,7 @@ class JobController extends Controller
                 'message' => 'No client found'
             ], 400);
         }
-        // $allJobtypes = config('constant.job_type');
+        
         $allJobCategory = config('constant.job_Category');
         $allJobStatus = config('constant.job_status');
         $parking = config('constant.parking');
@@ -341,38 +321,25 @@ class JobController extends Controller
             }
         };
 
-        // $jobType = '';
-        // for ($i = 1; $i <= count($allJobtypes); $i++) {
-        //     if ($request->job_type == $i) {
-        //         $jobType = $allJobtypes[$i];
-        //     }
-        // };
-
         $job->job_title = $request->job_title;
         $job->job_description = $request->job_description;
-        // $job->job_location = $request->job_location;
-        // $job->job_type = $request->job_type;
 
         $job->job_salary = $request->job_salary;
         $job->job_date = $request->job_date;
-        // $job->job_end_date = $request->job_end_date;
-        // $job->job_status = $request->job_status;
 
         $job->job_category = $request->job_category;
         $job->job_start_time = $request->job_start_time;
         $job->job_end_time = $request->job_end_time;
         $job->break_time = $request->break_time;
         $job->address_id = $request->address_id;
-        // $job->admin_time = $request->admin_time;
+        
         $job->client_id = $client->id;
-        // $job->visits = $request->visits;
+        
         $job->parking = $request->parking;
 
         if ($request->unit != 0) {
             $job->unit = $request->unit;
         }
-        // dd($job->unit);
-        // $job->meals = $request->meals;
 
         $job->created_at =  now();
         $job->updated_at = now();
@@ -401,30 +368,30 @@ class JobController extends Controller
     public function show($id)
     {
         $job = Job::where('id', $id)->with('client', 'timesheets','invoices')->first();
-        // dd($job);
+        
         if ($job) {
             $applicationsIDS = JobHelper::getApplicationIDsfromJob($job);
-            // dd($applicationsIDS);
-            // dd($job->job_status);
+            
+            
             $candidateObj = [];
             if ($job->job_status == 1) {
                 $MultipleCandidatesForJob = JobHelper::getCandidateDataForJob($job);
                 foreach ($MultipleCandidatesForJob as $key => $can) {
                     $canData = CandidateHelper::getCandidateField($can['id'], ['avatar', 'full_name', 'role']);
-                    // $candidateObj[$key]['avatar'] = $candidateAvatar;  
+                    
                     $canData['candidate_id']   = $can['id'];
                     $canData['application_id'] = $can['application_id'];
                     array_push($candidateObj, $canData);
                 }
-                // dd($cand);
+                
             } else if ($job->job_status == 2) {
-                // dd($job);
+                
                 $SingleCandidateForJob = JobHelper::getBookedCandidateToTheJob($job);
                 $canData = CandidateHelper::getCandidateField($SingleCandidateForJob[0]['id'],['avatar','full_name','role']);
 
                 $canData['candidate_id'] = $SingleCandidateForJob[0]['id'];
                 $canData['application_id'] = $SingleCandidateForJob[0]['application_id'];
-                // $canData['timesheet_id']   = $SingleCandidateForJob['timesheet_id'];
+                
                 array_push($candidateObj, $canData);
             } 
             else if ($job->job_status == 3){
@@ -432,14 +399,14 @@ class JobController extends Controller
                 $canData = CandidateHelper::getCandidateField($SingleCandidateForJob[0]['id'],['avatar','full_name','role','working_status']);
 
                 $canData['candidate_id'] = $SingleCandidateForJob[0]['id'];
-                // $canData['working_status'] = $SingleCandidateForJob[0]['working_status'];
+                
                 $canData['application_id'] = $SingleCandidateForJob[0]['application_id'];
-                // $canData['timesheet_id']   = $SingleCandidateForJob['timesheet_id'];
+                
                 array_push($candidateObj, $canData);
             }
             
             $data['job_title'] = $job->job_title;
-            // $data['application_ids']     = $applicationsIDS;
+            
             $data['candidates']          = isset($candidateObj) ? $candidateObj : [];
             $data['job_description']     = $job->job_description;
             $data['job_salary']          = $job->job_salary;
@@ -453,7 +420,7 @@ class JobController extends Controller
             }
             $data['job_location']        = ApplicationStatusHelper::getFullClientAddress($job->address_id);
             $data['job_date']            = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
-            // $data['job_start_time']      = Carbon::createFromFormat('H:i:s',$job->job_start_time)->format('H:i A');
+            
             $data['job_start_time']      = date("H:i", strtotime($job->job_start_time));
             $data['job_end_time']        = date("H:i", strtotime($job->job_end_time));
             $data['timesheet_status']    = (isset($job->timesheets) && isset($job->timesheets->status)) ? ApplicationStatusHelper::getTimesheetStatusByStatus($job->timesheets->status) : '';
@@ -464,7 +431,7 @@ class JobController extends Controller
             $data['parking']             = ApplicationStatusHelper::getParkingByName($job->parking);
             $data['break_time']          = Carbon::createFromFormat('H:i:s', $job->break_time)->format('H:i');
             $data['reject_reason']       = isset($job->timesheets->reject_reason) ? $job->timesheets->reject_reason : '';
-            // $data['visits'] = $job->visits;
+            
 
             return response()->json([
                 'message'   => 'Job Details',
@@ -536,19 +503,6 @@ class JobController extends Controller
             ], 404);
         }
 
-        // $client_id = $job->client_id;
-        // $client = Client::find($client_id);
-
-        // if(!$client){
-        //     return response()->json([
-        //         'message'   => 'Client Not Found',
-        //         'status'    => 'Not Found',
-        //         'code'      => 404,
-        //         'data'      => ['client' => $client,]
-        //     ], 404);
-        // }
-
-        // dd('job and client found');
         $allJobtypes = config('constant.job_type');
         $allJobCategory = config('constant.job_Category');
         $allJobStatus = config('constant.job_status');
@@ -592,7 +546,6 @@ class JobController extends Controller
 
         $job->updated_at = now();
 
-        // dd($job);
         $job->save();
 
         return response()->json([
@@ -605,7 +558,7 @@ class JobController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
+     *p
      * @param  \App\Job  $job
      * @return \Illuminate\Http\Response
      */
@@ -623,25 +576,14 @@ class JobController extends Controller
 
         $applications = Job::with('applications')->where('id', $id)->first();
         foreach ($applications->applications as $application) {
-            if ($application->status == 1) {
+            if ($application->status == 1 || $application->status == 2 || $application->status == 3) {
                 return response()->json([
-                    'message'   => 'Job Has Been Applied So,Cannot be Deleted',
+                    'message'   => 'Job Has Been '. ApplicationStatusHelper::getApplicationStatusByName($application->status) .' So,Cannot be Deleted',
                     'status'    => 'Not Found',
                     'code'      => 404,
                 ], 404);
             }
         }
-
-
-        // if ($job->job_status == ) {
-        //     // dd()
-        //     dd($job->job_status);
-        //     return response()->json([
-        //         'message'   => 'Job Has Been Applied So,Cannot be Deleted',
-        //         'status'    => 'Not Found',
-        //         'code'      => 404,
-        //     ], 404);
-        // }
         $job->delete();
 
         return response()->json([

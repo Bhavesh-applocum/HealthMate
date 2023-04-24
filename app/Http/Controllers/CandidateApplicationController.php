@@ -6,6 +6,7 @@ use App\Application;
 use App\Candidate;
 use App\Helpers\ApplicationStatusHelper;
 use App\Helpers\CustomPaginationHelper;
+use App\Invoice;
 use App\Job;
 use App\Timesheet;
 use Carbon\Carbon;
@@ -52,7 +53,6 @@ class CandidateApplicationController extends Controller
         }
 
         $job = Job::with('client')->find($request->job_id);
-        // dd($job);
 
         if (!$job) {
             return response()->json([
@@ -96,36 +96,7 @@ class CandidateApplicationController extends Controller
      */
     public function show($candidateID)
     {
-        // $candidateApplication = Application::where('candidate_id', $candidateID)->get();
-
-        // foreach($candidateApplication as $application) {
-        //     $job = Job::with('applications')->find($application->job_id);
-        //     dd($job);
-        // }
-
-        // // return response()->json([
-        // //     'message' => 'All Jobs',
-        // //     'status' => 'OK',
-        // //     'code' => 200,
-        // //     'data' => $alljobs
-        // // ]);
-
-        // $job = Job::with('applications')->find($id);
-        // // $application = Application::find($id);
-        // // $application->status;
-        // // dd($application->status);
-
-        // foreach($job->applications as $application) {
-        //     if($application->status == 1){
-        //         return response()->json([
-        //             'message' => 'Applied Jobs',
-        //             'status' => 'OK',
-        //             'code' => 200,
-        //             'data' => $application
-        //         ]);
-        //         dd($application);
-        //     }
-        // }
+        // 
     }
 
     public function showstautsjob(Request $request)
@@ -134,7 +105,6 @@ class CandidateApplicationController extends Controller
         $status = $request->status;
 
         $candidateApplication = Application::where(['candidate_id' => $candidateId, 'status' => $status])->with('candidate');
-        // dd($candidateApplication->candidate);
         $paginateData = CustomPaginationHelper::paginate_data($candidateApplication, request()->query('page') ?? 1);
         if (count($paginateData['data']) == 0) {
             return response()->json([
@@ -184,7 +154,6 @@ class CandidateApplicationController extends Controller
                 }
             }
         } elseif ($status == 3) {
-            //  dd($candidateApplication->candidate);
             foreach ($paginateData['data'] as $key => $application) {
                 $job = Job::with('applications', 'invoices')->whereNotIn('job_status', [1, 2])->find($application->job_id);
                 if ($job) {
@@ -202,7 +171,6 @@ class CandidateApplicationController extends Controller
                 }
             }
         }
-        // dd($data);
         if (count($paginateData) > 0) {
             return response()->json([
                 'message' => 'All Jobs',
@@ -227,7 +195,6 @@ class CandidateApplicationController extends Controller
     public function genaratetimesheet($id)
     {
         $job = Job::with('applications')->with('timesheets')->find($id);
-        // dd($job);
         if (!$job) {
             return response()->json([
                 'message' => 'Job Not Found',
@@ -238,7 +205,6 @@ class CandidateApplicationController extends Controller
         $timesheet = Timesheet::where(['job_id' => $job->id])->first();
 
         if ($timesheet) {
-            // update application status to 3
             $application = Application::where(['job_id' => $job->id, 'status' => 2])->first();
             $application->status = 3;
             $application->timesheet_id = $timesheet->id;
@@ -282,6 +248,39 @@ class CandidateApplicationController extends Controller
         //
     }
 
+
+    public function labalCount($id){
+        $candidatePaymentCount = Candidate::with('invoices')->where('id',$id)->get();
+
+        $workingStatus = $candidatePaymentCount[0]->working_status;
+        if($workingStatus == 1){
+            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>1])->sum('invoice_amount');
+
+            return response()->json([
+                'message' => 'Payment Due',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $payment
+            ]);
+        }else if($workingStatus == 3){
+            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>2])->sum('invoice_amount');
+
+            return response()->json([
+                'message' => 'Total Paid',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $payment
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'No Payment',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => 0
+            ]);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -291,9 +290,7 @@ class CandidateApplicationController extends Controller
     public function destroy($id)
     {
         $application = Application::with('job')->find($id);
-        // dd($application);
         $job = Job::with('applications')->where('id', $application->job->id)->first();
-        // dd($job);
         if (!$application) {
             return response()->json([
                 'message' => 'Application Not Found',
@@ -302,7 +299,6 @@ class CandidateApplicationController extends Controller
             ]);
         }
         $ifMultipleApplication = Application::where('job_id', $job->id)->count();
-        // dd($ifMultipleApplication);
         if ($ifMultipleApplication == 1) {
             $job->job_status = 0;
             $job->save();

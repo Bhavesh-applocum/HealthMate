@@ -67,6 +67,7 @@ Route::get('/edit/candidate/{id}/role', 'CandidateController@editRole');
 Route::post('/update/candidate/{id}/role', 'CandidateController@updateRole');
 Route::get('/onchange/get/skills/{id}', 'CandidateController@getSkills');
 Route::post('/upload/cv', 'CandidateController@uploadCv');
+Route::get('/label/count/{id}/candidate', 'CandidateApplicationController@labalCount');
 
 Route::post('/get/all/address', 'ClientController@getAddress');
 Route::get('/hello', function () {

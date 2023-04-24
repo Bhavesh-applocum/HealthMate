@@ -104,7 +104,6 @@ class CandidateController extends Controller
             'code' => 200,
             'data' => $candidate
         ], 200);
-        // return $candidate;
     }
     public function uploadImage(CandidateUpdateRequest $request)
     {
@@ -182,7 +181,6 @@ class CandidateController extends Controller
         $candidate->gender = $request->gender;
         $candidate->email = $request->email;
         $candidate->phone = $request->phone;
-        // $candidate->password = Hash::make($request->password);
         $candidate->updated_at = now();
 
         // create unique name for image 
@@ -216,9 +214,6 @@ class CandidateController extends Controller
             $data->phone = $candidate->phone;
             $data->gender = $candidate->gender;
 
-            // foreach($candidates as $key => $candidate){
-            //     $data[$key]['avatar'] => $candidate->
-            // }
             return response()->json([
                 'message' => 'Candidate found',
                 'status' => 'OK',
@@ -233,17 +228,6 @@ class CandidateController extends Controller
             ], 400);
         }
     }
-
-    // public function editRole($id){
-    //     $candidate = Candidate::find($id);
-    //     $candidateRole = ApplicationStatusHelper::getCandidateCategoryByName($candidate->role);
-    //     return response()->json([
-    //         'message' => 'Candidate found',
-    //         'status' => 'OK',
-    //         'code' => 200,
-    //         'data' => $candidateRole
-    //     ], 200);
-    // }
 
     //edit role api and as per ther role send multiple skills using applicationstatus helper 
     public function editRole($id)

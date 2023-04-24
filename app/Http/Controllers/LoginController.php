@@ -148,8 +148,6 @@ class LoginController extends Controller
         $qry            = Candidate::where('email', $request->email);
         $candidate      = $qry->first();
         $candidate_cnt  = $qry->count();
-        //"email" => "jiyan@yopmail.com"
-        // dd($candidate->email);
         $qry1           = Client::where('email', $request->email);
         $client         = $qry1->first();
         $client_cnt     = $qry1->count();
@@ -164,10 +162,6 @@ class LoginController extends Controller
                 'forgot_password_otp'=>$otp,
                 'forgot_password_otp_expire'=>$otp_expire
             ]);
-            // $client->forgot_password_otp = $otp;
-            // $client->forgot_password_otp_expire = $otp_expire;
-            // $client->save();
-            
                 Mail::to($client->email)->send(new ForgotPasswordMail($otp));
 
                 return response()->json([
@@ -187,11 +181,6 @@ class LoginController extends Controller
                     'forgot_password_otp'=>$otp,
                     'forgot_password_otp_expire'=>$otp_expire
                 ]);
-                // 
-                // $candidate->forgot_password_otp = $otp;
-                // $candidate->forgot_password_otp_expire = $otp_expire;
-                // $candidate->save();
-                // dd($candidate->save());
                 Mail::to($candidate->email)->send(new ForgotPasswordMail($otp));
 
                 return response()->json([

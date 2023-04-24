@@ -40,74 +40,7 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        // $candidate = $request->candidate_id;
-        // $job = $request->job_id;
-        // $application = $request->application_id;
-        // $timesheet = $request->timesheet_id;
-        // $client = $request->client_id;
-
-        // $Maincandidate = Candidate::find($candidate);
-        // $Mainjob = Job::find($job);
-        // $Mainapplication = Application::find($application);
-        // $Maintimesheet = Timesheet::find($timesheet);
-        // $Mainclient = Client::find($client);
-
-        // if (!$Maincandidate) {
-        //     return response()->json([
-        //         'message' => 'Candidate not found',
-        //         'status' => 'Bad Request',
-        //         'code' => 400
-        //     ], 400);
-        // }
-
-        // if (!$Mainjob) {
-        //     return response()->json([
-        //         'message' => 'Job not found',
-        //         'status' => 'Bad Request',
-        //         'code' => 400
-        //     ], 400);
-        // }
-
-        // if (!$Mainapplication) {
-        //     return response()->json([
-        //         'message' => 'Application not found',
-        //         'status' => 'Bad Request',
-        //         'code' => 400
-        //     ], 400);
-        // }
-
-        // if (!$Maintimesheet) {
-        //     return response()->json([
-        //         'message' => 'Timesheet not found',
-        //         'status' => 'Bad Request',
-        //         'code' => 400
-        //     ], 400);
-        // }
-
-        // if (!$Mainclient) {
-        //     return response()->json([
-        //         'message' => 'Client not found',
-        //         'status' => 'Bad Request',
-        //         'code' => 400
-        //     ], 400);
-        // }
-
-        // $invoice = new Invoice();
-        // $invoice->candidate_id = $candidate;
-        // $invoice->job_id = $job;
-        // $invoice->application_id = $application;
-        // $invoice->timesheet_id = $timesheet;
-        // $invoice->client_id = $client;
-        // $invoice->save();
-
-        // $invoice->ref_no = 'INV-' . ($invoice->id + 1000);
-        // $invoice->save();
-
-        // return response()->json([
-        //     'message' => 'Invoice created successfully',
-        //     'status' => 'OK',
-        //     'code' => 200
-        // ], 200);
+        // 
     }
 
     /**

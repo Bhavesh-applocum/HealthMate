@@ -37,7 +37,6 @@ class ClientController extends Controller
     {
 
         $client = Client::with('address')->where('email', $request->email)->get();
-        // dd($client);
 
         if(sizeof($client) > 0) {
             return response()->json([
@@ -61,7 +60,6 @@ class ClientController extends Controller
         $client->practice_name = $request->practice_name;
         $client->email = $request->email;
         $client->phone = $request->phone;
-        // $client->address = $request->address;
         $client->password = Hash::make($request->password);
         $client->created_at = now();
         $client->updated_at = now();
@@ -206,24 +204,4 @@ class ClientController extends Controller
     {
         //
     }
-
-    // public function getAddress(Request $request){
-    //     $clients = Client::all();
-    //     // dd($clients);
-    //     // get address from cilent one by one add in address table and add new address id in address column in client
-    //     foreach($clients as $client){
-    //         $address = new Address();
-    //         $address->address = $client->address;
-    //         $address->client_id = $client->id;
-    //         $address->save();
-    //         $client->address_id = $address->id;
-    //         $client->save();
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'Address added successfully',
-    //         'status' => 'OK',
-    //         'code' => 200
-    //     ], 200);
-    // }
 }
