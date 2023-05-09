@@ -28,7 +28,7 @@ class UploadcvRequest extends FormRequest
     public function rules()
     {
         return [
-            'cv' => 'mimes:pdf,doc,docx,jpg,xls,xlx|max:2048',
+            'cv' => 'mimes:pdf,doc,docx,jpg,xls,xlsx|max:2048',
         ];
     }
 }

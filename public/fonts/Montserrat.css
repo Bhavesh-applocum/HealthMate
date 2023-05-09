@@ -1,0 +1,49 @@
+/* montserrat-300 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 300;
+    src: url("./font-face/montserrat-300.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-regular - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 400;
+    src: url("./font-face/montserrat-regular.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-600 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 600;
+    src: url("./font-face/montserrat-600.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-500 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 500;
+    src: url("./font-face/montserrat-500.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-700 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 700;
+    src: url("./font-face/montserrat-700.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-800 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 800;
+    src: url("./font-face/montserrat-800.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* montserrat-900 - cyrillic */
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 900;
+    src: url("./font-face/montserrat-900.woff2") format("woff2"); /* Super Modern Browsers */
+}

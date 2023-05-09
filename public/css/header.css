@@ -1,0 +1,117 @@
+nav {
+    height: 60px;
+    padding: 10px !important;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    box-shadow: 0 0 24px 0 rgb(0 0 0 / 6%);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 100 !important;
+}
+nav .inner {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav .left {
+    color: var(--white);
+    display: flex;
+    align-items: center;
+}
+nav .left button.sidebar-menu-btn {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+}
+nav .left .logo {
+    margin-left: 10px;
+}
+nav .right {
+    display: flex;
+    align-items: center;
+}
+nav .right a.route-btn {
+    margin: 0 2px;
+    position: relative;
+    padding: 4px 10px;
+    border: 2px solid var(--white);
+    color: var(--black);
+    background: var(--white);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 8px 0 rgba(0, 0, 0, 0.534);
+}
+nav .right a.route-btn:not(:active):hover {
+    /* color: var(--white);
+    background: var(--transparent); */
+    box-shadow: none;
+}
+
+/* user dropdown */
+.user-dropdown-wrapper {
+    position: relative;
+    height: 35px;
+    width: 35px;
+    display: grid;
+    place-items: center;
+}
+.user-dropdown-btn {
+    position: inherit;
+}
+.user-dropdown-btn::after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: translateX(-50%);
+
+    transition: all 0.3s ease;
+}
+.user-dropdown-wrapper.show .user-dropdown-btn::after {
+    border-bottom-width: 8px;
+}
+.user-dropdown {
+    padding: 8px;
+    width: 200px;
+    box-shadow: 0 3px 6px 0 rgb(0 0 0 / 18%);
+    position: absolute;
+    top: calc(100% + 20px);
+    right: 0;
+    border-radius: 4px;
+    transform: translateX(60%);
+    opacity: 0;
+    visibility: hidden;
+    background: var(--white);
+    transition: all 0.3s ease;
+}
+.user-dropdown-wrapper.show .user-dropdown {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+}
+.user-dropdown .user-dropdown-item a {
+    color: var(--black);
+    height: 35px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+.user-dropdown .user-dropdown-item a img {
+    margin-right: 5px;
+}
+.user-dropdown .user-dropdown-item a:hover {
+    box-shadow: 0 3px 6px 0 rgb(0 0 0 / 18%);
+    background: var(--lightest-blue);
+}
+/* user dropdown */

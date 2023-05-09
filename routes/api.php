@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+Route::group([
+    'namespace' => 'Api',
+], function () {
 Route::post('/candidate/register', 'CandidateController@store');
 Route::get('/candidate/{id}/index', 'CandidateController@show');
 Route::post('/client/register', 'ClientController@store');
@@ -68,8 +70,11 @@ Route::post('/update/candidate/{id}/role', 'CandidateController@updateRole');
 Route::get('/onchange/get/skills/{id}', 'CandidateController@getSkills');
 Route::post('/upload/cv', 'CandidateController@uploadCv');
 Route::get('/label/count/{id}/candidate', 'CandidateApplicationController@labalCount');
+Route::get('/Notification/for/client/{id}', 'ClientApplicationController@bellNotification');
 
 Route::post('/get/all/address', 'ClientController@getAddress');
+});
+
 Route::get('/hello', function () {
     return 'Hello World';
 });

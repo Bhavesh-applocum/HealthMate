@@ -1,0 +1,120 @@
+.text-green {
+  color: var(--primary-green) !important;
+}
+
+.bg-lightest-green {
+  background-color: var(--lightest-green) !important;
+}
+
+.bg-primary-green {
+  background-color: var(--primary-green) !important;
+}
+
+.text-dark-green {
+  color: var(--primary-dark-green) !important;
+}
+
+.bg-primary-dark-green {
+  background: var(--primary-dark-green) !important;
+}
+
+.text-blue {
+  color: var(--primary-blue) !important;
+}
+
+.bg-lightest-blue {
+  background-color: var(--lightest-blue) !important;
+}
+
+.bg-primary-blue {
+  background-color: var(--primary-blue) !important;
+}
+
+.text-dark-blue {
+  color: var(--primary-dark-blue) !important;
+}
+
+.bg-primary-dark-blue {
+  background: var(--primary-dark-blue) !important;
+}
+
+.text-yellow {
+  color: var(--primary-yellow) !important;
+}
+
+.bg-lightest-yellow {
+  background-color: var(--lightest-yellow) !important;
+}
+
+.bg-primary-yellow {
+  background-color: var(--primary-yellow) !important;
+}
+
+.text-dark-yellow {
+  color: var(--primary-dark-yellow) !important;
+}
+
+.bg-primary-dark-yellow {
+  background: var(--primary-dark-yellow) !important;
+}
+
+.text-red {
+  color: var(--primary-red) !important;
+}
+
+.bg-lightest-red {
+  background-color: var(--lightest-red) !important;
+}
+
+.bg-primary-red {
+  background-color: var(--primary-red) !important;
+}
+
+.text-dark-red {
+  color: var(--primary-dark-red) !important;
+}
+
+.bg-primary-dark-red {
+  background: var(--primary-dark-red) !important;
+}
+
+.text-purple {
+  color: var(--primary-purple) !important;
+}
+
+.bg-lightest-purple {
+  background-color: var(--lightest-purple) !important;
+}
+
+.bg-primary-purple {
+  background-color: var(--primary-purple) !important;
+}
+
+.text-dark-purple {
+  color: var(--primary-dark-purple) !important;
+}
+
+.bg-primary-dark-purple {
+  background: var(--primary-dark-purple) !important;
+}
+
+.text-orange {
+  color: var(--primary-orange) !important;
+}
+
+.bg-lightest-orange {
+  background-color: var(--lightest-orange) !important;
+}
+
+.bg-primary-orange {
+  background-color: var(--primary-orange) !important;
+}
+
+.text-dark-orange {
+  color: var(--primary-dark-orange) !important;
+}
+
+.bg-primary-dark-orange {
+  background: var(--primary-dark-orange) !important;
+}
+

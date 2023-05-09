@@ -1,0 +1,35 @@
+/* roboto-300 - latin */
+@font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 300;
+    src: url("./font-face/roboto-300.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* roboto-regular - latin */
+@font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 400;
+    src: url("./font-face/roboto-regular.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* roboto-500 - latin */
+@font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 500;
+    src: url("./font-face/roboto-500.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* roboto-700 - latin */
+@font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 700;
+    src: url("./font-face/roboto-700.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* roboto-900 - latin */
+@font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 900;
+    src: url("./font-face/roboto-900.woff2") format("woff2"); /* Super Modern Browsers */
+}

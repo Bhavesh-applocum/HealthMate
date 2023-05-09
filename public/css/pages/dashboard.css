@@ -1,0 +1,58 @@
+.count_info_wrapper{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.count_info_single{
+    padding: 11px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    box-shadow: 3px 0px 7px #dfdfdfb2;
+    margin-right: 16px;
+}
+.client_count_info{
+    border-left: 5px solid var(--primary-blue);
+}
+.candidate_count_info{
+    border-left: 5px solid var(--primary-orange);
+}
+.timesheet_count_info{
+    border-left: 5px solid var(--primary-yellow);
+}
+.invoice_count_info{
+    border-left: 5px solid var(--primary-red);
+}
+.application_count_info{
+    border-left: 5px solid var(--primary-green);
+}
+.count_info_header {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    justify-content: space-between;
+    width: 200px;
+}
+.count_info_header .title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    color: var(--secondaryblue);
+}
+.count_info_body{
+    margin-top: 10px;
+}
+.count_info_body .count_value {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    color: var(--secondaryblue);
+}
+.count_info_body .count_duration_text {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    color: var(--secondaryblue);
+}

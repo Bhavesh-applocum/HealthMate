@@ -1,0 +1,28 @@
+/* source-sans-pro-regular - latin */
+@font-face {
+    font-family: "Source Sans Pro";
+    font-style: normal;
+    font-weight: 400;
+    src: url("./font-face/source-sans-pro-regular.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* source-sans-pro-600 - latin */
+@font-face {
+    font-family: "Source Sans Pro";
+    font-style: normal;
+    font-weight: 600;
+    src: url("./font-face/source-sans-pro-600.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* source-sans-pro-700 - latin */
+@font-face {
+    font-family: "Source Sans Pro";
+    font-style: normal;
+    font-weight: 700;
+    src: url("./font-face/source-sans-pro-700.woff2") format("woff2"); /* Super Modern Browsers */
+}
+/* source-sans-pro-900 - latin */
+@font-face {
+    font-family: "Source Sans Pro";
+    font-style: normal;
+    font-weight: 900;
+    src: url("./font-face/source-sans-pro-900.woff2") format("woff2"); /* Super Modern Browsers */
+}

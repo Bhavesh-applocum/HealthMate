@@ -16,6 +16,7 @@
         "illuminate/mail": "*",
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
+        "laravelcollective/html": "^6.4",
         "toin0u/geocoder-laravel": "^4.3"
     },
     "require-dev": {
@@ -50,7 +51,9 @@
             "app/Helper/ApplicationStatusHelper.php",
             "app/Helper/CustomPaginationHelper.php",
             "app/Helper/JobHelper.php",
-            "app/Helper/CandidateHelper.php"
+            "app/Helper/CandidateHelper.php",
+            "app/Helper/GeneralHelper.php",
+            "app/Helper/keyencryption.php"
         ]
     },
     "autoload-dev": {

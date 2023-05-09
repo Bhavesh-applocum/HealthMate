@@ -1,0 +1,36 @@
+/*poppins-300 - latin */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 300;
+    src: url("./font-face/Poppins-Light.woff2") format("woff2");
+}
+/*poppins-regular - latin */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 400;
+    src: url("./font-face/Poppins-Medium.woff2") format("woff2");
+}
+/*poppins-500 - latin */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    src: url("./font-face/Poppins-Regular.woff2") format("woff2");
+}
+/*poppins-600 - latin */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 700;
+    src: url("./font-face/Poppins-SemiBold.woff2") format("woff2");
+}
+
+/*poppins-600 - latin */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 900;
+    src: url("./font-face/Poppins-Bold.woff2") format("woff2");
+}
