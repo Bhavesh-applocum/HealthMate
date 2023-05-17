@@ -240,4 +240,17 @@ class GeneralHelper
         $randomString     = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
         return $randomString;
     }
+
+    public static function GenderFullName($gender)
+    {
+        if ($gender == 'M') {
+            return 'Male';
+        }
+        elseif ($gender == 'F') {
+            return 'Female';
+        }
+        else{
+            return 'Other';
+        }
+    }
 }

@@ -166,6 +166,9 @@ li {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+.cursor-pointer{
+    cursor: pointer !important;
+}
 /* custom globally useful classes */
 /* session message  */
 .session_message_wrapper {
@@ -251,3 +254,51 @@ body > main .right_main .box {
     background: var(--lighest-blue);
 }
 /* bootstrap dropdown override */
+
+.profile-pic-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid black;
+    object-fit: cover;
+}
+
+.profile-pic-div:hover #uploadBtn {
+    transform: translateY(0);
+}
+
+.profile-pic-div .img-profile{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.rounded-circle{
+    border-radius: 50% !important;
+}
+
+#uploadBtn{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    color: wheat;
+    padding: 10px 0;
+    font-family: sans-serif;
+    font-size: 10px;
+    cursor: pointer;
+    margin: 0;
+    transition: all 0.2s ease;
+    transform: translateY(140%);
+}
+
+#avatar_img{
+    display: none;
+}

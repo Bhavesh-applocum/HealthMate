@@ -32,6 +32,13 @@ nav .left button.sidebar-menu-btn {
 nav .left .logo {
     margin-left: 10px;
 }
+.logo a{
+    color: var(--white);
+    font-family: Poppins;
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+}
 nav .right {
     display: flex;
     align-items: center;

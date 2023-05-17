@@ -43,7 +43,24 @@ Route::group([
         'prefix' => 'admin',
     ], function () {
         Route::get('/', 'AdminController@index')->name('home'); // admin home
+        Route::get('client', 'ClientController@index')->name('clients.index');
+        Route::get('client/view/{id}','ClientController@show')->name('clients.show');
+        Route::delete('client/delete/{id}','ClientController@destroy')->name('clients.delete');
+        Route::get('client/edit/{id}', 'ClientController@edit')->name('clients.edit');
+        Route::put('client/update/{id}', 'ClientController@update')->name('clients.update');
+        Route::get('create/client', 'ClientController@create')->name('clients.create');
+        Route::post('store/client', 'ClientController@store')->name('clients.store');
+        Route::get('candidate', 'CandidateController@index')->name('candidates.index');
+        Route::get('candidate/view/{id}','CandidateController@show')->name('candidates.show');
+        Route::delete('candidate/delete/{id}','CandidateController@destroy')->name('candidates.delete');
+        Route::get('candidate/edit/{id}', 'CandidateController@edit')->name('candidates.edit');
+        Route::put('candidate/update/{id}', 'CandidateController@update')->name('candidates.update');
+        Route::get('create/candidate', 'CandidateController@create')->name('candidates.create');
+        Route::post('store/candidate', 'CandidateController@store')->name('candidates.store');
+        Route::get('jobs', 'JobController@index')->name('jobs.index');
         Route::get('/getDashboardInfo', 'AdminController@getDashboardInfo')->name('getDashboardInfo');
+        Route::get('/dashboardTimesheetInfo', 'AdminController@getTimesheetChartInfo')->name('getTimesheetChartInfo');
+        Route::get('/dashboardCategoryInfo', 'AdminController@getCategoryWiseCandidateAndCreatedJob')->name('getCategoryInfo');
     });
 });
 

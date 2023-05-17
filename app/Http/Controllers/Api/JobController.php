@@ -178,6 +178,7 @@ class JobController extends Controller
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
+                'code'   => 400,
                 'message' => 'No job found',
                 'AppliedCount' => $jobCount,
                 'BookedCount' => $BookedCount,
@@ -200,6 +201,7 @@ class JobController extends Controller
 
         return response()->json([
             'success' => true,
+            'code'    => 200,
             'message' => 'Jobs found',
             'data' => $data,
             'AppliedCount' => $jobCount,
@@ -221,6 +223,7 @@ class JobController extends Controller
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
+                'code'    => 400,
                 'message' => 'No job found',
             ], 400);
         }
@@ -229,6 +232,7 @@ class JobController extends Controller
         if (!$client) {
             return response()->json([
                 'success' => false,
+                'code'    => 400,
                 'message' => 'Client not found'
             ], 400);
         }

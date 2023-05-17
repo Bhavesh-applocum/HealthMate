@@ -1,0 +1,48 @@
+<form action="{{ route('admin.clients.update', $data) }}" method="post" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="profile-pic-div my-4">
+                    <img class="img-profile rounded-circle shadow-4-strong" src="/{{ $data['avatar'] }}" style="width:100px;height:100px;object-fit:cover;" id="show">
+                    <input type="file" name="avatar" id="avatar_img" onchange="previewImg();">
+                    <label for="avatar_img" id="uploadBtn">Choose Photo</label>
+            </div>
+            <div class="form-wrapper my-2">
+                <div class="input-group">
+                    <label>Practice_Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="clientname" class="form-control @error('clientname') is-invalid @enderror" id="clientname" value="{{ $data['name'] }}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ $data['email'] }}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Phone</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" id="phone" value="{{ $data['phone'] }}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Address</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" id="address" value="{{ $data['address'] }}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Area</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="area" class="form-control @error('area') is-invalid @enderror" id="area" value="{{ $data['area'] }}">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Post Code</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="post_code" class="form-control @error('post_code') is-invalid @enderror" id="post_code" value="{{ $data['post_code'] }}">
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="editButton form-control btn-custom-primary-blue btn-hover-outline mw-200 w-100 my-3 text-center" tabindex="1">Edit</a>
+        </form>

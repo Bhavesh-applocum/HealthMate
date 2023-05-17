@@ -34,6 +34,26 @@
     justify-content: flex-start;
     flex-direction: column;
 }
+.form-check-input {
+    display: flex;
+    flex-direction: row ;
+    align-items: center;
+    justify-content: flex-end;
+    height: 18px;
+    width: 410px;
+}
+.form-check-label {
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 1px;
+    color: var(--secondaryblue);
+    display: block;
+}
+#editGender{
+    border: 1px solid #ced4da;
+}
 .input-group label {
     margin-bottom: 12px;
     font-size: 15px;

@@ -12,9 +12,10 @@
   @include('includes.css')
   @yield('style')
 </head>
-@php 
+@php
 
 @endphp
+
 <body class="" data-login-type="{{Session::get('user_type')}}">
   @include('includes.header')
   @include('global.show_session')
@@ -41,7 +42,14 @@
   <script src="{{ asset('js/select2.full.js') }}"></script>
   <script src="{{ asset('js/modal.js') }}"></script>
   <script src="{{ asset('js/common.js') }}"></script>
-  
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+
   @yield('custom_scripts')
   <script src="{{ asset('js/dataTable-custom.js') }}"></script>
   <script src="{{ asset('js/validations/after_validation.js') }}"></script>
@@ -55,4 +63,5 @@
     }, 2000);
   </script>
 </body>
+
 </html>

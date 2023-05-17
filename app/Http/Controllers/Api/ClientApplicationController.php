@@ -137,6 +137,7 @@ class ClientApplicationController extends Controller
         return response()->json([
             'message' => 'Perfect',
             'sucess' => true,
+            'code'  => 200,
             'data' => $data,
             'curent_page' => $paginateData['current_page'],
             'last_page' => $paginateData['last_page'],

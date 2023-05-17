@@ -5,7 +5,7 @@
                 <img src="{{ asset('/images/HealthMate.svg') }}" alt="menu" width="30" height="30">
             </button>
             <div class="logo">
-                HealthMate
+                <a href="{{ route('admin.dashboard') }}">HealthMate</a>
             </div>
         </div>
         <div class="right">

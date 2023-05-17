@@ -119,6 +119,7 @@ class ApplicationStatusHelper
 
     public static function getOnlyArea($address_id)
     {
+        // dd($address_id);
         $address = Address::find($address_id);
         return $address->area;
     }

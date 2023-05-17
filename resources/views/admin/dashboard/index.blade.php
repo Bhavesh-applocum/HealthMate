@@ -2,9 +2,13 @@
 @section('title','dashboard')
 @section('style')
 <link rel="stylesheet" href="{{ asset('css/pages/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('css/pages/timesheetChart.css') }}">
+<!-- <link rel="stylesheet" href="{{ asset('css/pages/categoryTypeList.css') }}"> -->
 @endsection
 @section('main_content')
 <span id="getDashboardInfo" data-url="{{ route('admin.getDashboardInfo') }}"></span>
+<span id="dashboardTimesheetInfo" data-url="{{ route('admin.getTimesheetChartInfo') }}"></span>
+<span id="dashboardCategoryInfo" data-url="{{ route('admin.getCategoryInfo') }}"></span>
 <div class="box">
     <div class="count_info_wrapper">
         <div class="count_info_single client_count_info">
@@ -134,8 +138,19 @@
             </div>
         </div>
     </div> -->
+
+    <figure class="highcharts-figure">
+    <div id="TimesheetChart"></div>
+    </figure>
+
+    <figure class="highcharts-figure1">
+    <div id="CategoryTypeList"></div>
+    </figure>
+
 </div>
 @endsection
 @section('custom_scripts')
 <script src="{{ asset('js/admin/dashboard.js') }}"></script>
+<script src="{{ asset('js/admin/timesheetChart.js') }}"></script>
+<script src="{{ asset('js/admin/categoryTypeList.js') }}"></script>
 @endsection

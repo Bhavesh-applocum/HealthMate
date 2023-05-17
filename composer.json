@@ -17,7 +17,8 @@
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.4",
-        "toin0u/geocoder-laravel": "^4.3"
+        "toin0u/geocoder-laravel": "^4.3",
+        "yajra/laravel-datatables-oracle": "^9.21"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
@@ -49,6 +50,7 @@
         ],
         "files": [
             "app/Helper/ApplicationStatusHelper.php",
+            "app/Helper/DataTableHelper.php",
             "app/Helper/CustomPaginationHelper.php",
             "app/Helper/JobHelper.php",
             "app/Helper/CandidateHelper.php",

@@ -16,4 +16,9 @@ $.validator.addMethod("isMatchedToPassword", function (value, element) {
     let password = $("#password").val();
     return confirm_password === password;
 }, "Confirm password must be equal to password");
+    
+// $.validator.addMethod("filesize", function (value, element) {
+//     let file_size = element.files[0].size;
+//     return file_size <= 1000000;
+// }, "File size must be less than 1MB");
 

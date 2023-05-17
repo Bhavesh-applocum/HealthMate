@@ -20,7 +20,9 @@ class AddressController extends Controller
         $address = Address::with('client')->where('client_id', $id)->orderBy('id','desc')->get();
         if (sizeof($address) > 0){
         return response()->json([
+            'message' => 'Address found',
             'address' => $address,
+            'code'    => 200
         ], 200);
         }else{
             return response()->json([
@@ -41,6 +43,7 @@ class AddressController extends Controller
             $client->save();
             }
         return response()->json([
+            'message' => 'Address set as default',
             'status' => 'success',
             'code' => 200
         ], 200);
@@ -70,10 +73,9 @@ class AddressController extends Controller
         $address->address = $request->address;
         $address->area = $request->area;
         $address->post_code = $request->post_code;
-
         $address->save();
-
-        if($request->is_default == true){
+        
+        if($request->is_default != 'false'){
             $client = Client::findOrFail($id);
             $client->address_id = $address->id;
             $client->save();
@@ -108,6 +110,8 @@ class AddressController extends Controller
     {
         $address = Address::with('client')->findOrFail($id);
         return response()->json([
+            'message' => 'Address found',
+            'code'    => 200,
             'address' => $address
         ], 200);
     }
@@ -148,6 +152,8 @@ class AddressController extends Controller
         $address = Address::findOrFail($address);
         $deleteAddressId = $address->id;
 
+        $address->delete();
+        
         $client_id = $address->client_id;
         $client = Client::findOrFail($client_id);
         $jobs = Job::where('client_id',$client_id)->get();
@@ -167,7 +173,6 @@ class AddressController extends Controller
                 $job->save();
             }   
         }
-        $address->delete();
         
         return response()->json([
             'message' => 'Address deleted successfully',

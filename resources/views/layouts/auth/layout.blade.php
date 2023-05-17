@@ -9,7 +9,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <title>@yield('title')</title>
-  <!-- <link rel="shortcut icon" href="{{ config('params.favicon') }}" /> -->
+  <link rel="icon" type="image/x-icon" href="Healthmate-black.ico">
   @include('includes.css')
 </head>
 
@@ -22,6 +22,8 @@
 <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('js/validations/index.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 
 @yield('custom_scripts')
 <script src="{{ asset('js/validations/after_validation.js') }}"></script>

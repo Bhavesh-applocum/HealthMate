@@ -33,19 +33,28 @@ $(document).ready(function () {
                     data: "id",
                     name: "id",
                     render: function (data, type, row) {
-                        return "USR-" + ("000" + row.id).substr(-3);
+                        return "CON-" + ("000" + row.id).substr(-3);
                     },
                 },
                 {
-                    data: "name",
-                    name: "name",
+                    data: "title",
+                    name: "title",
                 },
                 {
-                    data: "email",
-                    render: function (data, type, row) {
-                        return `<a href="mailto:${row.email}" class="can_mail" target="_blank">${row.email}</a>`;
-                    },
-                    name: "email",
+                    data: "client",
+                    name: "client",
+                },
+                {
+                    data: "date",
+                    name: "date",
+                },
+                {
+                    data: "time",
+                    name: "start/end time",
+                },
+                {
+                    data: "created_at",
+                    name: "created_at",
                 },
                 {
                     data: "action",
