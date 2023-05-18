@@ -11,7 +11,7 @@ class CustomPaginationHelper
         $limit = 10; // limit also workd as count per page
         $page = (int)$page; // this will convert page to int from string
         $offset = ($page*$limit)-$limit; 
-        $lastPage = ceil($query->count()/$limit); // divided total by limitto get last page
+        $lastPage = ceil(count($query->get())/$limit); // divided total by limitto get last page
         if($page == $lastPage){ // is page and last_page is equal then make is_last_page true
             $is_last_page = true;
         }
@@ -22,8 +22,10 @@ class CustomPaginationHelper
         $paginatedData = [];
         $paginatedData['data'] = $query;
         $paginatedData['is_last_page'] = $is_last_page;
+        // dd($paginatedData['is_last_page']);
         $paginatedData['last_page'] = $lastPage;
         $paginatedData['current_page'] = $page;
+        // dd($paginatedData);
         return $paginatedData;
     }
 

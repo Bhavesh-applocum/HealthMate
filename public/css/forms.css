@@ -9,6 +9,11 @@
     grid-gap: 0 16px;
     grid-template-columns: repeat(3, 1fr);
 }
+.form-box{
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 6%);
+    border-radius: 8px;
+    padding: 16px;
+}
 @media screen and (max-width: 900px) {
     .form-wrapper:not(.auth-wrapper .form-wrapper) {
         grid-template-columns: repeat(2, 1fr);

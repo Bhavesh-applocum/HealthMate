@@ -253,4 +253,17 @@ class GeneralHelper
             return 'Other';
         }
     }
+
+    public static function getParkingInfo($count)
+    {
+        if ($count == 0) {
+            return 'Not Available';
+        }
+        elseif ($count == 1) {
+            return 'Available';
+        }
+        else{
+            return 'Not Applicable';
+        }
+    }
 }

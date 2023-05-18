@@ -226,6 +226,10 @@ body > main .right_main {
 body > main .right_main .box {
     padding: 16px;
 }
+#ShowJob {
+    padding: 16px;
+    text-align: center;
+}
 /* main */
 
 /* bootstrap dropdown override */

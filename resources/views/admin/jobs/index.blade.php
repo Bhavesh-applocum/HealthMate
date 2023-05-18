@@ -16,6 +16,9 @@
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
+                    <a href="#" class="icon-btn icon-btn-lg ml-2 __shadow icon-btn-primary-purple icon-btn-hover-outline">
+                        <i class="fa-solid fa-plus"></i>
+                    </a>
                 </div>
             </div>
         </div>

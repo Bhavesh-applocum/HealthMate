@@ -58,6 +58,8 @@ Route::group([
         Route::get('create/candidate', 'CandidateController@create')->name('candidates.create');
         Route::post('store/candidate', 'CandidateController@store')->name('candidates.store');
         Route::get('jobs', 'JobController@index')->name('jobs.index');
+        Route::delete('delete/job/{id}', 'JobController@destroy')->name('jobs.delete');
+        Route::get('/job/view/{id}','JobController@show')->name('jobs.show');
         Route::get('/getDashboardInfo', 'AdminController@getDashboardInfo')->name('getDashboardInfo');
         Route::get('/dashboardTimesheetInfo', 'AdminController@getTimesheetChartInfo')->name('getTimesheetChartInfo');
         Route::get('/dashboardCategoryInfo', 'AdminController@getCategoryWiseCandidateAndCreatedJob')->name('getCategoryInfo');

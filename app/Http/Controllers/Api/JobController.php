@@ -78,7 +78,6 @@ class JobController extends Controller
     public function specificJob($id)
     {
         $candidate = Candidate::find($id);
-
         if (!$candidate) {
             return response()->json([
                 'message' => 'Candidate not found',
@@ -86,12 +85,13 @@ class JobController extends Controller
                 'code' => 400
             ], 400);
         }
-        $today = date('Y,m-d');
+        $today = date('Y-m-d');
+        // dd($jobs->get());
         $jobs = Job::with('client', 'applications')
             ->select('jobs.*')
             ->leftJoin('applications', 'applications.job_id', "jobs.id")
             ->where('job_category', $candidate->role)
-            ->whereIn('jobs.job_status', [0, 1])
+            ->whereIn('jobs.job_status',[0, 1])
             ->whereNotIn('jobs.id', function ($query) use ($id) {
                 $query->select('job_id')
                     ->from(with(new Application())->getTable())
@@ -100,13 +100,16 @@ class JobController extends Controller
                             ->where("candidate_id", "=", $id);
                     });
             })
-            ->whereDate('jobs.job_date', '>=', $today)
+            ->where('job_date', '>=', $today)
             ->groupBy('jobs.id');
+            // dd($jobs->count());
+            // dd(count($jobs->get()));
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
                 'message' => 'No job found',
+                'code'  => 400,
             ], 400);
         }
         $data = [];
@@ -121,8 +124,10 @@ class JobController extends Controller
             $data[$key]['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
             $data[$key]['job_category']     = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
         }
+        // dd($paginatedData['last_page']);
         return response()->json([
             'success' => true,
+            'code'  => 200,
             'message' => 'Jobs found',
             'data' => $data,
             'curent_page' => $paginatedData['current_page'],
@@ -219,7 +224,6 @@ class JobController extends Controller
         $client = Client::find($id);
         $jobs = Job::where('client_id', $id);
         $paginatedData = CustomPaginationHelper::paginate_data($jobs, request()->query('page') ?? 1);
-
         if (count($paginatedData['data']) == 0) {
             return response()->json([
                 'success' => true,
@@ -256,6 +260,8 @@ class JobController extends Controller
         $TimesheetCount = Job::where(['client_id'=>$client->id,'clientJobWorkingStatus'=>2])->count();
         $InvoiceCount = Job::where(['client_id'=>$client->id,'job_status'=>1,'clientJobWorkingStatus'=>1])->count();
         $AllPayment  = Invoice::where(['client_id'=>$client->id,'invoice_status'=>2])->sum('invoice_amount');
+
+        // dd($paginatedData['last_page']);//
 
         return response()->json([
             'message' => 'Jobs retrieved successfully',
