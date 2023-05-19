@@ -1,12 +1,13 @@
 @extends('layouts.__layout')
-@section('title','Job Description')
+@section('title','Edit Contract')
 @section('main_content')
+<span id="get_url" "></span>
 <div class="box" id="ShowJob">
     <div class="form-design">
         <div class="form-header">
             <div class="form-title d-flex justify-content-start align-items-center">
-            <a href="{{ route('admin.jobs.index') }}"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></a>
-                <h3 class="form-title mb-0 ml-3">Job Description</h3>
+            <a href="{{ URL::previous() }}"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></a>
+                <h3 class="form-title mb-0 ml-3">Edit Contract</h3>
             </div>
         </div>
         {{ Form::model($data, ['method'=>'PUT','route'=>['admin.clients.update',$data['id']], 'files'=>true ]) }}
@@ -20,34 +21,49 @@
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2" style="width:135px">Title</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('title', null, ['class'=>'form-control', 'id'=>'jobTitle', 'readonly']) }}
+                            {{ Form::text('title', null, ['class'=>'form-control', 'id'=>'jobTitle']) }}
                         </div>
                     </div>
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-2 mr-2" style="width:135px">Description</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::textarea('description', null, ['class'=>'form-control', 'id'=>'jobDescription', 'rows'=>3, 'cols'=>3, 'readonly']) }}
+                            {{ Form::textarea('description', null, ['class'=>'form-control', 'id'=>'jobDescription', 'rows'=>3, 'cols'=>3]) }}
                         </div>
                     </div>
                     <!-- job category  -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
-                        <label for="" class="mb-0 mr-2" style="width:135px">Category</label>
-                        <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('job_category', null, ['class'=>'form-control', 'id'=>'jobCategory', 'readonly']) }}
-                        </div>
+                    <label for="" class="mb-2 mr-2" style="width:135px">Category</label>
+                    <div class="input-wrapper select-wrapper flex-grow-1">
+                        <select name="role" class="single-select2" id="">
+                            @foreach ($data['AllCategories'] as $key => $role)
+                            @php
+                                $isSelected = $role == $data['job_category'];
+                            @endphp
+                            <option value="{{ $key }}" {{ $isSelected ? "selected" : "" }}>{{ $role }}</option>
+                            @endforeach
+                            
+                        </select>
                     </div>
+                </div>
                     <!-- job date -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2" style="width:135px">Date</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('job_date', null, ['class'=>'form-control', 'id'=>'jobDate', 'readonly']) }}
+                            {{ Form::date('jobdate', \Carbon\Carbon::parse($data['job_date']), ['class'=>'form-control', 'id'=>'jobDate']) }}
                         </div>
                     </div>
                     <!-- job time -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
-                        <label for="" class="mb-0 mr-2" style="width:135px">Time</label>
+                        <label for="" class="mb-0 mr-2" style="width:135px">Start Time</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('job_time', null, ['class'=>'form-control', 'id'=>'jobTime', 'readonly']) }}
+                            {{ Form::time('job_start_time', \Carbon\Carbon::parse($data['job_start_time']), ['class'=>'form-control', 'id'=>'jobTime']) }}
+                        </div>
+                    </div>
+                    <!-- job end time -->
+                    <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
+                        <label for="" class="mb-0 mr-2" style="width:135px">End Time</label>
+                        <div class="input-wrapper flex-grow-1">
+                            {{ Form::time('job_end_time', \Carbon\Carbon::parse($data['job_end_time']), ['class'=>'form-control', 'id'=>'jobEndTime']) }}
                         </div>
                     </div>
                     <!-- job salary -->
@@ -55,22 +71,29 @@
                         <label for="" class="mb-0 mr-2" style="width:135px">Salary</label>
                         ₹ &nbsp;&nbsp; 
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('salary', null, ['class'=>'form-control', 'id'=>'jobSalary', 'readonly']) }}
+                            {{ Form::text('salary', null, ['class'=>'form-control', 'id'=>'jobSalary']) }}
                         </div>
                     </div>
                     <!-- break time -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2" style="width:135px">Break Time</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('break', null, ['class'=>'form-control', 'id'=>'breakTime', 'readonly']) }}
+                            {{ Form::time('break', \Carbon\Carbon::parse($data['break']), ['class'=>'form-control', 'id'=>'breakTime']) }}
                         </div>
                         &nbsp;&nbsp;/ Min
                     </div>
                     <!-- Parking -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2" style="width:135px">Parking</label>
-                        <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('parking', null, ['class'=>'form-control', 'id'=>'parking', 'readonly']) }}
+                        <div class="input-wrapper select-wrapper flex-grow-1">
+                            <select name="parking" id="" class="single-select2">
+                                @foreach ($data['AllParking'] as $key => $parking )
+                                    @php
+                                        $isSelected = $parking == $data['parking'];
+                                    @endphp
+                                    <option value="{{ $key }}" {{ $isSelected ? "selected" : "" }}>{{ $parking }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <!-- Job Created At -->
@@ -110,14 +133,35 @@
                     </div>
                     <div class="input-group my-4 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2 ml-0" style="width:135px">Address</label>
-                        <div class="input-wrapper flex-grow-1">
-                            {{ Form::textarea('address', null, ['class'=>'form-control', 'id'=>'clientPhone','rows'=>3, 'cols'=>3, 'readonly']) }}
+                        <div class="input-wrapper select-wrapper flex-grow-1">
+                            <select name="address" id="addressDrop" class="single-select2">
+                                @foreach ($data['AllClientAddress'] as $key => $address )
+                                    @php
+                                        $isSelected = $address['address'] == $data['address'];
+                                    @endphp
+                                    <option data-id="{{ $address['id'] }}" data-url="{{ route('admin.jobs.area.edit', $address['id']) }}" value="{{ $address['id'] }}" {{ $isSelected ? "selected" : "" }}>{{ $address['address'] }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+                    <!-- area  -->
+                    <div class="input-group my-4 d-flex flex-row justify-content-between align-items-center">
+                        <label for="" class="mb-0 mr-2 ml-0" style="width:135px">Area</label>
+                        <div class="input-wrapper flex-grow-1">
+                            {{ Form::text('area', null, ['class'=>'form-control area-edit', 'id'=>'clientArea']) }}
+                        </div>
+                    </div>
+                    <!-- post_code -->
+                    <div class="input-group my-4 d-flex flex-row justify-content-between align-items-center">
+                        <label for="" class="mb-0 mr-2 ml-0" style="width:135px">Post Code</label>
+                        <div class="input-wrapper flex-grow-1">
+                            {{ Form::text('post_code', null, ['class'=>'form-control pc-edit', 'id'=>'clientPost']) }}
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>
-        <a href="{{ route('admin.jobs.edit',$data['id']) }}" class="form-control btn-custom-primary-blue btn-hover-outline m-auto mw-200 w-100 my-3 text-center" tabindex="1">Edit</a>
+        <a href="#" class="form-control btn-custom-primary-blue btn-hover-outline m-auto mw-200 w-100 my-3 text-center edit-contract" tabindex="1">Edit</a>
         {!! Form::close() !!}
     </div>
 </div>

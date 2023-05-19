@@ -1,12 +1,12 @@
 @extends('layouts.__layout')
 @section('title','Edit Client')
 @section('main_content')
-
 <div class="box">
     <div class="form-design">
         <div class="form-header">
-            <div class="form-title">
-                <h3 class="form-title">Edit Client</h3>
+            <div class="form-title d-flex justify-content-start align-items-center">
+            <a href="{{ route('admin.clients.index') }}"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></a>
+                <h3 class="form-title mb-0 ml-3">Edit Client</h3>
             </div>
         </div>
         {{ Form::model($data, ['method'=>'PUT','route'=>['admin.clients.update',$data['id']], 'files'=>true ]) }}

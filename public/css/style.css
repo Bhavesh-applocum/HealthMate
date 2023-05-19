@@ -44,6 +44,34 @@
     --page-bg-lightest-purple: var(--lightest-purple);
 }
 
+/* status color keys  /
+/ contract  /
+/* in-review : #d8d800
+published: #00dada
+applied : #ff22fb
+booked : #00ff00
+terminated : var(--primaryred)as terminated
+worked: #0c3dff /
+/ contract  /
+
+/ timesheet /
+/* asigned : #00dada
+pending: #d8d800  as processed
+sbmitted: #ff9539  as processed
+rejected: var(--primaryred)
+terminated: #ff22fb as ts-terminated
+authorised: #0c3dff
+invoiced:#00ff00 /
+/ timesheet /
+
+/ invoice  /
+/* processing : #0c3dff
+paid: #00ff00
+overdue : var(--primaryred)/
+/ invoice  /
+/ status color keys  */
+
+
 /* white  */
 .text-white {
     color: var(--white) !important;

@@ -5,8 +5,9 @@
 <div class="box">
     <div class="form-design">
         <div class="form-header">
-            <div class="form-title">
-                <h3 class="form-title">Edit Candidate</h3>
+                <div class="form-title d-flex justify-content-start align-items-center">
+                <a href="{{ route('admin.candidates.index') }}"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></a>
+                <h3 class="form-title mb-0 ml-3">Edit Candidate</h3>
             </div>
         </div>
         {{ Form::model($data, ['method'=>'PUT','route'=>['admin.candidates.update',$data['id']], 'files'=>true ]) }}

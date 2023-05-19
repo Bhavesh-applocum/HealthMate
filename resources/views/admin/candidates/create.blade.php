@@ -5,8 +5,9 @@
 <div class="box">
     <div class="form-design">
         <div class="form-header">
-            <div class="form-title">
-                <h3 class="form-title">Create Candidate</h3>
+            <div class="form-title d-flex justify-content-start align-items-center">
+            <a href="{{ route('admin.candidates.index') }}"><i class="fas fa-arrow-left" style="font-size: 20px;"></i></a>
+                <h3 class="form-title mb-0 ml-3">Create Candidate</h3>
             </div>
         </div>
         {!! Form::open(['method'=>'POST','route'=>'admin.candidates.store','id'=>'create_candidate','class'=>'create_candidate', 'files'=>true ]) !!}

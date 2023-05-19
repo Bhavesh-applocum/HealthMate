@@ -60,24 +60,25 @@ class JobController extends Controller
         $job = Job::with('client')->findOrFail($id);
         $address = Address::with('job')->where(['id'=>$job->address_id, 'client_id'=>$job->client_id])->first();
         $data = [];
+        $startTime = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
+        $endTime = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
 
-        $data['id'] = $job->ref_no;
+        $data['id'] = $job->id;
         $data['title'] = $job->job_title;
         $data['description'] = $job->job_description;
         $data['status'] = ApplicationStatusHelper::getJobStatusByName($job->job_status);
         $data['client_avatar'] = $job->client->avatar;
         $data['client'] = $job->client->practice_name;
+        $data['client_email'] = $job->client->email;
+        $data['client_phone'] = $job->client->phone;
         $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
-        $data['job_date'] = Carbon::createFromFormat('Y-m-d' , $job->job_date)->format('d-m-Y');
-        $data['job_start_time'] = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
-        $data['job_end_time'] = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
-        $data['salary'] = '₹'. $job->job_salary;
-        $data['address'] = $address->address;
-        $data['area'] = $address->area;
-        $data['post_code'] = $address->post_code;
-        $data['break'] = Carbon::createFromFormat('H:i:s',$job->break_time)->format('i:s A');
+        $data['job_date'] = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d/m/Y');
+        $data['job_time'] = $startTime. ' - ' .$endTime;
+        $data['salary'] = $job->job_salary;
+        $data['address'] = $address->address . '' .$address->area. '-' .$address->post_code;
+        $data['break'] = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');
         $data['parking'] = GeneralHelper::getParkingInfo($job->parking);
-        $data['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $job->created_at)->format('d-m-Y H:i:s');
+        $data['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $job->created_at)->format('d/m/Y - H:i:s A');
 
         return view('admin.jobs.view', [
             'data' => $data
@@ -91,8 +92,52 @@ class JobController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        //
+    {  
+        $job = Job::with('client')->findOrFail($id);
+        $address = Address::with('job')->where(['id'=>$job->address_id, 'client_id'=>$job->client_id])->first();
+        $allAddress = Address::where('client_id',$job->client_id)->get();
+        // dd($allAddress);
+        $data = [];
+        $startTime = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
+        $endTime = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i');
+
+        $data['id'] = $job->id;
+        $data['title'] = $job->job_title;
+        $data['description'] = $job->job_description;
+        $data['status'] = ApplicationStatusHelper::getJobStatusByName($job->job_status);
+        $data['client_avatar'] = $job->client->avatar;
+        $data['client'] = $job->client->practice_name;
+        $data['client_email'] = $job->client->email;
+        $data['client_phone'] = $job->client->phone;
+        $data['job_category'] = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
+        $data['AllCategories'] = config('constant.job_Category');
+        $data['job_date'] = Carbon::createFromFormat('Y-m-d', $job->job_date)->format('d-m-Y');
+        $data['job_start_time'] = $startTime;
+        $data['job_end_time'] = $endTime;
+        $data['salary'] = $job->job_salary;
+        $data['AllClientAddress'] = $allAddress;
+        $data['address'] = $address->address;
+        $data['area'] = $address->area;
+        $data['post_code'] = $address->post_code;
+        $data['break'] = Carbon::createFromFormat('H:i:s',$job->break_time)->format('H:i');
+        $data['parking'] = GeneralHelper::getParkingInfo($job->parking);
+        $data['AllParking'] = config('constant.parking');
+        $data['created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $job->created_at)->format('d/m/Y - H:i:s A');
+
+        // dd($data);
+        return view('admin.jobs.edit', [
+            'data' => $data
+        ]);
+    }
+
+    public function editAjaxArea($id){
+        $address = Address::where('id',$id)->first();
+        $data = [];
+        $data['area'] = $address->area;
+        $data['post_code'] = $address->post_code;
+        return response()->json([
+            'data' => $data
+        ],200);
     }
 
     /**

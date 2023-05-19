@@ -60,6 +60,8 @@ Route::group([
         Route::get('jobs', 'JobController@index')->name('jobs.index');
         Route::delete('delete/job/{id}', 'JobController@destroy')->name('jobs.delete');
         Route::get('/job/view/{id}','JobController@show')->name('jobs.show');
+        Route::get('job/edit/{id}', 'JobController@edit')->name('jobs.edit');
+        Route::get('/address/{id}', 'JobController@editAjaxArea')->name('jobs.area.edit');
         Route::get('/getDashboardInfo', 'AdminController@getDashboardInfo')->name('getDashboardInfo');
         Route::get('/dashboardTimesheetInfo', 'AdminController@getTimesheetChartInfo')->name('getTimesheetChartInfo');
         Route::get('/dashboardCategoryInfo', 'AdminController@getCategoryWiseCandidateAndCreatedJob')->name('getCategoryInfo');

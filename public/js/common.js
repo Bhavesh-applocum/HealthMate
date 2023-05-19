@@ -178,6 +178,41 @@ $(".sidebarCloseButton").click(function () {
     }, 200);
 });
 
+//chage color job status wise using condition 
+$(document).ready(function () {
+    $(".job-status").each(function () {
+        let status = $(this).data("status");
+        if (status == "Published") {
+            $(this).addClass('bg-primary-blue');
+        } else if (status == "Application") {
+            $(this).addClass('bg-primary-purple');
+        } else if (status == "Booking") {
+            $(this).addClass('bg-primary-green');
+        } else if (status == "Worked") {
+            $(this).addClass('bg-primary-yellow');
+        }
+    });
+});
+
+$("#addressDrop").change(function (){
+    // get url 
+    var url = $(this).children(":selected").data('url');
+    console.log(url);
+    // ajax call
+    $.ajax({
+        // id
+        url: url,
+        method: 'GET',
+        success: function (data){
+            console.log(data)
+            let addressData = data.data
+            $(".area-edit").attr('value', addressData.area);
+            $(".pc-edit").attr('value',addressData.post_code);
+        }
+    })
+});
+
+
 function previewImg() {
     var file = document.getElementById("avatar_img").files;
             if (file.length > 0) {
