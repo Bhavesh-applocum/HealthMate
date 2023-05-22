@@ -53,8 +53,8 @@ $(document).ready(function () {
                     name: "start/end time",
                 },
                 {
-                    data: "created_at",
-                    name: "created_at",
+                    data: "job_status",
+                    name: "job_status",
                 },
                 {
                     data: "action",

@@ -6,7 +6,7 @@
             <th class="table_sort_data" style="min-width:70px !important;">Client</th>
             <th class="table_sort_data" style="min-width:70px !important;">Job Date</th>
             <th class="table_sort_data" style="min-width:70px !important;">Start/End Time</th>
-            <th class="table_sort_data" style="min-width:70px !important;">Created At</th>
+            <th class="table_sort_data" style="min-width:70px !important;">Job Status</th>
             <th class="table_sort_data" style="min-width:70px !important;">Action</th>
         </tr>
     </thead>

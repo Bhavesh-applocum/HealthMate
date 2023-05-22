@@ -130,9 +130,9 @@ class TimesheetController extends Controller
     public function update(Request $request,$id)
     {
         $timesheet = Timesheet::with('job','application','candidate')->find($id);
-
-        $timesheet->candidate->working_status = 1;
-        $timesheet->candidate->save();
+        
+        $timesheet->job->candidate_working_status = 1;
+        $timesheet->job->save();
 
         $timesheet->start_time = $request->start_time;
         $timesheet->end_time = $request->end_time;

@@ -334,3 +334,7 @@ body > main .right_main .box {
 #avatar_img{
     display: none;
 }
+
+.ClientInfo{
+    display: none;
+}

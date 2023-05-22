@@ -198,8 +198,8 @@ return [
     ],
 
     'Working_status_candidate' => [
-        1 => 'Payment Due', //candidate side (After worked candidate default status is Pendidg )
-        2 => 'Processing', //client check timesheet and approve
+        1 => 'Worked', //candidate side (After worked candidate default status is Pendidg )
+        2 => 'Payment Due', //client check timesheet and approve
         3 => 'Paid', //client click on mark as paid button
         4 => 'Dispute', //client click on reject timesheet button
     ],

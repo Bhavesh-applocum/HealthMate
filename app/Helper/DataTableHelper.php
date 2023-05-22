@@ -96,8 +96,8 @@ class DataTableHelper
                 $eDate = Carbon::createFromFormat('H:i:s', $row->job_end_time)->format('H:i'); 
                 return $sDate."-".$eDate;
             })
-            ->editColumn('created_at', function ($row) {
-                return $row->created_at->format('d-m-Y');
+            ->editColumn('job_status', function ($row) {
+                return ApplicationStatusHelper::getJobStatusByName($row->job_status);
             })
             ->addColumn('action', function ($row) {
                 return view('partials.job.__action', [

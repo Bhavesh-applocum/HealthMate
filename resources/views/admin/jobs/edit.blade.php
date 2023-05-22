@@ -10,7 +10,7 @@
                 <h3 class="form-title mb-0 ml-3">Edit Contract</h3>
             </div>
         </div>
-        {{ Form::model($data, ['method'=>'PUT','route'=>['admin.clients.update',$data['id']], 'files'=>true ]) }}
+        {{ Form::model($data, ['method'=>'PUT','route'=>['admin.jobs.update',$data['id']], 'files'=>true ]) }}
         <div class="row m-4">
             <div class="col-6">
                 <!-- job details -->
@@ -52,18 +52,20 @@
                             {{ Form::date('jobdate', \Carbon\Carbon::parse($data['job_date']), ['class'=>'form-control', 'id'=>'jobDate']) }}
                         </div>
                     </div>
-                    <!-- job time -->
-                    <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
-                        <label for="" class="mb-0 mr-2" style="width:135px">Start Time</label>
-                        <div class="input-wrapper flex-grow-1">
-                            {{ Form::time('job_start_time', \Carbon\Carbon::parse($data['job_start_time']), ['class'=>'form-control', 'id'=>'jobTime']) }}
+                    <div class="d-flex">
+                        <!-- job start time -->
+                        <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
+                            <label for="" class="mb-0 mr-2" style="width:135px">Start Time</label>
+                            <div class="input-wrapper flex-grow-1">
+                                {{ Form::time('job_start_time', \Carbon\Carbon::parse($data['job_start_time']), ['class'=>'form-control', 'id'=>'jobTime']) }}
+                            </div>
                         </div>
-                    </div>
-                    <!-- job end time -->
-                    <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
-                        <label for="" class="mb-0 mr-2" style="width:135px">End Time</label>
-                        <div class="input-wrapper flex-grow-1">
-                            {{ Form::time('job_end_time', \Carbon\Carbon::parse($data['job_end_time']), ['class'=>'form-control', 'id'=>'jobEndTime']) }}
+                        <!-- job end time -->
+                        <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
+                            <label for="" class="mb-0 mr-2" style="width:135px">End Time</label>
+                            <div class="input-wrapper flex-grow-1">
+                                {{ Form::time('job_end_time', \Carbon\Carbon::parse($data['job_end_time']), ['class'=>'form-control', 'id'=>'jobEndTime']) }}
+                            </div>
                         </div>
                     </div>
                     <!-- job salary -->
@@ -148,20 +150,20 @@
                     <div class="input-group my-4 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2 ml-0" style="width:135px">Area</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('area', null, ['class'=>'form-control area-edit', 'id'=>'clientArea']) }}
+                            {{ Form::text('area', null, ['class'=>'form-control area-edit', 'id'=>'clientArea', 'readonly']) }}
                         </div>
                     </div>
                     <!-- post_code -->
                     <div class="input-group my-4 d-flex flex-row justify-content-between align-items-center">
                         <label for="" class="mb-0 mr-2 ml-0" style="width:135px">Post Code</label>
                         <div class="input-wrapper flex-grow-1">
-                            {{ Form::text('post_code', null, ['class'=>'form-control pc-edit', 'id'=>'clientPost']) }}
+                            {{ Form::text('post_code', null, ['class'=>'form-control pc-edit', 'id'=>'clientPost','readonly']) }}
                         </div>
                     </div>  
                 </div>
             </div>
         </div>
-        <a href="#" class="form-control btn-custom-primary-blue btn-hover-outline m-auto mw-200 w-100 my-3 text-center edit-contract" tabindex="1">Edit</a>
+        <button type="submit" class="form-control btn-custom-primary-blue btn-hover-outline mw-200 w-100 my-3 m-auto text-center" tabindex="1">Update</button>
         {!! Form::close() !!}
     </div>
 </div>

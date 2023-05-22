@@ -206,11 +206,10 @@ class ClientApplicationController extends Controller
 
         $timesheet->status = 2;
         $timesheet->job->clientJobWorkingStatus = 3;
-        $timesheet->candidate->working_status = 2;
+        $timesheet->job->candidate_working_status = 2;
 
         $timesheet->save();
         $timesheet->job->save();
-        $timesheet->candidate->save();
 
         return response()->json([
             'message' => 'Timesheet successfully approved',
@@ -243,10 +242,10 @@ class ClientApplicationController extends Controller
 
         $timesheet->status = 3;
         $timesheet->reject_reason = $rejectReason;
-        $timesheet->candidate->working_status = 4;
+        $timesheet->job->candidate_working_status = 4;
 
         $timesheet->save();
-        $timesheet->candidate->save();
+        $timesheet->job->save();
 
         return response()->json([
             'message' => 'Timesheet successfully rejected',
@@ -267,8 +266,7 @@ class ClientApplicationController extends Controller
 
         $timesheet->save();
 
-        $timesheet->candidate->working_status = 1;
-        $timesheet->candidate->save();
+        $timesheet->job->candidate_working_status = 1;
         $timesheet->job->unit = $request->units;
         $timesheet->job->save();
 
@@ -294,10 +292,10 @@ class ClientApplicationController extends Controller
         }
 
         $invoice->invoice_status = 2;
-        $invoice->candidate->working_status = 3;
+        $invoice->job->candidate_working_status = 3;
+        $invoice->job->save();
 
         $invoice->save();
-        $invoice->candidate->save();
 
         return response()->json([
             'message' => 'Invoice successfully paid',

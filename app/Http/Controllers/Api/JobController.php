@@ -407,7 +407,7 @@ class JobController extends Controller
             } 
             else if ($job->job_status == 3){
                 $SingleCandidateForJob = JobHelper::getWorkedCandidateToTheJob($job);
-                $canData = CandidateHelper::getCandidateField($SingleCandidateForJob[0]['id'],['avatar','full_name','role','working_status']);
+                $canData = CandidateHelper::getCandidateField($SingleCandidateForJob[0]['id'],['avatar','full_name','role']);
 
                 $canData['candidate_id'] = $SingleCandidateForJob[0]['id'];
                 
@@ -436,7 +436,7 @@ class JobController extends Controller
             $data['job_end_time']        = date("H:i", strtotime($job->job_end_time));
             $data['timesheet_status']    = (isset($job->timesheets) && isset($job->timesheets->status)) ? ApplicationStatusHelper::getTimesheetStatusByStatus($job->timesheets->status) : '';
             if($job->job_status == 3){
-                $data['candidate_working_status'] = ApplicationStatusHelper::getAfterWorkingStatusForCandidateByName($candidateObj[0]['working_status']);
+                $data['candidate_working_status'] = ApplicationStatusHelper::getAfterWorkingStatusForCandidateByName($job->candidate_working_status);
             }
             $data['job_category']        = ApplicationStatusHelper::getJobCategoryByName($job->job_category);
             $data['parking']             = ApplicationStatusHelper::getParkingByName($job->parking);

@@ -117,8 +117,15 @@
                 </div>
             </div>
         </div>
-        <a href="{{ route('admin.jobs.edit',$data['id']) }}" class="form-control btn-custom-primary-blue btn-hover-outline m-auto mw-200 w-100 my-3 text-center" tabindex="1">Edit</a>
+        <!-- if job status is booking or worked then hide edit button -->
+        @if($data['status'] == 'Published' || $data['status'] == 'Application')
+        <a href="{{ route('admin.jobs.edit',$data['id']) }}" class="form-control btn-custom-primary-blue btn-hover-outline m-auto mw-200 w-100 my-3 text-center editJobBtn" tabindex="1">Edit</a>
+        @endif
         {!! Form::close() !!}
     </div>
 </div>
+@endsection
+
+@section('custom_scripts')
+<script src="{{ asset('js/admin/job/view.js') }}"></script>
 @endsection

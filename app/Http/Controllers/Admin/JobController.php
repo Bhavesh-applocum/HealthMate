@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Address;
+use App\Client;
 use App\Helper\DataTableHelper;
 use App\Helpers\ApplicationStatusHelper;
 use App\Helpers\GeneralHelper;
@@ -35,7 +36,13 @@ class JobController extends Controller
      */
     public function create()
     {
-        //
+        $client = Client::all();
+        $data['allCategory'] = config('constant.job_Category');
+        $data['parking'] = config('constant.parking');
+        $data['AllClient'] = $client;
+        return view('admin.jobs.create',[
+            'data' => $data
+        ]);
     }
 
     /**
@@ -149,7 +156,29 @@ class JobController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        $job = Job::findOrFail($id);
+        $job->job_title = $request->title;
+        $job->job_description = $request->description;
+        $job->job_category = $request->role;
+        $job->job_date = $request->jobdate;
+        $job->job_start_time = $request->job_start_time;
+        $job->job_end_time = $request->job_end_time;
+        $job->job_salary = $request->salary;
+        $job->address_id = $request->address;
+        $job->break_time = $request->break;
+        $job->parking = $request->parking;
+        $job->save();
+
+        if($job){
+            $message = config('params.msg_success'). 'Job Updated Successfully!' .config('params.msg_end');
+            Session::flash('message', $message);
+            return redirect()->route('admin.jobs.index');
+        }else {
+            $message = config('params.msg_error'). 'Job Not Updated!' .config('params.msg_end');
+            Session::flash('message', $message);
+            return redirect()->route('admin.jobs.index');
+        }
     }
 
     /**

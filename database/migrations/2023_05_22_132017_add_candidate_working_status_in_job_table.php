@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddWorkingStatusColumnToCandidateTable extends Migration
+class AddCandidateWorkingStatusInJobTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddWorkingStatusColumnToCandidateTable extends Migration
      */
     public function up()
     {
-        Schema::table('candidates', function (Blueprint $table) {
-            $table->integer('working_status')->nullable()->after('role');
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->string('candidate_working_status')->nullable()->after('clientJobWorkingStatus');
         });
     }
 
@@ -25,7 +25,7 @@ class AddWorkingStatusColumnToCandidateTable extends Migration
      */
     public function down()
     {
-        Schema::table('candidates', function (Blueprint $table) {
+        Schema::table('jobs', function (Blueprint $table) {
             //
         });
     }

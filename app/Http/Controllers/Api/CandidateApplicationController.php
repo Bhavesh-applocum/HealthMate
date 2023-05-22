@@ -166,7 +166,7 @@ class CandidateApplicationController extends Controller
                     $dataObj['job_start_time']   = Carbon::createFromFormat('H:i:s', $job->job_start_time)->format('H:i A');
                     $dataObj['job_end_time']     = Carbon::createFromFormat('H:i:s', $job->job_end_time)->format('H:i A');
                     $dataObj['job_location']     = ApplicationStatusHelper::getOnlyArea($job->address_id);
-                    $dataObj['working_status']   = isset($application->candidate->working_status) ? ApplicationStatusHelper::getAfterWorkingStatusForCandidateByName($application->candidate->working_status) : '';
+                    $dataObj['working_status']   = isset($job->candidate_working_status) ? ApplicationStatusHelper::getAfterWorkingStatusForCandidateByName($job->candidate_working_status) : '';
                     $dataObj['job_salary']       = $job->job_salary;
                     array_push($data,$dataObj);
                 }
@@ -251,33 +251,45 @@ class CandidateApplicationController extends Controller
 
 
     public function labalCount($id){
+        $candidate = Candidate::findOrFail($id);
         $candidatePaymentCount = Candidate::with('invoices')->where('id',$id)->get();
-
-        $workingStatus = $candidatePaymentCount[0]->working_status;
-        if($workingStatus == 1){
-            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>1])->sum('invoice_amount');
-
-            return response()->json([
-                'message' => 'Payment Due',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $payment
-            ]);
-        }else if($workingStatus == 3){
-            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>2])->sum('invoice_amount');
-
-            return response()->json([
-                'message' => 'Total Paid',
-                'status' => 'OK',
-                'code' => 200,
-                'data' => $payment
-            ]);
-        }else{
+        $applications = Application::with('candidate', 'job')->where('candidate_id', $candidate->id)->get();
+        // dd($applications);
+        $data = [];
+        if(count($applications) == 0){
             return response()->json([
                 'message' => 'No Payment',
                 'status' => 'OK',
                 'code' => 200,
                 'data' => 0
+            ]);
+        }
+        $isDue = false;
+        foreach($applications as $key => $application){
+            // $data[$key]['job_id'] = $application->job_id;
+            $job = Job::with('applications')->where('id', $application->job_id)->first();
+            // dd($job);
+            if($job->candidate_working_status == 2){
+                $isDue = true;
+            }
+        }
+        if($isDue){
+            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>1])->sum('invoice_amount');
+    
+                return response()->json([
+                    'message' => 'Payment Due',
+                    'status' => 'OK',
+                    'code' => 200,
+                    'data' => $payment
+                ]);
+        }else{
+            $payment = Invoice::where(['candidate_id'=>$id,'invoice_status'=>2])->sum('invoice_amount');
+    
+            return response()->json([
+                'message' => 'Total Paid',
+                'status' => 'OK',
+                'code' => 200,
+                'data' => $payment
             ]);
         }
     }
