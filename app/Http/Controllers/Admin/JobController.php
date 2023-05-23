@@ -9,8 +9,11 @@ use App\Helpers\ApplicationStatusHelper;
 use App\Helpers\GeneralHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminCreateJobRequest;
 use App\Job;
 use Carbon\Carbon;
+use DateTime;
+use Facade\FlareClient\Time\Time;
 use Illuminate\Support\Facades\Session;
 
 class JobController extends Controller
@@ -45,6 +48,41 @@ class JobController extends Controller
         ]);
     }
 
+    public function getClientDetails(Request $request, $id)
+    {
+        $client = Client::with('address')->findOrFail($id);
+        // dd($client);
+        $address = Address::where('id', $client->address_id)->first();
+        // dd($address);
+        $addData = Address::where('client_id',$id)->get();
+        foreach ($addData as $key => $value) {
+            $Alladdress[$key]['id'] = $value->id;
+            $Alladdress[$key]['address'] = $value->address;
+            $Alladdress[$key]['url'] = route('admin.jobs.area.edit', $value['id']) ;
+        }
+        $data = [];
+        $data['client_avatar'] = $client->avatar;
+        $data['client_email'] = $client->email;
+        $data['client_phone'] = $client->phone;
+        $data['client_address_id'] = $client->address_id;
+        $data['client_address'] = $address->address;
+        $data['client_area'] = $address->area;
+        $data['client_post_code'] = $address->post_code;
+        $data['AllAddress']  = $Alladdress;
+        return response()->json([
+            'data' => $data
+        ], 200);
+
+        // $simpleResponse = response([
+        //     'address' => $Alladdress
+        // ]);
+
+        // if($request->ajax()){
+        //     return $jsonResponse;
+        // }   
+        // return $simpleResponse;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -53,7 +91,34 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $startTime = Carbon::createFromFormat('H:i', $request->job_start_time);
+        $endTime = Carbon::createFromFormat('H:i', $request->job_end_time);
+        $breakTime = Carbon::createFromFormat('H:i', $request->break);
+        $diff = $startTime->diffInHours($endTime);
+        $difference = Carbon::createFromFormat('H', $diff);
+        $job = $difference->diffInMinutes($breakTime);
+        $unit = $job / 60;
+        dd($unit);
+
+        $job = new Job();
+        $job->job_title = $request->job_title;
+        $job->job_description = $request->job_description;
+        $job->job_category = $request->job_category;
+        $job->job_date = $request->job_date;
+        $job->job_start_time = Carbon::createFromFormat('H:i', $request->job_start_time)->format('H:i:s');
+        $job->job_end_time = Carbon::createFromFormat('H:i', $request->job_end_time)->format('H:i:s');
+        $job->job_salary = $request->job_salary;
+        $job->job_status = $request->job_status;
+        $job->client_id = $request->client_id;
+        $job->address_id = $request->address_id;
+        $job->parking = $request->parking;
+        $job->save();
+
+        $job->ref_no = 'CON-' . ($job->id + 10000);
+        $job->save();
+
+        Session::flash('success', 'Job created successfully');
+        return redirect()->route('admin.jobs.index');
     }
 
     /**
