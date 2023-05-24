@@ -89,35 +89,39 @@ class JobController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AdminCreateJobRequest $request)
     {
-        $startTime = Carbon::createFromFormat('H:i', $request->job_start_time);
-        $endTime = Carbon::createFromFormat('H:i', $request->job_end_time);
-        $breakTime = Carbon::createFromFormat('H:i', $request->break);
-        $diff = $startTime->diffInHours($endTime);
-        $difference = Carbon::createFromFormat('H', $diff);
-        $job = $difference->diffInMinutes($breakTime);
-        $unit = $job / 60;
-        dd($unit);
+        $startTime = Carbon::createFromFormat('H:i',  $request->job_start_time); // 06:59
+        $endTime = Carbon::createFromFormat('H:i', $request->job_end_time); // 18:48
+        $breakTime = Carbon::createFromFormat('H:i', $request->break)->format('i'); // 00.50
+        $diff = $endTime->diffInMinutes($startTime); // 709 (Min) 
+        $difference = $diff - $breakTime; // 659
+        $hours = (int)floor($difference/60);
+        $minutes = (int)($difference - floor($difference / 60)* 60);
+        $d = $hours.'.'.$minutes;
+        $unitDouble = (doubleval($d));
 
         $job = new Job();
-        $job->job_title = $request->job_title;
-        $job->job_description = $request->job_description;
-        $job->job_category = $request->job_category;
-        $job->job_date = $request->job_date;
+        $job->job_title = $request->title;
+        $job->job_description = $request->description;
+        $job->job_category = $request->role;
+        $job->job_date = $request->jobdate;
         $job->job_start_time = Carbon::createFromFormat('H:i', $request->job_start_time)->format('H:i:s');
         $job->job_end_time = Carbon::createFromFormat('H:i', $request->job_end_time)->format('H:i:s');
-        $job->job_salary = $request->job_salary;
-        $job->job_status = $request->job_status;
+        $job->job_salary = $request->salary;
+        $job->unit = $unitDouble;
         $job->client_id = $request->client_id;
         $job->address_id = $request->address_id;
         $job->parking = $request->parking;
+        $job->break_time = $request->break;
         $job->save();
 
         $job->ref_no = 'CON-' . ($job->id + 10000);
         $job->save();
 
-        Session::flash('success', 'Job created successfully');
+        // message 
+        $message = config('params.msg_success'). 'Job created successfully' .config('params.msg_end');
+        Session::flash('message', $message);
         return redirect()->route('admin.jobs.index');
     }
 

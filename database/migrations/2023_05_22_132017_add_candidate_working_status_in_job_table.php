@@ -14,7 +14,7 @@ class AddCandidateWorkingStatusInJobTable extends Migration
     public function up()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->string('candidate_working_status')->nullable()->after('clientJobWorkingStatus');
+            $table->string('candidate_working_status')->default(0)->after('clientJobWorkingStatus');
         });
     }
 

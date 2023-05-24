@@ -423,8 +423,8 @@ class JobController extends Controller
             $data['job_salary']          = $job->job_salary;
             $data['unit']                = $job->unit;
             $data['timesheet_id']        = isset($job->timesheets->id) ? $job->timesheets->id : 0;
-            $data['timesheet_start_time']= isset($job->timesheets->start_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->start_time)->format('H:i A') : '';
-            $data['timesheet_end_time']  = isset($job->timesheets->end_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->end_time)->format('H:i A') : '';
+            $data['timesheet_start_time']= isset($job->timesheets->start_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->start_time)->format('H:i') : '';
+            $data['timesheet_end_time']  = isset($job->timesheets->end_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->end_time)->format('H:i') : '';
             $data['timesheet_break_time'] = isset($job->timesheets->break_time) ? Carbon::createFromFormat('H:i:s', $job->timesheets->break_time)->format('H:i') : '';
             if($job->job_status == 2){
             $data['cordinates']          = ApplicationStatusHelper::getLatitudeAndLongtitude();

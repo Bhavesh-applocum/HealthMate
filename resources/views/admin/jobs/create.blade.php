@@ -73,7 +73,6 @@
                         <div class="input-wrapper flex-grow-1">
                             {{ Form::time('break', null, ['class'=>'form-control', 'id'=>'breakTime']) }}
                         </div>
-                        &nbsp;&nbsp;/ Min
                     </div>
                     <!-- Parking -->
                     <div class="input-group my-3 d-flex flex-row justify-content-between align-items-center">
